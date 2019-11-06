@@ -1,4 +1,4 @@
-# proxima
+# Proxima Command
 
 ## Sources
 ### Docs & Datasheets
