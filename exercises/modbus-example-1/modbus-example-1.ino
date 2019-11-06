@@ -11,7 +11,7 @@ void setup() {
   pinMode(led1, OUTPUT);
   pinMode(led2, OUTPUT);
   pinMode(led3, OUTPUT);
-  bus = Modbus(1,1,4); 
+  bus = Modbus(1,1,4); // slave address, Serial1 of Arduino Mega
   Serial.begin(9600);
   bus.begin(9600);
 }
