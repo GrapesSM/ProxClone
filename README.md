@@ -14,7 +14,7 @@
 | ERROR | | 7 |
 | SYNCRONIZED | | 8 |
 | ON | | 9 |
-| OFF |  | 10 |
+| OFF | | 10 |
 
 ```cpp
 struct Puzzle {
