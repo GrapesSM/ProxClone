@@ -21,6 +21,7 @@ struct Puzzle {
     int address;
     int status;
     bool forced; // default is false
+    int totalPower; // Watts
     int startTime;
     int endTime;
     int * messages;
@@ -31,5 +32,6 @@ struct Puzzle {
 ## Sources
 ### Docs & Datasheets
 - [Modicon Modbus Protocol Reference Guide](http://modbus.org/docs/PI_MBUS_300.pdf)
+- [MODBUS over Serial Line Specification & Implementation guide V1.0 ](http://www.modbus.org/docs/Modbus_over_serial_line_V1.pdf)
 ### Libraries
 - [Arduino Modbus](https://github.com/arduino-libraries/ArduinoModbus)
