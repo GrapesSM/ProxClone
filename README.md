@@ -15,12 +15,12 @@
 | SYNCRONIZED | | 8 |
 | ON | | 9 |
 | OFF | | 10 |
-```cpp
 
+```cpp
 struct Puzzle {
     int address;
     int status;
-    boolean forced; // default is false
+    bool forced; // default is false
     int startTime;
     int endTime;
     int * messages;
