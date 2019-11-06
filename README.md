@@ -3,16 +3,18 @@
 ## Global/Game Variables
 | Name  |  Type  | Value |
 | ----  |  ----  | ----- |
-| STAGE |  Array of String | --- |
-| PUZZLE | Structure | ---- |
-| ACTIVE | ---- | 1 |
-| STANDBY | ---- | 2 |
-| SOLVED | ---- | 3 |
-| OFFLINE | ---- | 4 |
-| FAILURE | ---- | 5 |
-| SYSTEM_ERROR | ---- | 6 |
-| ERROR | ---- | 7 |
-| SYNCRONIZING | ---- | 8 |
+| STAGE |  Array of String | |
+| PUZZLE | Structure | |
+| ACTIVE | | 1 |
+| STANDBY | | 2 |
+| SOLVED | | 3 |
+| OFFLINE | | 4 |
+| FAILURE | | 5 |
+| SYSTEM_ERROR | | 6 |
+| ERROR | | 7 |
+| SYNCRONIZED | | 8 |
+| ON | | 9 |
+| OFF | | 10 |
 ```cpp
 
 struct Puzzle {
