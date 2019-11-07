@@ -10,5 +10,3 @@ The board shows completion, progress, and time-out of the game.
 - Neopixel (Puzzle Completion)
 - Neopixel (Game Progress)
 - Alphanumeric Display (Time Countdown)
-
-
