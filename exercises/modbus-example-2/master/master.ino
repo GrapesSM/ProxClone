@@ -33,7 +33,8 @@ Modbus master(0,1,4); // this is master and RS-232 or USB-FTDI
  * This is an structure which contains a query to an slave device
  */
 modbus_t telegram[2];
-uint16_t value = 0;
+int v;
+uint16_t values[] = {0, 0, 0};
 
 unsigned long u32wait;
 
@@ -69,12 +70,11 @@ void loop() {
     Serial.print(au16data[1]);
     Serial.print(',');
     Serial.print(au16data[2]);
-    Serial.print(','); 
-    Serial.print(value);
    
     
     if (Serial.available() > 1) {
-      value = Serial.parseInt();
+      v = Serial.parseInt();
+      values[v/10 - 1] = v - (v / 10) * 10;
     } 
     
     switch( u8state ) {
@@ -92,9 +92,8 @@ void loop() {
         if (master.getState() == COM_IDLE) {
           u8state = 0;
           u32wait = millis() + 1000;
-          if (au16data[0] != value) {
-            au16data[0] = value;
-            au16data[random(1,3)] = value;
+          for (int i = 0; i < 3; i++) {
+            au16data[i] = values[i];
           }
         }
         break;
