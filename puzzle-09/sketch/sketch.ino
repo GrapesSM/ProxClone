@@ -2,8 +2,6 @@
 #ifdef __AVR__
  #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
 #endif
-#define LED_PIN 9
-#define LED_COUNT 7
 
 #define PIN_RX 0
 #define PIN_TX 1
@@ -25,7 +23,9 @@
 #define PIN_GP6
 #define PIN_GP7
 
-Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
+#define LED_COUNT 7
+
+Adafruit_NeoPixel strip(LED_COUNT, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
 
 void setup() {
   #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
