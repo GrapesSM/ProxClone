@@ -3,31 +3,29 @@
 #include <Wire.h>
 #include "Adafruit_MCP23017.h"
 
-#define addr1 0 //0x20
-#define addr2 4 //0x24
+#define addr1 0 // 0x20
+#define addr2 4 // 0x24
 
 // Encoder pins
-#define encoder0PinA  2
-#define encoder0PinB  4
-
+#define encoder0PinA 2
+#define encoder0PinB 4
 
 // Neopixel setup
 #include <Adafruit_NeoPixel.h>
 #ifdef __AVR__
-//#include <avr/power.h> // Required for 16 MHz Adafruit Trinket
+// #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
 #endif
 
-#define PIN 9 //neopixel control pin
+#define PIN 9 // neopixel control pin
 #define NUMPIXELS 19 // Number of neopixel on the puzzle
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
-//neopixel commands
-
-//pixels.clear();
-//pixels.setPixelColor(i, pixels.Color(0, 150, 0));
-//pixels.show();
-//pixels.setBrightness(64);
-//pixels.fill(32000, 0, 19);
+// neopixel commands
+// pixels.clear();
+// pixels.setPixelColor(i, pixels.Color(0, 150, 0));
+// pixels.show();
+// pixels.setBrightness(64);
+// pixels.fill(32000, 0, 19);
 
 // 7 Segment
 #include <Adafruit_GFX.h>
@@ -52,32 +50,30 @@ float lcdDisplay;
 
 void setup() {
   Serial.begin(9600);
-  tone (10, random(2000,4000), 25);
+  tone(10, random(2000,4000), 25);
   // Attach encoder interrupts
   pinMode(encoder0PinA, INPUT);
   digitalWrite(encoder0PinA, HIGH);       // turn on pull-up resistor
   pinMode(encoder0PinB, INPUT);
   digitalWrite(encoder0PinB, HIGH);       // turn on pull-up resistor
-
   attachInterrupt(0, doEncoder, CHANGE);  // encoder pin on interrupt 0 - pin 2
 
   // Start i2c expanders
   mcp1.begin(addr1);      // use default address 0
   mcp2.begin(addr2);      // use default address 0
 
-
   // 7 segment
 
-  //#ifndef __AVR_ATtiny85__
+  // #ifndef __AVR_ATtiny85__
   //  Serial.begin(9600);
   //  Serial.println("7 Segment Backpack Test");
-  //#endif
+  // #endif
   matrix.begin(0x71);
 
   ////////////////////////////
-  //#if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
+  // #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
   //  clock_prescale_set(clock_div_1);
-  //#endif
+  // #endif
   // END of Trinket-specific code.
 
   pixels.begin(); // INITIALIZE NeoPixel strip object
@@ -116,7 +112,7 @@ void setup() {
   pixels.setPixelColor(1, pixels.Color(255, 255, 255));
   pixels.show();
 
-  //reset timers since millis started during setup
+  // reset timers since millis started during setup
   timer1Read =  millis();
   timer1 = 0;
 }
@@ -137,7 +133,6 @@ void doEncoder() {
     tone (10, random(2000,4000), 25);
     delay(10);
   }
-
 }
 
 void doEncoder_Expanded() {
@@ -159,13 +154,10 @@ void doEncoder_Expanded() {
     else {
       encoder0Pos = encoder0Pos - 1;          // CCW
     }
-
   }
-
 }
 
 void loop() {
-
   if (encoder0Pos <= 0) {
     encoder0Pos = 0;
     matrix.println(lcdDisplay / 10, 1);
@@ -175,7 +167,6 @@ void loop() {
   lcdDisplay = encoder0Pos;
   matrix.println(lcdDisplay / 10, 1);
   matrix.writeDisplay();
-
 
   // Countdown timer for sync key
 
@@ -196,7 +187,7 @@ void loop() {
   } else if ((timer1 >= 4000) && (timer1 <= 5000)) {
     pixels.setPixelColor(2, pixels.Color(0, 255, 0));
     pixels.show();
-  } else if  ((timer1 >= 5000) && (timer1 <= 6000)) {
+  } else if ((timer1 >= 5000) && (timer1 <= 6000)) {
     pixels.setPixelColor(2, pixels.Color(0, 0, 0));
     pixels.show();
   } else if  ((timer1 >= 6000) && (timer1 >= 7000)) {
@@ -204,20 +195,17 @@ void loop() {
     timer1 = 0;
   }
 
-
-
   for ( i = 1; i <= 14; i++) {
     if (i <= 7) {
       mcpRead[i] = mcp1.digitalRead(i);
       if (lastmcpRead[i] != mcpRead[i]) {
-        //Serial.print(lastmcpRead[i]); Serial.print("   "); Serial.println(mcpRead[i]);
+        // Serial.print(lastmcpRead[i]); Serial.print("   "); Serial.println(mcpRead[i]);
         tone (10, 4000, 100);
       }
       lastmcpRead[i] = mcpRead[i];
 
       if (mcp1.digitalRead(i) == HIGH) {
-
-        //        mcpRead[i] = mcp1.digitalRead(i);
+        // mcpRead[i] = mcp1.digitalRead(i);
         pixels.setPixelColor((NUMPIXELS - 7) - i, pixels.Color(255, 0, 0));
         pixels.show();
       } else {
@@ -240,7 +228,7 @@ void loop() {
 
   if ((mcpRead[1] == 1) && (mcpRead[2] == 1)) {
     pixels.fill(32000, 0, 19);
-    //pixels.clear();
+    // pixels.clear();
     pixels.show();
     matrix.writeDigitRaw (0, B01110011); //P
     matrix.writeDigitRaw (1, B00111000); //l
@@ -249,5 +237,4 @@ void loop() {
     matrix.writeDisplay();
     while (1) {}
   }
-
 }
