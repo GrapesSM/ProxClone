@@ -5,7 +5,7 @@ MAX 485 chip wired with arduino based on [the circuit](https://github.com/Jamshe
 
 ## Example 2
 A master (Arduino Mega 1) communicates to a slave (Arduino Mega 2) using ModBus protocol RS-485. The slave is uploaded with a program that lights up LEDs depending on values received from the master. The master reads from the built-in Serial input and sends a read/write query to the slave's registors to control the state of the slave's LEDs. 
-MAX 485 chip wired with arduino based on [the circuit](https://github.com/Jamshedshoh/proxima/blob/master/exercises/sources/Ff8Vo.png). Two chips connected with each other using A to A and B to B pins.
+MAX 485 chip wired with arduino based on [the circuit](https://github.com/Jamshedshoh/proxima/blob/master/exercises/sources/Ff8Vo.png). Two chips are wired with each other using A to A and B to B pins.
 
 ## Example 3
 A master (Raspberry Pi) comminicates to a slave (Arduino Uno) using ModBus protocol RS-485. The slave is uploaded with a program that sequentially lights up NeoPixels depending on the RGB colors received from the master. 
