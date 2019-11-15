@@ -13,10 +13,10 @@ import modbus_tk
 import modbus_tk.defines as cst
 from modbus_tk.modbus_rtu import RtuServer
 from modbus_tk.simulator import Simulator
+from modbus_tk.modbus import Databank
 
 #PORT = 1
 PORT = '/dev/ttyUSB0'
-data = []
 
 def main():
     """main"""
@@ -26,6 +26,7 @@ def main():
     )
     server.set_timeout(5.0)
     server.set_verbose(True)
+    server.add_slave(1)
     
     simu = Simulator(server)
     try:
