@@ -17,7 +17,7 @@ from modbus_tk.modbus import Databank
 
 #PORT = 1
 PORT = '/dev/ttyUSB0'
-
+# general test comment POB
 def main():
     """main"""
     logger = modbus_tk.utils.create_logger("console")
