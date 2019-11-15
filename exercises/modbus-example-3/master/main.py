@@ -27,7 +27,6 @@ def main():
         )
         master.set_timeout(5.0)
         master.set_verbose(True)
-        logger.info("connected")
 
         logger.info(master.execute(1, cst.READ_HOLDING_REGISTERS, 0, 10))
 
