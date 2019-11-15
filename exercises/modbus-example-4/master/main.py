@@ -11,7 +11,8 @@ import serial
 
 import modbus_tk
 import modbus_tk.defines as cst
-from modbus_tk import modbus_rtu
+from modbus_tk.modbus_rtu import RtuServer
+from modbus_tk.simulator import Simulator
 
 #PORT = 1
 PORT = '/dev/ttyUSB0'
@@ -20,19 +21,19 @@ data = []
 def main():
     """main"""
     logger = modbus_tk.utils.create_logger("console")
-
+    server = RtuServer(
+        serial.Serial(port=PORT, baudrate=19200, bytesize=8, parity='N', stopbits=1, xonxoff=0)
+    )
+    server.set_timeout(5.0)
+    server.set_verbose(True)
+    
+    simu = Simulator(server)
     try:
-
-        #Connect to the slave
-        server = modbus_rtu.RtuServer(
-            serial.Serial(port=PORT, baudrate=19200, bytesize=8, parity='N', stopbits=1, xonxoff=0), data
-        )
-        server.set_timeout(5.0)
-        server.start();
-        logger.info("connected")
-
-    except modbus_tk.modbus.ModbusError as exc:
+        logger.info("'quit' for closing the server")
+        simu.start()
+    except Exception as exc:
         logger.error("%s- Code=%d", exc, exc.get_exception_code())
-
+    finally:
+        simu.close()
 if __name__ == "__main__":
     main()
