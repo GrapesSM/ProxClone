@@ -21,8 +21,8 @@ void setup() {
   #endif
 
   strip.begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
-  strip.show();            // Turn OFF all pixels ASAP
   strip.setBrightness(255); // Set BRIGHTNESS to about 1/5 (max = 255)
+  strip.show();            // Turn OFF all pixels ASAP
 }
 
 void loop() {
@@ -32,6 +32,7 @@ void loop() {
     strip.show(); //  Update strip to match
     delay(50);
   }
+  
 
   for(int i=0; i<strip.numPixels(); i++) {
     strip.setPixelColor(i, strip.Color(au16data[4], au16data[5], au16data[6]));

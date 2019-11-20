@@ -15,9 +15,8 @@ from modbus_tk.modbus_rtu import RtuServer
 from modbus_tk.simulator import Simulator as Listener
 from modbus_tk.modbus import Databank
 
-#PORT = 1
 PORT = '/dev/ttyUSB0'
-
+# general test comment POB
 def main():
     """main"""
     logger = modbus_tk.utils.create_logger("console")
