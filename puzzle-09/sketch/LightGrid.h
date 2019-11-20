@@ -27,6 +27,8 @@ class LightGrid : public Grid
 
         void setColor();
         void setColor(uint8_t red, uint8_t green, uint8_t blue);
+        void setColor(uint8_t number, uint8_t red, uint8_t green, uint8_t blue);
+        void setColor(uint8_t row, uint8_t column, uint8_t red, uint8_t green, uint8_t blue);
         void setColor(uint8_t box[], uint8_t rows, uint8_t columns);
         uint8_t* getColor(uint8_t row, uint8_t column);
     private:
@@ -65,6 +67,14 @@ void LightGrid::setColor(uint8_t red, uint8_t green, uint8_t blue) {
     for (uint8_t i = 0, n = rows * columns; i < n; i++) {
         _p->setPixelColor(i, _p->Color(red, green, blue));
     }
+}
+
+void LightGrid::setColor(uint8_t number, uint8_t red, uint8_t green, uint8_t blue) {
+    _p->setPixelColor(number - 1, _p->Color(red, green, blue));
+}
+
+void LightGrid::setColor(uint8_t row, uint8_t column, uint8_t red, uint8_t green, uint8_t blue) {
+    _p->setPixelColor(0, _p->Color(red, green, blue));
 }
 
 void LightGrid::setColor(uint8_t box[], uint8_t rows, uint8_t columns) {
