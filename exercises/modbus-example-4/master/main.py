@@ -12,7 +12,7 @@ import serial
 import modbus_tk
 import modbus_tk.defines as cst
 from modbus_tk.modbus_rtu import RtuServer
-from modbus_tk.simulator import Simulator
+from modbus_tk.simulator import Simulator as Listener
 from modbus_tk.modbus import Databank
 
 #PORT = 1
@@ -27,14 +27,15 @@ def main():
     server.set_timeout(5.0)
     server.set_verbose(True)
     server.add_slave(1)
+    server.add_slave(2)
     
-    simu = Simulator(server)
+    listener = Listener(server)
     try:
         logger.info("'quit' for closing the server")
-        simu.start()
+        listener.start()
     except Exception as exc:
         logger.error("%s- Code=%d", exc, exc.get_exception_code())
     finally:
-        simu.close()
+        listener.close()
 if __name__ == "__main__":
     main()
