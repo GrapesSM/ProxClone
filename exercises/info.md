@@ -14,12 +14,12 @@ TC485S chip (converter) is used with Arduino to communicate via ModBus protocol 
 
 ## Example 4
 
-# Sqlite
+# Web App & SQLite
 ## Example 1
-Simple API connected with a database shows user interface via a web browser. [Flask](https://flask.palletsprojects.com/en/1.1.x/quickstart/) application and [Peewee](http://docs.peewee-orm.com/en/latest/peewee/quickstart.html#quickstart) ORM (Object-relational mapping) library is used for handle request from the browser and store data in to the Sqlite database.  
+Simple API connected with a database shows user interface via a web browser. [Flask](https://flask.palletsprojects.com/en/1.1.x/quickstart/) application and [Peewee](http://docs.peewee-orm.com/en/latest/peewee/quickstart.html#quickstart) ORM (Object-relational mapping) library is used for handle request from the browser and store data in to the SQLite database.  
 
 ### Libraries
 - [Modbus Master Slave for Arduino](https://github.com/smarmengol/Modbus-Master-Slave-for-Arduino)
 - [Modbus TX](https://github.com/ljean/modbus-tk)
 - [Flask the minimal web application](https://github.com/pallets/flask)
-- [Peewee](https://github.com/coleifer/peewee)
+- [Peewee ORM](https://github.com/coleifer/peewee)
