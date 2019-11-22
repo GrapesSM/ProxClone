@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Index page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
     <h1>Index Page</h1>
@@ -10,9 +11,10 @@
     {% endfor %}
     <form action="/user" method="POST">
         <label>Username
-            <input name="username" />
+            <input name="username" autofocus/>
         </label>
-        <button type="submit">Get Profile</button>
+        <button type="submit">Add</button>
+        <a href="/user/clear">Clear All</a>
     </form>
 </body>
 </html>

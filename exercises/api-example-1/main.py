@@ -21,6 +21,11 @@ def create_user():
     user.save()
     return redirect(url_for('index'))
 
+@app.route('/user/clear')
+def clear_all():
+    User.delete().execute()
+    return redirect(url_for('index'))
+
 @app.route('/about')
 def about():
     return 'About Page'
