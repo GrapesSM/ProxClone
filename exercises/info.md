@@ -13,6 +13,8 @@ A master (Raspberry Pi) comminicates to a slave (Arduino Uno) using ModBus proto
 TC485S chip (converter) is used with Arduino to communicate via ModBus protocol RS-485. [USB to RS485 Converter Adapter](https://potentiallabs.com/cart/image/cache/catalog/Latest%20components/usb%20to%20485%20converter_01-800x800.jpg) is used with Raspberry PI to communicate with the slave. The adapter is wired with the chip using A to A and B to B pins. 
 
 ## Example 4
+A master (Raspberry Pi) acting as a listener comminicates to a slave (Arduino Uno) using ModBus protocol RS-485. The slave is uploaded with a program that sequentially lights up NeoPixels depending on the RGB colors received from the master. 
+TC485S chip (converter) is used with Arduino to communicate via ModBus protocol RS-485. [USB to RS485 Converter Adapter](https://potentiallabs.com/cart/image/cache/catalog/Latest%20components/usb%20to%20485%20converter_01-800x800.jpg) is used with Raspberry PI to communicate with the slave. The adapter is wired with the chip using A to A and B to B pins. 
 
 # Web App & SQLite
 ## Example 1
