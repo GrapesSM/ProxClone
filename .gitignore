@@ -1,3 +1,9 @@
 
+
 .vscode/
-exercises/modbus-example-1/hs_err_pid25420.log
+*.log
+__pycache__/
+*.so
+*$py.class
+*.py[cod]
+*.db
