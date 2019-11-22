@@ -15,4 +15,5 @@ def initialize_db():
     db.create_tables([User], safe=True)
     db.close()
 
-initialize_db()
+if __name__ == "__main__":
+    initialize_db()
