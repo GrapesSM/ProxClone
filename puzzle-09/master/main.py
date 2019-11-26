@@ -13,7 +13,6 @@ import modbus_tk
 import modbus_tk.defines as cst
 from modbus_tk import modbus_rtu
 
-#PORT = 1
 PORT = '/dev/ttyUSB0'
 
 def main():
@@ -38,7 +37,7 @@ def main():
         #logger.info(master.execute(1, cst.WRITE_SINGLE_COIL, 7, output_value=1))
         #logger.info(master.execute(1, cst.WRITE_SINGLE_REGISTER, 100, output_value=54))
         #logger.info(master.execute(1, cst.WRITE_MULTIPLE_COILS, 0, output_value=[1, 1, 0, 1, 1, 0, 1, 1]))
-        logger.info(master.execute(1, cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=[7, 127, 127, 127]))
+        logger.info(master.execute(1, cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=[1, 0, 0, 127]))
 
     except modbus_tk.modbus.ModbusError as exc:
         logger.error("%s- Code=%d", exc, exc.get_exception_code())
