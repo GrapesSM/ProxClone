@@ -1,5 +1,5 @@
-#define PIN_RX 0
-#define PIN_TX 1
+#define PIN_RX1 2
+#define PIN_TX1 4
 #define PIN_B 2
 #define PIN_485_EN 3
 #define PIN_A 4

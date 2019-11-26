@@ -1,5 +1,5 @@
+#include "ModbusRtu.h"
 #include "LightGrid.h"
-#include <ModbusRtu.h>
 #include "Constants.h"
 
 Adafruit_NeoPixel strip(LED_COUNT, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
@@ -8,7 +8,7 @@ uint16_t au16data[4] = {0, 0, 0, 0};
 Modbus slave(1,0,3);
 
 void setup() {
-  slave.begin( 19200 );
+  slave.begin( 19200, PIN_RX1, PIN_TX1 );
   #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
     clock_prescale_set(clock_div_1);
   #endif
