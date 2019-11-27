@@ -1,5 +1,12 @@
 # Proxima Command
 
+## Global Registers (16-bit)
+- Power Status for each puzzle (binary)
+- Solved state for each puzzle (binary)
+- Remaining game time
+- Play message
+- Recharge / Standby
+
 ## Global/Game Variables
 | Name  |  Type  | Value |
 | ----  |  ----  | ----- |

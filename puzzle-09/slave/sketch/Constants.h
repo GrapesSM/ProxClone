@@ -6,7 +6,7 @@
 #define PIN_RX1 5
 #define PIN_TX1 6
 #define PIN_LIMIT 7
-#define PIN_NEOPIXEL 9
+#define PIN_NEOPIXEL 26
 #define PIN_SPEAKER 11
 #define PIN_RELAY1 8
 #define PIN_RELAY2 12
