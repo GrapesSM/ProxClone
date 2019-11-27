@@ -339,11 +339,11 @@ void Modbus::begin(long u32speed, uint8_t rx, uint8_t tx)
     
     switch( u8serno )
     {
-#if defined(UBRR1H)
+//#if defined(UBRR1H)
     case 1:
         port = &Serial1;
         break;
-#endif
+//#endif
 
 #if defined(UBRR2H)
     case 2:
