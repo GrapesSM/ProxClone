@@ -45,23 +45,22 @@
   <script>
     function openNav() {
       var sidebar = document.getElementById("mySidenav")
+      sidebar.style.width = "250px";
       sidebar.style.zIndex = "2000"; 
       sidebar.classList.remove("d-none");
-      console.log(sidebar.className)
     }
     
     function closeNav() {
       var sidebar = document.getElementById("mySidenav")
       sidebar.classList.add("d-none");
-      sidebar.style.zIndex = "1000"; 
-      console.log("CLOSE")
+      sidebar.style.zIndex = "1000";
     }
     </script>
 </head>
 <body>
   <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow" >
     <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="javascript:void(0)">
-      <span class="d-block d-sm-none" onclick="openNav()">&#9776;</span>
+      <span class="d-inline d-sm-inline d-md-none" onclick="openNav()">&#9776;</span>
       Proxima
     </a>
     <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">
@@ -75,7 +74,7 @@
   <div class="container-fluid">
     <div class="row">
       <nav id="mySidenav" class="col-md-2 d-none d-md-block bg-light sidebar">
-        <a href="javascript:void(0)" class="closebtn d-sm-block d-xs-block" onclick="closeNav()">&times;</a>
+        <a href="javascript:void(0)" class="closebtn d-sm-block d-xs-block" style="text-decoration: none;" onclick="closeNav()">&times;</a>
         <div class="sidebar-sticky">
           <ul class="nav flex-column">
             <li class="nav-item">
