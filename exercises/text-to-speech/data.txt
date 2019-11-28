@@ -1,0 +1,27 @@
+{  "texts": [
+      { "text-number": 1,
+        "value": "Hi, this is number 1",
+        "speed": 1,
+        "volume": 1,
+        "filename":"speech.mp3",
+        "repeat-number" : 1
+      },
+      { "text-number": 2,
+        "value": "Hi, this is number 2",
+        "speed": 1,
+        "volume": 0.5,
+        "filename":"speech.mp3",
+        "repeat-number":2
+      }, 
+      { "text-number": 3,
+        "value": "Hi, this is number 3",
+        "speed": 1,
+        "volume": 1,
+        "filename":"speech.mp3",
+        "repeat-number" : 1
+      }
+    ], 
+   "config": {
+      "location": ""
+  }
+} 

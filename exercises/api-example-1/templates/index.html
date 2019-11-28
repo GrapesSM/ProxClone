@@ -6,15 +6,52 @@
 </head>
 <body>
     <h1>Index Page</h1>
-    {% for user in users: %}
-        <h5>Hello {{ user.username }}</h4>
-    {% endfor %}
-    <form action="/user" method="POST">
-        <label>Username
-            <input name="username" autofocus/>
-        </label>
-        <button type="submit">Add</button>
-        <a href="/user/clear">Clear All</a>
-    </form>
+    <section>
+        {% for user in users: %}
+            <h5>Hello {{ user.username }}</h4>
+        {% endfor %}
+        <form action="/user" method="POST">
+            <label>Username
+                <input name="username" autofocus/>
+            </label>
+            <button type="submit">Add</button>
+            <a href="/user/clear">Clear All</a>
+        </form>
+    </section>
+    <br/>
+    <section>
+        <form action="/led" method="POST">
+            <div>
+                <label>Red</label>
+                <div>
+                    <input name="red" autofocus/>
+                </div>
+            </div>
+            <div>
+                <label>Green</label>
+                <div>
+                    <input name="green" />
+                </div>
+            </div>
+            <div>
+                <label>Blue</label>
+                <div>
+                    <input name="blue" />
+                </div>
+            </div>
+            <button type="submit">Set</button>
+        </form>
+    </section>
+    <section>
+        <form action="/led1" method="POST">
+            <div>
+                <label>Red</label>
+                <div>
+                    <input type="color" name="color" />
+                </div>
+            </div>
+            <button type="submit">Set</button>
+        </form>
+    </section>
 </body>
 </html>

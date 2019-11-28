@@ -8,7 +8,7 @@ uint16_t au16data[4] = {0, 127, 127, 0};
 Modbus slave(1, 1, PIN_485_EN);
 
 void setup() {
-  slave.begin( 19200, PIN_RX1, PIN_TX1 );
+  slave.begin( 19200, 2, 4 );
   #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
     clock_prescale_set(clock_div_1);
   #endif
