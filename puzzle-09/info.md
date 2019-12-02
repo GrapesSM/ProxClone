@@ -1,4 +1,5 @@
 ## Docked Ship Energy Supplemental & Ship Prep Aux & Docked Ship Prep Status
+Track the states of switches and lights
 
 ### Constants & Variables
 
@@ -23,3 +24,8 @@
   - Synchro Key
   - Neopixel (Red, Yellow, Green, 9 LEDs)
   - Light effects
+
+### Libraries
+  - https://github.com/Makuna/NeoPixelBus
+  - https://github.com/smarmengol/Modbus-Master-Slave-for-Arduino
+  

@@ -2,8 +2,8 @@
 #define PIN_TX1 4
 #define PIN_RX2 5
 #define PIN_TX2 10
-#define PIN_ENCODER_CHANNEL_A 33
-#define PIN_ENCODER_CHANNEL_B 14
+#define PIN_ENCODER_A 33
+#define PIN_ENCODER_B 14
 #define PIN_485_EN 15
 #define PIN_INPUT1 13
 #define PIN_INPUT2 9
@@ -18,6 +18,9 @@
 #define PIN_ANALOG_INPUT1 34
 #define PIN_ANALOG_INPUT2 35
 #define PIN_ANALOG_INPUT3 37
+#define ADDR_SWITCH1 0 // 0x20
+#define ADDR_SWITCH2 4 // 0x24
+#define ADDR_SEVENSEGMENT 0x71
 
-#define LED_COUNT 7
+#define LED_COUNT 18
 #define COLOR_SATURATION 128
