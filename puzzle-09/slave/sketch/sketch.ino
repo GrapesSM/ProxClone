@@ -4,19 +4,19 @@
 #include <Adafruit_MCP23017.h>
 #include <Adafruit_GFX.h>
 #include "Adafruit_LEDBackpack.h"
+#include <ESP32Encoder.h>
 
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, PIN_NEOPIXEL);
 LightGrid lg(&strip, LED_COUNT);
 uint16_t au16data[4] = {0, 0, 127, 0};
 Modbus slave(1, 1, PIN_485_EN);
+ESP32Encoder encoder;
 
 Adafruit_MCP23017 mcp1;
 Adafruit_MCP23017 mcp2;
 
 Adafruit_7segment matrix = Adafruit_7segment();
 uint16_t counter = 0;
-
-int encoder0Pos = 0;
 
 unsigned int timer1;
 unsigned int timer1Read;
@@ -58,8 +58,12 @@ void setup() {
   pinMode(PIN_SWITCH2, INPUT);
   pinMode(PIN_SWITCH3, INPUT);
 
-  pinMode(PIN_ENCODER_A, INPUT_PULLUP);
-  pinMode(PIN_ENCODER_B, INPUT_PULLUP);
+  ESP32Encoder::useInternalWeakPullResistors=false;
+   // adjust starting count value to 0
+  encoder.clearCount();
+  encoder.setCount(16380);
+  // Attache pins for use as encoder pins
+  encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
   
   // reset timers since millis started during setup
   timer1Read =  millis();
@@ -75,56 +79,52 @@ void loop() {
     au16data[0] = 0;  
   }
 
-  Serial.print(digitalRead(PIN_ENCODER_A));
-  Serial.print(", ");
-  Serial.println(digitalRead(PIN_ENCODER_B));
-
-//  if (timer1 > 5000) {
-//    timer1Read = millis();
-//    Serial.println("==========================");
-//    Serial.print("Milliseconds: "); 
-//    Serial.println(millis());
-//    Serial.print("Switch 1: "); 
-//    for (int i = 0; i <= 9; i++) {
-//      Serial.print(mcp1.digitalRead(i));
-//      if (i < 9) Serial.print(",");  
-//    }
-//    Serial.println();
-//    Serial.print("Switch 2: "); 
-//    for (int i = 0; i <= 9; i++) {
-//      Serial.print(mcp2.digitalRead(i));
-//      if (i < 9) Serial.print(",");  
-//    }
-//    Serial.println();
-//    Serial.print("Neopixel: ");
-//    for (int i = 0; i < LED_COUNT; i++) {
-//      Serial.print(strip.GetPixelColor(i).R);
-//      Serial.print("-");
-//      Serial.print(strip.GetPixelColor(i).G);
-//      Serial.print("-");
-//      Serial.print(strip.GetPixelColor(i).B);
-//      if (i < LED_COUNT - 1) Serial.print(",");
-//    }
-//    Serial.println();
-//    Serial.print("Seven Segment: "); 
-//    counter++;
-//    Serial.print(counter);
-//    matrix.print(counter);
-//    matrix.writeDisplay();
-//    delay(10);
-//    if (counter > 9999) {
-//      counter = 0;
-//    }
-//    Serial.println();
-//    Serial.print("Switches: "); 
-//    Serial.print(digitalRead(PIN_SWITCH1));
-//    Serial.print(",");
-//    Serial.print(digitalRead(PIN_SWITCH2));
-//    Serial.print(",");
-//    Serial.print(digitalRead(PIN_SWITCH3));
-//    Serial.println();
-//    Serial.print("Encoder: ");
-//    Serial.print(encoder0Pos);
-//    Serial.println(); 
-//  }
+  if (timer1 > 5000) {
+    timer1Read = millis();
+    Serial.println("==========================");
+    Serial.print("Milliseconds: "); 
+    Serial.println(millis());
+    Serial.print("Switch 1: "); 
+    for (int i = 0; i <= 9; i++) {
+      Serial.print(mcp1.digitalRead(i));
+      if (i < 9) Serial.print(",");  
+    }
+    Serial.println();
+    Serial.print("Switch 2: "); 
+    for (int i = 0; i <= 9; i++) {
+      Serial.print(mcp2.digitalRead(i));
+      if (i < 9) Serial.print(",");  
+    }
+    Serial.println();
+    Serial.print("Neopixel: ");
+    for (int i = 0; i < LED_COUNT; i++) {
+      Serial.print(strip.GetPixelColor(i).R);
+      Serial.print("-");
+      Serial.print(strip.GetPixelColor(i).G);
+      Serial.print("-");
+      Serial.print(strip.GetPixelColor(i).B);
+      if (i < LED_COUNT - 1) Serial.print(",");
+    }
+    Serial.println();
+    Serial.print("Seven Segment: "); 
+    counter++;
+    Serial.print(counter);
+    matrix.print(counter);
+    matrix.writeDisplay();
+    delay(10);
+    if (counter > 9999) {
+      counter = 0;
+    }
+    Serial.println();
+    Serial.print("Switches: "); 
+    Serial.print(digitalRead(PIN_SWITCH1));
+    Serial.print(",");
+    Serial.print(digitalRead(PIN_SWITCH2));
+    Serial.print(",");
+    Serial.print(digitalRead(PIN_SWITCH3));
+    Serial.println();
+    Serial.print("Encoder: ");
+    Serial.print(String((int32_t)encoder.getCount()));
+    Serial.println(); 
+  }
 }
