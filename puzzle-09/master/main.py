@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import render_template, request, redirect, url_for
+from flask import send_from_directory
 from db import User
 app = Flask(__name__)
 
@@ -27,26 +28,14 @@ except modbus_tk.modbus.ModbusError as exc:
 
 @app.route('/')
 def index():
-    users = User.select()
-    return render_template('index.html', users=users)
-
-@app.route('/user/<string:username>')
-def show_user_profile(username):
-    user = User.get_or_none(User.username == username)
-    return 'User %s' % user.username if user else 'User not found'
-
-@app.route('/user', methods=['POST'])
-def create_user():
-    if (not request.form['username']):
-        return 'Username is required'
-    user = User(username = request.form['username'])
-    user.save()
-    return redirect(url_for('index'))
-
-@app.route('/user/clear')
-def clear_all():
-    User.delete().execute()
-    return redirect(url_for('index'))
+    try:
+        a = master.execute(1, cst.READ_HOLDING_REGISTERS, 0, 20)
+        a += master.execute(1, cst.READ_HOLDING_REGISTERS, 20, 20)
+        a += master.execute(1, cst.READ_HOLDING_REGISTERS, 40, 20)
+        a += master.execute(1, cst.READ_HOLDING_REGISTERS, 60, 10)
+    except modbus_tk.modbus.ModbusError as exc:
+        logger.error("%s- Code=%d", exc, exc.get_exception_code())
+    return render_template('index.html', output=a)
 
 @app.route('/led', methods=['POST'])
 def set_color():
@@ -60,25 +49,42 @@ def set_color():
         logger.error("%s- Code=%d", exc, exc.get_exception_code())
     return redirect(url_for('index'))
 
-@app.route('/led1', methods=['POST'])
-def set_color1():
-    if (not request.form['color']):
-        return 'Pick color'
-    
-    color = request.form['color'].lstrip('#')
-    colorRGB = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
-    logger.info(colorRGB)
-
+@app.route('/update', methods=['POST'])
+def update():
+    #color = request.form['color'].lstrip('#')
+    #colorRGB = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
+    inputs = request.form;
+    registers = []
+    for name in inputs:
+        registers.append(int(inputs[name]))       
+       
     try:
-        master.execute(1, cst.READ_HOLDING_REGISTERS, 0, 4)
-        master.execute(1, cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=[1, colorRGB[0], colorRGB[1], colorRGB[2]])
+        master.execute(1, cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=registers[0:20])
+        master.execute(1, cst.WRITE_MULTIPLE_REGISTERS, 20, output_value=registers[20:40])
+        master.execute(1, cst.WRITE_MULTIPLE_REGISTERS, 40, output_value=registers[40:60])
+        master.execute(1, cst.WRITE_MULTIPLE_REGISTERS, 60, output_value=registers[60:70])
+        registers[0] = 1
+        master.execute(1, cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=registers[0:1])
     except modbus_tk.modbus.ModbusError as exc:
         logger.error("%s- Code=%d", exc, exc.get_exception_code())
+    
+    logger.info(registers[0:20])
+    logger.info(registers[20:40])
+    logger.info(registers[40:60])
+    logger.info(registers[60:70])
     return redirect(url_for('index'))
 
-@app.route('/about')
-def about():
-    return 'About Page'
+@app.route('/img/<path:path>')
+def send_img(path):
+    return send_from_directory('templates/img', path)
+
+@app.route('/js/<path:path>')
+def send_js(path):
+    return send_from_directory('templates/js', path)
+
+@app.route('/css/<path:path>')
+def send_css(path):
+    return send_from_directory('templates/css', path)
 
 @app.errorhandler(404)
 def not_found(error):
