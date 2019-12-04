@@ -8,7 +8,13 @@
 
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, PIN_NEOPIXEL);
 LightGrid lg(&strip, LED_COUNT);
-uint16_t au16data[10] = {
+uint16_t au16data[70] = {
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
@@ -75,28 +81,31 @@ void setup() {
 }
 
 void loop() {
-  slave.poll( au16data, 10 );
+  slave.poll( au16data, 70 );
   
   timer1 = millis() - timer1Read;
   if (counter > 9999) {
     counter = 0;
   }
 
-  // if (au16data[0] > 0) {
-  //   lg.setColor(au16data[0], au16data[1], au16data[2], au16data[3]);
-  //   strip.Show();
-  //   au16data[0] = 0;  
-  // }
+  if (au16data[0] == 1) {
+    for (int i = 1; i <= 18; i++) {
+      lg.setColor(i, au16data[8 + 3*(i-1)], au16data[8 + 3*(i-1) + 1], au16data[8 + 3*(i-1) + 2]);  
+    }
+    au16data[0] = 0;
+    strip.Show();
+  }
+  
   /////////////////////////////////////////
   byte sw1 = 0x0000000;
   for (int i = 0; i < 7; i++) {
-    mcp1.digitalRead(i) ? bitSet(sw1,i) : bitClear(sw1,i);
+    mcp1.digitalRead(i+1) ? bitSet(sw1,i) : bitClear(sw1,i);
   }
   au16data[1] = sw1;
 
   byte sw2 = 0x0000000;
   for (int i = 0; i < 7; i++) {
-    mcp2.digitalRead(i) ? bitSet(sw2,i) : bitClear(sw2,i);
+    mcp2.digitalRead(i+1) ? bitSet(sw2,i) : bitClear(sw2,i);
   }
   au16data[2] = sw2;
 
