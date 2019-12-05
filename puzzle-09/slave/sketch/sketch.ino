@@ -9,13 +9,13 @@
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, PIN_NEOPIXEL);
 LightGrid lg(&strip, LED_COUNT);
 uint16_t au16data[70] = {
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+  0, 0, 0, 0, 0, 0, 0, 0, 127, 127,
+  127, 0, 0, 127, 0, 0, 127, 0, 0, 127,
+  127, 0, 0, 127, 0, 0, 127, 0, 0, 127,
+  0, 0, 127, 0, 0, 127, 0, 0, 127, 0,
+  0, 0, 127, 0, 0, 127, 0, 0, 127, 0,
+  0, 127, 0, 0, 127, 0, 0, 127, 0, 0,
+  127, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
 Modbus slave(1, 1, PIN_485_EN);
@@ -90,22 +90,44 @@ void loop() {
 
   if (au16data[0] == 1) {
     for (int i = 1; i <= 18; i++) {
-      lg.setColor(i, au16data[8 + 3*(i-1)], au16data[8 + 3*(i-1) + 1], au16data[8 + 3*(i-1) + 2]);  
+      if (i >= 5) {
+        if (i <= 11) {
+          if (mcp1.digitalRead(12 + i*(-1))) {
+            lg.setColor(i, au16data[8 + 3*(i-1)], au16data[8 + 3*(i-1) + 1], au16data[8 + 3*(i-1) + 2]);              
+          } else {
+            lg.setColor(i, 0, 0, 0); 
+          }
+        } else {
+          if (mcp2.digitalRead(19 + i*(-1))) {
+            lg.setColor(i, au16data[8 + 3*(i-1)], au16data[8 + 3*(i-1) + 1], au16data[8 + 3*(i-1) + 2]);              
+          } else {
+            lg.setColor(i, 0, 0, 0); 
+          }
+        }
+      } else if (i == 1) {
+        if (au16data[5]) {
+          lg.setColor(i, au16data[8 + 3*(i-1)], au16data[8 + 3*(i-1) + 1], au16data[8 + 3*(i-1) + 2]);
+        } else {
+          lg.setColor(i, 0, 0, 0);    
+        }
+      } else {
+        lg.setColor(i, au16data[8 + 3*(i-1)], au16data[8 + 3*(i-1) + 1], au16data[8 + 3*(i-1) + 2]);    
+      }
     }
     au16data[0] = 0;
     strip.Show();
   }
   
   /////////////////////////////////////////
-  byte sw1 = 0x0000000;
-  for (int i = 0; i < 7; i++) {
-    mcp1.digitalRead(i+1) ? bitSet(sw1,i) : bitClear(sw1,i);
+  byte sw1 = 0x00000000;
+  for (int i = 7; i > 0; i--) {
+    mcp1.digitalRead(i) ? bitSet(sw1, 7 - i) : bitClear(sw1, 7 - i);
   }
   au16data[1] = sw1;
 
-  byte sw2 = 0x0000000;
-  for (int i = 0; i < 7; i++) {
-    mcp2.digitalRead(i+1) ? bitSet(sw2,i) : bitClear(sw2,i);
+  byte sw2 = 0x00000000;
+  for (int i = 7; i > 0; i--) {
+    mcp2.digitalRead(i) ? bitSet(sw2, 7 - i) : bitClear(sw2, 7 - i);
   }
   au16data[2] = sw2;
 
@@ -115,52 +137,18 @@ void loop() {
   au16data[6] = digitalRead(PIN_SWITCH2);
   au16data[7] = digitalRead(PIN_SWITCH3);
 
-  if (timer1 > 5000) {
+  if (timer1 > 300) {
     counter++;
     timer1Read = millis();
-  //   Serial.println("==========================");
-  //   Serial.print("Milliseconds: "); 
-  //   Serial.println(millis());
-  //   Serial.print("Switch 1: "); 
-  //   for (int i = 0; i <= 9; i++) {
-  //     Serial.print(mcp1.digitalRead(i));
-  //     if (i < 9) Serial.print(",");  
-  //   }
-  //   Serial.println();
-  //   Serial.print("Switch 2: "); 
-  //   for (int i = 0; i <= 9; i++) {
-  //     Serial.print(mcp2.digitalRead(i));
-  //     if (i < 9) Serial.print(",");  
-  //   }
-  //   Serial.println();
-  //   Serial.print("Neopixel: ");
-  //   for (int i = 0; i < LED_COUNT; i++) {
-  //     Serial.print(strip.GetPixelColor(i).R);
-  //     Serial.print("-");
-  //     Serial.print(strip.GetPixelColor(i).G);
-  //     Serial.print("-");
-  //     Serial.print(strip.GetPixelColor(i).B);
-  //     if (i < LED_COUNT - 1) Serial.print(",");
-  //   }
-  //   Serial.println();
-  //   Serial.print("Seven Segment: "); 
-  //   Serial.print(counter);
-     matrix.print(counter);
-     matrix.writeDisplay();
-  //   delay(10);
-  //   if (counter > 9999) {
-  //     counter = 0;
-  //   }
-  //   Serial.println();
-  //   Serial.print("Switches: "); 
-  //   Serial.print(digitalRead(PIN_SWITCH1));
-  //   Serial.print(",");
-  //   Serial.print(digitalRead(PIN_SWITCH2));
-  //   Serial.print(",");
-  //   Serial.print(digitalRead(PIN_SWITCH3));
-  //   Serial.println();
-  //   Serial.print("Encoder: ");
-  //   Serial.print(String((int32_t)encoder.getCount()));
-  //   Serial.println(); 
+    au16data[0] = 1;
+    if (au16data[4] >= 0 && au16data[4] <= 9999) {
+      matrix.print(au16data[4]);  
+    } else if (au16data[4] > 9999 && au16data[4] < 10100) {
+      au16data[4] = 9999;
+    } else {
+      au16data[4] = 0;
+    }
+    
+    matrix.writeDisplay();
   }
 }
