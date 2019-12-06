@@ -1,6 +1,16 @@
 ## Docked Ship Energy Supplemental & Ship Prep Aux & Docked Ship Prep Status
 Track the states of switches and lights
 
+### Logic
+  Read digital and analog signals
+  Save states to local storage
+  Turn on/off lights regarding switches
+  Save orders of turning on/off
+  Count down for synchro keys
+  Save power state
+  Read power switch
+  Update global state
+
 ### Constants & Variables
 
 ### List of Components
