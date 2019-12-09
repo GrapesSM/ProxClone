@@ -42,3 +42,9 @@ enum STATE {
     OFF = 10,
     INITIALIZED = 1
 };
+
+extern int lightPinForPowerSwitchOfEnergySupplemental = 0;
+extern int lightPinsForSyncroReader[] = {1, 2, 3};
+extern int lightPinsForBatteryMatrix[] = {11, 12, 13, 14, 15, 16, 17};
+extern int lightPinsForGenerator[] = {4, 5, 6, 7, 8, 9, 10};
+extern int lightPinForPowerSwitchOfShipPrep = 17; // 18;

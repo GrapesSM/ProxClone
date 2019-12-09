@@ -10,31 +10,45 @@
 class PowerSwitch
 {
   public:
-    PowerSwitch(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, uint8_t lightPins[], uint8_t switchPin);
+    PowerSwitch();
+    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin, int pin);
     void setLightOn();
     void setLightOff();
-    void switchOn();
-    void switchOff();
     bool isLightOn();
     bool isLightOff();
     bool isSwitchOn();
     bool isSwitchOff();
-
+    void listen();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
-    uint8_t _lightPins;
-    uint8_t _pin;
+    int _lightPin;
+    int _pin;
 };
 
-PowerSwitch::PowerSwitch(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, uint8_t lightPins[], uint8_t switchPin) {
+PowerSwitch::PowerSwitch() {}
+
+void PowerSwitch::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin, int pin) 
+{
   _strip = strip;
-  _lightPins = lightPins;
+  _lightPin = lightPin;
   _pin = pin;
 }
 
-void PowerSwitch::setLightOn() {
-  strip.set
-  
+bool PowerSwitch::isSwitchOn()
+{
+  return digitalRead(_pin);
+}
+
+void PowerSwitch::setLightOn()
+{
+  _strip->SetPixelColor(_lightPin, RgbColor(127, 127, 127));
+  _strip->Show();
+}
+
+void PowerSwitch::setLightOff()
+{
+  _strip->SetPixelColor(_lightPin, RgbColor(0, 0, 0));
+  _strip->Show();
 }
 
 #endif

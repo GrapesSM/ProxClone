@@ -12,14 +12,20 @@
 
 namespace ShipPrepAux {
   typedef struct {
-    BatteryMatrix *batteryMatrix;
-    Generator *generator;
-    PowerSwitch *powerSwitch;
-    Speaker *speaker;
+    BatteryMatrix batteryMatrix;
+    Generator generator;
+    PowerSwitch powerSwitch;
+    Speaker speaker;
   } Components;
 
-
-  
+  void run(Components components) 
+  {
+    if (components.powerSwitch.isSwitchOn()) {
+      components.powerSwitch.setLightOn();
+    } else {
+      components.powerSwitch.setLightOff();
+    }
+  }
 }
 
 #endif

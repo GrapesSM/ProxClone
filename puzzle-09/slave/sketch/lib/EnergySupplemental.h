@@ -12,11 +12,20 @@
 
 namespace EnergySupplemental {
   typedef struct {
-    PowerAdjuster *powerAdjuster;
-    SyncroReader *syncroReader;
-    PowerSwitch *powerSwitch;
-    Speaker *speaker;
+    PowerAdjuster powerAdjuster;
+    SyncroReader syncroReader;
+    PowerSwitch powerSwitch;
+    Speaker speaker;
   } Components;
+
+  void run(Components components) 
+  {
+    if (components.powerSwitch.isSwitchOn()) {
+      components.powerSwitch.setLightOn();
+    } else {
+      components.powerSwitch.setLightOff();
+    }
+  }
 }
 
 #endif
