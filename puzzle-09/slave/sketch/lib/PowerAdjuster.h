@@ -15,13 +15,17 @@ class PowerAdjuster
     PowerAdjuster();
     void set(ESP32Encoder * encoder, Adafruit_7segment * matrix);
     void update();
-    void show();
+    void display();
+    void disable();
+    void enable();
+    bool isDisabled();
   private:
     ESP32Encoder *_encoder;
     Adafruit_7segment *_matrix;
     int _val;
     int _min;
     int _max;
+    int _disabled = true;
 };
 
 PowerAdjuster::PowerAdjuster() {
@@ -37,6 +41,7 @@ void PowerAdjuster::set(ESP32Encoder *encoder, Adafruit_7segment *matrix) {
 
 void PowerAdjuster::update() {
   _val = _encoder->getCount();
+  Serial.println(_val);
   if (_val >= _max) {
     _val = _max;
     _encoder->setCount(_max);
@@ -46,7 +51,25 @@ void PowerAdjuster::update() {
   }
 }
 
-void PowerAdjuster::show() {
+void PowerAdjuster::disable() {
+  _disabled = true;
+  _encoder->pauseCount();
+  _matrix->clear();
+}
+
+void PowerAdjuster::enable() {
+  _disabled = false;
+  _encoder->resumeCount();
+}
+
+bool PowerAdjuster::isDisabled()
+{
+  return _disabled;
+}
+
+void PowerAdjuster::display() {
+  Serial.println(_val);
+  _matrix->clear();
   _matrix->print(_val);
   _matrix->writeDisplay();
 }

@@ -16,26 +16,40 @@ namespace EnergySupplemental {
     SyncroReader syncroReader;
     PowerSwitch powerSwitch;
     Speaker speaker;
-    unsigned long timer;
-    unsigned long lastTime;
+    STATE state;
   } Components;
 
   void run(Components c) 
   {
-    c.timer = millis();
-
-    if (c.powerSwitch.isSwitchOn()) {
-      c.powerSwitch.setLightOn();
-    } else {
+    if (c.powerSwitch.isSwitchOff()) {
+      c.state = OFF;
       c.powerSwitch.setLightOff();
+      c.powerAdjuster.disable();
+      c.syncroReader.disable();
+      return;
+    } else {
+      c.state = ON;
+      c.powerSwitch.setLightOn();
+      c.powerAdjuster.enable();
+      c.syncroReader.enable();
     }
 
-    c.powerAdjuster.update();
-
-    if (c.timer - c.lastTime > 1000) {
-      c.lastTime = millis();
-      c.powerAdjuster.show();
+    if (! c.powerAdjuster.isDisabled()) {
+      c.powerAdjuster.update();
+      delay(10);
+      c.powerAdjuster.display();
     }
+
+    if (! c.syncroReader.isDisabled()) {
+      c.syncroReader.update();
+    }
+  }
+
+  void show(Components c)
+  {
+    // c.powerAdjuster.display();
+    c.powerSwitch.display();
+    c.syncroReader.display();
   }
 }
 

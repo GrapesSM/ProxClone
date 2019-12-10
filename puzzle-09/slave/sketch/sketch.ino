@@ -20,6 +20,7 @@ struct Puzzle {
   unsigned long timer = 0;
   unsigned long counter = 0;
   unsigned long checkpoint = 0;
+  unsigned long interval = 200;
 } puzzle;
 
 struct Parts {
@@ -98,6 +99,13 @@ void loop()
   // Enable Energy Supplemental
   EnergySupplemental::run(esComponents);
   ShipPrepAux::run(spComponents);
+
+  puzzle.timer = millis();
+  if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
+    puzzle.checkpoint = millis();
+    EnergySupplemental::show(esComponents);
+    ShipPrepAux::show(spComponents);
+  }
 }
 
 void setupEnergySupplemental()

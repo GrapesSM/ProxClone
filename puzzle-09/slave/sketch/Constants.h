@@ -40,11 +40,19 @@ enum STATE {
     SYNCRONIZED = 8,
     ON = 9,
     OFF = 10,
-    INITIALIZED = 1
+    INITIALIZED = 11
 };
 
+// Number of Lights and Pin Numbers
 extern int lightPinForPowerSwitchOfEnergySupplemental = 0;
+
+#define NUMBER_OF_LIGHTS_FOR_SYNCRO_READER 3
 extern int lightPinsForSyncroReader[] = {1, 2, 3};
-extern int lightPinsForBatteryMatrix[] = {11, 12, 13, 14, 15, 16, 17};
-extern int lightPinsForGenerator[] = {4, 5, 6, 7, 8, 9, 10};
-extern int lightPinForPowerSwitchOfShipPrep = 17; // 18;
+
+#define NUMBER_OF_LIGHTS_FOR_BATTERY_MATRIX 7
+extern int lightPinsForBatteryMatrix[] = {17, 16, 15, 14, 13, 12, 11};
+
+#define NUMBER_OF_LIGHTS_FOR_GENERATOR 7
+extern int lightPinsForGenerator[] = {10, 9, 8, 7, 6, 5, 4};
+
+extern int lightPinForPowerSwitchOfShipPrep = 18;

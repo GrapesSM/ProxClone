@@ -16,15 +16,37 @@ namespace ShipPrepAux {
     Generator generator;
     PowerSwitch powerSwitch;
     Speaker speaker;
+    STATE state;
   } Components;
 
-  void run(Components components) 
+  void run(Components c) 
   {
-    if (components.powerSwitch.isSwitchOn()) {
-      components.powerSwitch.setLightOn();
+    if (c.powerSwitch.isSwitchOff()) {
+      c.state = OFF;
+      c.powerSwitch.setLightOff();
+      c.batteryMatrix.disable();
+      c.generator.disable();
+      return;
     } else {
-      components.powerSwitch.setLightOff();
+      c.state = ON;
+      c.powerSwitch.setLightOn();
+      c.batteryMatrix.enable();
+      c.generator.enable();
     }
+
+    if (! c.batteryMatrix.isDisabled()) {
+      c.batteryMatrix.update();
+    }
+
+    if (! c.generator.isDisabled()) {    
+      c.generator.update();
+    }
+
+  }
+
+  void show(Components c)
+  {
+    c.powerSwitch.display();
   }
 }
 
