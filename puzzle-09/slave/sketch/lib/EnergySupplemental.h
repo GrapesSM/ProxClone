@@ -16,14 +16,25 @@ namespace EnergySupplemental {
     SyncroReader syncroReader;
     PowerSwitch powerSwitch;
     Speaker speaker;
+    unsigned long timer;
+    unsigned long lastTime;
   } Components;
 
-  void run(Components components) 
+  void run(Components c) 
   {
-    if (components.powerSwitch.isSwitchOn()) {
-      components.powerSwitch.setLightOn();
+    c.timer = millis();
+
+    if (c.powerSwitch.isSwitchOn()) {
+      c.powerSwitch.setLightOn();
     } else {
-      components.powerSwitch.setLightOff();
+      c.powerSwitch.setLightOff();
+    }
+
+    c.powerAdjuster.update();
+
+    if (c.timer - c.lastTime > 1000) {
+      c.lastTime = millis();
+      c.powerAdjuster.show();
     }
   }
 }

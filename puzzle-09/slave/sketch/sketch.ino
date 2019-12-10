@@ -28,7 +28,7 @@ struct Parts {
   Adafruit_MCP23017 mcp1;
   Adafruit_MCP23017 mcp2;
   ESP32Encoder encoder;
-  Adafruit_7segment matrix = Adafruit_7segment();  
+  Adafruit_7segment matrix = Adafruit_7segment(); 
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
@@ -58,11 +58,11 @@ void setup()
 
   // Setup and Init Encoders
   ESP32Encoder::useInternalWeakPullResistors=false;
-  //-- attach pins for use as encoder pins
-  parts.encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
   //-- adjust starting count value to 0
   parts.encoder.clearCount();
-  parts.encoder.setCount(16380);
+  parts.encoder.setCount(0);
+  //-- attach pins for use as encoder pins
+  parts.encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
   
   // Setup 7 segment LED
   parts.matrix.begin(ADDR_SEVENSEGMENT);
