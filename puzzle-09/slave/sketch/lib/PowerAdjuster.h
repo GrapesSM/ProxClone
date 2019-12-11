@@ -41,7 +41,6 @@ void PowerAdjuster::set(ESP32Encoder *encoder, Adafruit_7segment *matrix) {
 
 void PowerAdjuster::update() {
   _val = _encoder->getCount();
-  Serial.println(_val);
   if (_val >= _max) {
     _val = _max;
     _encoder->setCount(_max);
