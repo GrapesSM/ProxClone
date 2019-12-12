@@ -28,17 +28,16 @@ struct Parts {
   NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip;
   ESP32Encoder encoder;
   Adafruit_7segment matrix1 = Adafruit_7segment(); 
-  Adafruit_7segment matrix2 = Adafruit_7segment(); 
+  Adafruit_7segment matrix2 = Adafruit_7segment();
+  void dial;
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, PIN_NEOPIXEL);
 
-EnergySupplemental::Components esComponents;
-ShipPrepAux::Components spComponents;
+PowerSupply::Components psComponents;
 
-void setupEnergySupplemental();
-void setupShipPrepAux();
+void setupPowerSupply();
 
 void setup() 
 {
@@ -84,8 +83,7 @@ void setup()
     parts.mcp2.pinMode(i, INPUT);
   }
   
-  setupEnergySupplemental();
-  setupShipPrepAux();
+  setupPowerSupply();
 
   puzzle.timer = millis();
 }
@@ -95,28 +93,20 @@ void loop()
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
-  // Enable Energy Supplemental
-  EnergySupplemental::run(esComponents);
-  ShipPrepAux::run(spComponents);
+  // Enable Power Supply
+  PowerSupply::run(psComponents);
 
   puzzle.timer = millis();
   if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
     puzzle.checkpoint = millis();
-    EnergySupplemental::show(esComponents);
-    ShipPrepAux::show(spComponents);
+    PowerSupply::show(psComponents);
   }
 }
 
-void setupEnergySupplemental()
+void setupPowerSupply()
 {
-  esComponents.powerAdjuster.set(&parts.encoder, &parts.matrix);
-  esComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader);
-  esComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitchOfEnergySupplemental, PIN_SWITCH_1);
-}
-
-void setupShipPrepAux() 
-{
-  spComponents.batteryMatrix.set(parts.strip, lightPinsForBatteryMatrix, &parts.mcp2);
-  spComponents.generator.set(parts.strip, lightPinsForGenerator, &parts.mcp1);
-  spComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitchOfShipPrep, PIN_SWITCH_2);
+  psComponents.powerControl.set(&parts.encoder, &parts.matrix1, &parts.matrix2, &parts.dial);
+  psComponents.powerIndicator.set(parts.strip, lightPinsForPowerIndicator);
+  psComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
+  psComponents.generator.set(parts.strip, lightPinsForGenerator);
 }

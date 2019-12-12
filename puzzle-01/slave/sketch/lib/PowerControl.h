@@ -1,5 +1,5 @@
 /*
-  PowerControl.h - Library for playing sounds and voices.
+  PowerControl.h - Library to control supply and demand of powers to others puzzles.
 */
 #ifndef PowerControl_h
 #define PowerControl_h
@@ -13,7 +13,7 @@ class PowerControl
 {
   public:
     PowerControl();
-    void set(ESP32Encoder * encoder, Adafruit_7segment * matrix);
+    void set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2, void * dial);
     void update();
     void display();
     void disable();
@@ -21,7 +21,8 @@ class PowerControl
     bool isDisabled();
   private:
     ESP32Encoder *_encoder;
-    Adafruit_7segment *_matrix;
+    Adafruit_7segment *_matrix1;
+    Adafruit_7segment *_matrix2;
     int _val;
     int _min;
     int _max;
@@ -34,9 +35,10 @@ PowerControl::PowerControl() {
   _max = 100;
 }
 
-void PowerControl::set(ESP32Encoder *encoder, Adafruit_7segment *matrix) {
+void PowerControl::set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2, void * dial) {
   _encoder = encoder;
-  _matrix = matrix;
+  _matrix1 = matrix1;
+  _matrix2 = matrix2;
 }
 
 void PowerControl::update() {
@@ -53,12 +55,13 @@ void PowerControl::update() {
 void PowerControl::disable() {
   _disabled = true;
   _encoder->pauseCount();
-  _matrix->clear();
+  // TO-DO:
 }
 
 void PowerControl::enable() {
   _disabled = false;
   _encoder->resumeCount();
+  // TO-DO:
 }
 
 bool PowerControl::isDisabled()
@@ -66,11 +69,14 @@ bool PowerControl::isDisabled()
   return _disabled;
 }
 
-void PowerControl::display() {
-  Serial.println(_val);
-  _matrix->clear();
-  _matrix->print(_val);
-  _matrix->writeDisplay();
+void PowerControl::display() {  
+  _matrix1->clear();
+  _matrix1->print(_val);
+  _matrix1->writeDisplay();
+
+  _matrix2->clear();
+  _matrix2->print(_val);
+  _matrix2->writeDisplay();
 }
 
 #endif
