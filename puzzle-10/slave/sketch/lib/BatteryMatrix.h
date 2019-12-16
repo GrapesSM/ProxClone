@@ -1,5 +1,5 @@
 /*
-  BatteryMatrix.h - Library for playing sounds and voices.
+  BatteryMatrix.h - Library for ________.
 */
 #ifndef BatteryMatrix_h
 #define BatteryMatrix_h

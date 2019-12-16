@@ -78,8 +78,8 @@ void loop()
 void setupPrepStatus()
 {
   psComponents.batteryMatrix.set();
-  psComponents.energySupplemental.set();
-  psComponents.batteryMatrix.set();
+  psComponents.energySupp.set();
+  psComponents.lightEffect.set();
   psComponents.generator.set();
   psComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader);
   psComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
