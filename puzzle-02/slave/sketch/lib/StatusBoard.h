@@ -23,12 +23,50 @@ namespace StatusBoard {
 
   void run(Components c) 
   {
-    // TO-DO:
+    c.shipPrepStatus.listen();
+    c.lifeSupportStatus.listen();
+    c.blastDoorStatus.listen();
+    c.laserGrid.listen();
+
+    if (c.shipPrepStatus.isSolved()) {
+      c.shipPrepStatus.setGreenLightOn();
+      c.shipPrepStatus.setRedLightOff();
+    } else {
+      c.shipPrepStatus.setRedLightOn();
+      c.shipPrepStatus.setGreenLightOff();
+    }
+
+    if (c.lifeSupportStatus.isSolved()) {
+      c.lifeSupportStatus.setRedLightOff();
+      c.lifeSupportStatus.setGreenLightOn();
+    } else [
+      c.lifeSupportStatus.setRedLightOn();
+      c.lifeSupportStatus.setGreenLightOff();
+    ]
+
+    if (c.blastDoorStatus.isSolved()) {
+      c.blastDoorStatus.setRedLightOff();
+      c.blastDoorStatus.setGreenLightOn();
+    } else {
+      c.blastDoorStatus.setRedLightOn();
+      c.blastDoorStatus.setGreenLightOff();
+    }
+
+    if (c.laserGrid.isSolved()) {
+      c.laserGrid.setRedLightOff();
+      c.laserGrid.setGreenLightOn();
+    } else {
+      c.laserGrid.setRedLightOn();
+      c.laserGrid.setGreenLightOff();
+    }
   }
 
   void show(Components c)
   {
-    // TO-DO:
+    c.shipPrepStatus.display();
+    c.lifeSupportStatus.display();
+    c.blastDoorStatus.display();
+    c.laserGrid.display();
   }
 }
 
