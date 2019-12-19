@@ -1,5 +1,5 @@
 /*
-  CodeReader.h - Library for playing sounds and voices.
+  CodeReader.h - Library for ________.
 */
 #ifndef CodeReader_h
 #define CodeReader_h
@@ -17,10 +17,12 @@ class CodeReader
     void update();
     void display();
     bool isDisabled();
+    int getInputValue();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
     int *_lightPins;
     bool _disabled = true;
+    int _input;
 };
 
 CodeReader::CodeReader() {}
@@ -56,6 +58,11 @@ void CodeReader::update()
 void CodeReader::display()
 {
   // TO-DO:
+}
+
+int CodeReader::getInputValue()
+{
+  return _input;
 }
 
 #endif

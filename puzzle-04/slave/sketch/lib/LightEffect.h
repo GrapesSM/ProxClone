@@ -1,5 +1,5 @@
 /*
-  LightEffect.h - Library for playing sounds and voices.
+  LightEffect.h - Library for _______.
 */
 #ifndef LightEffect_h
 #define LightEffect_h
@@ -13,13 +13,11 @@ class LightEffect
     LightEffect();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
     void update();
-    void disable();
-    void enable();
-    bool isDisabled();
+    void setLightOn();
+    void setLightOff();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
-    bool _disabled = true;
 };
 
 LightEffect::LightEffect(){}
@@ -35,22 +33,14 @@ void LightEffect::update()
   // TO-DO: 
 }
 
-void LightEffect::disable() 
+void LightEffect::setLightOn() 
 {
-  _disabled = true;
   // TO-DO: 
 }
 
-void LightEffect::enable() 
+void LightEffect::setLightOff() 
 {
-  _disabled = false;
   // TO-DO: 
 }
-
-bool LightEffect::isDisabled()
-{
-  return _disabled;
-}
-
 
 #endif
