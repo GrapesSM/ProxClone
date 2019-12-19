@@ -5,7 +5,7 @@
 #include <Adafruit_GFX.h>
 #include "Adafruit_LEDBackpack.h"
 #include <ESP32Encoder.h>
-#include "lib/PowerSupply.h"
+#include "lib/PowerControl.h"
 
 struct Puzzle {
   uint8_t address = ADDR_SLAVE;
@@ -34,9 +34,9 @@ struct Parts {
 Modbus slave(puzzle.address, 1, PIN_485_EN);
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, PIN_NEOPIXEL);
 
-PowerSupply::Components psComponents;
+PowerControl::Components psComponents;
 
-void setupPowerSupply();
+void setupPowerControl();
 
 void setup() 
 {
@@ -71,7 +71,7 @@ void setup()
   pinMode(PIN_SWITCH_2, INPUT);
   pinMode(PIN_SWITCH_3, INPUT);
 
-  setupPowerSupply();
+  setupPowerControl();
 
   puzzle.timer = millis();
 }
@@ -81,19 +81,19 @@ void loop()
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
-  // Enable Power Supply
-  PowerSupply::run(psComponents);
+  // Enable Power Control
+  PowerControl::run(psComponents);
 
   puzzle.timer = millis();
   if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
     puzzle.checkpoint = millis();
-    PowerSupply::show(psComponents);
+    PowerControl::show(pcComponents);
   }
 }
 
-void setupPowerSupply()
+void setupPowerControl()
 {
-  psComponents.powerControl.set(&parts.encoder, &parts.matrix1, &parts.matrix2, &parts.dial);
+  psComponents.powerAdjuster.set(&parts.encoder, &parts.matrix1, &parts.matrix2, &parts.dial);
   psComponents.powerIndicator.set(parts.strip, lightPinsForPowerIndicator);
   psComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
   psComponents.generator.set(parts.strip, lightPinsForGenerator);

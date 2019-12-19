@@ -1,82 +1,60 @@
 /*
-  PowerControl.h - Library to control supply and demand of powers to others puzzles.
+  PowerControl.h - Library for controlling energy and syncro reader.
 */
 #ifndef PowerControl_h
 #define PowerControl_h
 
 #include <Arduino.h>
-#include <ESP32Encoder.h>
-#include <Adafruit_GFX.h>
-#include "Adafruit_LEDBackpack.h"
+#include "PowerAdjuster.h"
+#include "SyncroReader.h"
+#include "PowerSwitch.h"
+#include "Speaker.h"
 
-class PowerControl
-{
-  public:
-    PowerControl();
-    void set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2, void * dial);
-    void update();
-    void display();
-    void disable();
-    void enable();
-    bool isDisabled();
-  private:
-    ESP32Encoder *_encoder;
-    Adafruit_7segment *_matrix1;
-    Adafruit_7segment *_matrix2;
-    int _val;
-    int _min;
-    int _max;
-    int _disabled = true;
-};
+namespace PowerControl {
+  typedef struct {
+    PowerAdjuster powerAdjuster;
+    PowerLightIndicator powerLightIndicator;
+    PowerPinIndicator powerPinIndicator;
+    PowerBarIndicator powerBarIndicator;
+    LightEffect lightEffect;
+    Speaker speaker;
+    STATE state;
+    float currentDemand = 0.0;
+    float currentSupply = 0.0;
+    float maxDemand = 13.0;
+    unsigned long timer;
+  } Components;
 
-PowerControl::PowerControl() {
-  _val = 0;
-  _min = 0;
-  _max = 100;
-}
+  void run(Components c) 
+  {
+    c.timer = millis();
 
-void PowerControl::set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2, void * dial) {
-  _encoder = encoder;
-  _matrix1 = matrix1;
-  _matrix2 = matrix2;
-}
+    if (powerAdjuster.isBalanced()) {
+      powerLightIndicator.turnToWhite();
+    } else {
+      powerLightIndicator.turnToRed();
+    }
 
-void PowerControl::update() {
-  _val = _encoder->getCount();
-  if (_val >= _max) {
-    _val = _max;
-    _encoder->setCount(_max);
-  } else if (_val <= _min) {
-    _val = _min;
-    _encoder->setCount(_min);
+    powerAdjuster.setOutputValue(c.currentSupply);
+    // read register and add to current total value
+    powerAdjuster.update();
+    
+    powerBarIndicator.setValue(powerControl.getInputValue());
+    powerPinIndicator.setValue(powerControl.getInputValue());
+
+    if (puzzle.MAX_POWER >= powerControl.getInputValue()) {
+      // shut off all puzzles by setting register to SHUT_OFF_ALL_PUZZLES state
+    }
   }
-}
 
-void PowerControl::disable() {
-  _disabled = true;
-  _encoder->pauseCount();
-  // TO-DO:
-}
-
-void PowerControl::enable() {
-  _disabled = false;
-  _encoder->resumeCount();
-  // TO-DO:
-}
-
-bool PowerControl::isDisabled()
-{
-  return _disabled;
-}
-
-void PowerControl::display() {  
-  _matrix1->clear();
-  _matrix1->print(_val);
-  _matrix1->writeDisplay();
-
-  _matrix2->clear();
-  _matrix2->print(_val);
-  _matrix2->writeDisplay();
+  void show(Components c)
+  {
+    powerAdjuster.display();
+    powerLightIndicator.display();
+    powerBarIndicator.display();
+    powerPinIndicator.display();
+    lightEffect.display();
+  }
 }
 
 #endif

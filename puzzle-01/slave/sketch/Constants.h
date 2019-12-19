@@ -22,7 +22,8 @@
 #define NUMBER_OF_SWITCHES_1 7
 #define ADDR_SWITCH_2 4 // 0x24
 #define NUMBER_OF_SWITCHES_2 7
-#define ADDR_SEVENSEGMENT 0x71
+#define ADDR_SEVENSEGMENT_1 0x71
+#define ADDR_SEVENSEGMENT_2 0x71
 #define ADDR_SLAVE 1
 
 #define SERIAL_BAUDRATE 19200
@@ -40,7 +41,9 @@ enum STATE {
     SYNCRONIZED = 8,
     ON = 9,
     OFF = 10,
-    INITIALIZED = 11
+    INITIALIZED = 11,
+    START = 12,
+    END = 13
 };
 
 // Number of Lights and Pin Numbers
