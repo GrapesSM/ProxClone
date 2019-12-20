@@ -1,5 +1,5 @@
 /*
-  Generator.h - Library for playing sounds and voices.
+  Generator.h - Library for ______.
 */
 #ifndef Generator_h
 #define Generator_h
@@ -15,6 +15,7 @@ class Generator
     void update();
     void disable();
     void enable();
+    void display();
     bool isDisabled();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
@@ -59,6 +60,11 @@ void Generator::enable()
 bool Generator::isDisabled()
 {
   return _disabled;
+}
+
+void Generator::display() 
+{
+  // TO-DO:
 }
 
 

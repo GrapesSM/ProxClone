@@ -27,21 +27,47 @@ namespace ShipPrepAux {
 
   void run(Components c) 
   {
-    // TO-DO:
-    // Start State
-    // End State
-    // Winning Indication
-    // Connections to other puzzles
-    // Mandatory clues/dependencies
-    // Optional clues
-    // How to solve the puzzle
-    // Failure consequences
-    // Discovered clues/ unlocked status
+    if (c.powerSwitch.isSwitchOff()) {
+      c.powerSwitch.setLightOff();
+      c.batteryMatrix.disable();
+      c.energySupp.disable();
+      c.generator.disable();
+      c.syncroReader.disable();
+      c.lightEffect.disable();
+    } else {
+      c.powerSwitch.setLightOn();
+      c.batteryMatrix.enable();
+      c.energySupp.enable();
+      c.generator.enable();
+      c.syncroReader.enable();
+      c.lightEffect.enable();
+    }
+
+    if (! c.syncroReader.isDisabled()) {
+      c.syncroReader.update();
+    }
+
+    if (! c.batteryMatrix.isDisabled()) {
+      c.batteryMatrix.update();
+    }
+
+    if (! c.energySupp.isDisabled()) {
+      c.energySupp.update();
+    }
+
+    if (! c.generator.isDisabled()) {
+      c.generator.update();
+    }
   }
 
   void show(Components c)
   {
-    // TO-DO:
+    c.powerSwitch.display();
+    c.batteryMatrix.display();
+    c.energySupp.display();
+    c.generator.display();
+    c.syncroReader.display();
+    c.lightEffect.display();
   }
 }
 

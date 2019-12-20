@@ -15,6 +15,7 @@ class BatteryMatrix
     void update();
     void disable();
     void enable();
+    void display();
     bool isDisabled();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
@@ -59,6 +60,11 @@ void BatteryMatrix::enable()
 bool BatteryMatrix::isDisabled()
 {
   return _disabled;
+}
+
+void BatteryMatrix::display() 
+{
+  // TO-DO:
 }
 
 #endif
