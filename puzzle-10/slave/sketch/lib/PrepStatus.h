@@ -1,8 +1,8 @@
 /*
-  ShipPrepAux.h - Library for controlling energy and syncro reader.
+  PrepStatus.h - Library for controlling energy and syncro reader.
 */
-#ifndef ShipPrepAux_h
-#define ShipPrepAux_h
+#ifndef PrepStatus_h
+#define PrepStatus_h
 
 #include <Arduino.h>
 #include "BatteryMatrix.h"
@@ -13,7 +13,7 @@
 #include "PowerSwitch.h"
 #include "Speaker.h"
 
-namespace ShipPrepAux {
+namespace PrepStatus {
   typedef struct {
     BatteryMatrix batteryMatrix;
     EnergySupp energySupp;
