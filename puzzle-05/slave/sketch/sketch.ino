@@ -5,7 +5,7 @@
 #include <Adafruit_GFX.h>
 #include "Adafruit_LEDBackpack.h"
 #include <ESP32Encoder.h>
-#include "lib/Datamatic.h"
+#include "lib/Safeomatic.h"
 
 struct Puzzle {
   uint8_t address = ADDR_SLAVE;
@@ -86,9 +86,7 @@ void loop()
 
 void setupSafeomatic()
 {
-  smComponents.infomationDisplay.set();
-  smComponents.codeReader.set();
+  smComponents.combinationReader.set();
   smComponents.powerSwitch.set();
-  smComponents.lightEffect.set();
   smComponents.speaker.set();
 }
