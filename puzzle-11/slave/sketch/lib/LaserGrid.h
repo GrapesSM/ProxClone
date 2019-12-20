@@ -21,12 +21,29 @@ namespace LaserGrid {
 
   void run(Components c) 
   {
-    // TO-DO:
+    if (c.powerSwitch.isSwitchOff()) {
+      c.powerSwitch.setLightOff();
+      c.keyReader.disable();
+      c.waveAdjuster.disable();
+    } else {
+      c.powerSwitch.setLightOn();
+      c.keyReader.enable();
+      c.waveAdjuster.enable();
+    }
+
+    if (! c.keyReader.isDisabled()) {
+      c.keyReader.update();
+    }
+
+    if (! c.waveAdjuster.isDisabled() && c.keyReader.isSolved()) {
+      c.waveAdjuster.update();
+    }
   }
 
   void show(Components c)
   {
-    // TO-DO:
+    c.powerSwitch.display();
+    c.waveAdjuster.display();
   }
 }
 
