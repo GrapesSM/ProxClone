@@ -1,16 +1,16 @@
 /*
-  PowerIndicator.h - Library for ______.
+  PowerPinIndicator.h - Library for ______.
 */
-#ifndef PowerIndicator_h
-#define PowerIndicator_h
+#ifndef PowerPinIndicator_h
+#define PowerPinIndicator_h
 
 #include <Arduino.h>
 #include <NeoPixelBus.h>
 
-class PowerIndicator
+class PowerPinIndicator
 {
   public:
-    PowerIndicator();
+    PowerPinIndicator();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin);
     void setLightOn();
     void setLightOff();
@@ -21,26 +21,26 @@ class PowerIndicator
     int _lightPin;
 };
 
-PowerIndicator::PowerIndicator() {}
+PowerPinIndicator::PowerPinIndicator() {}
 
-void PowerIndicator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin) 
+void PowerPinIndicator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin) 
 {
   _strip = strip;
   _lightPin = lightPin;
   _state = OFF;
 }
 
-void PowerIndicator::setLightOn()
+void PowerPinIndicator::setLightOn()
 {
   _strip->SetPixelColor(_lightPin, RgbColor(127, 127, 127));
 }
 
-void PowerIndicator::setLightOff()
+void PowerPinIndicator::setLightOff()
 {
   _strip->SetPixelColor(_lightPin, RgbColor(0, 0, 0));
 }
 
-void PowerIndicator::display()
+void PowerPinIndicator::display()
 {
   _strip->Show();
 }
