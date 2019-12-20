@@ -12,13 +12,18 @@ class LaserGridStatus
   public:
     LaserGridStatus();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin);
-    void setLightOn();
-    void setLightOff();
+    void listen();
+    void setRedLightOn();
+    void setRedLightOff();
+    void setGreenLightOn();
+    void setGreenLightOff();
+    bool isSolved();
     void display();
     STATE _state;
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
     int _lightPin;
+    bool _solved;
 };
 
 LaserGridStatus::LaserGridStatus() {}
@@ -30,19 +35,39 @@ void LaserGridStatus::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, i
   _state = OFF;
 }
 
-void LaserGridStatus::setLightOn()
+void LaserGridStatus::listen()
 {
-  _strip->SetPixelColor(_lightPin, RgbColor(127, 127, 127));
+  // TO-DO:
 }
 
-void LaserGridStatus::setLightOff()
+void LaserGridStatus::setRedLightOn()
 {
-  _strip->SetPixelColor(_lightPin, RgbColor(0, 0, 0));
+  // TO-DO:
+}
+
+void LaserGridStatus::setRedLightOff()
+{
+  // TO-DO:
+}
+
+void LaserGridStatus::setRedLightOn()
+{
+  // TO-DO:
+}
+
+void LaserGridStatus::setRedLightOff()
+{
+  // TO-DO:
+}
+
+bool LaserGridStatus::isSolved()
+{
+  // TO-DO:
 }
 
 void LaserGridStatus::display()
 {
-  _strip->Show();
+  // TO-DO:
 }
 
 #endif

@@ -12,14 +12,17 @@ class LifeSupportStatus
   public:
     LifeSupportStatus();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
-    void update();
-    void disable();
-    void enable();
-    bool isDisabled();
+    void listen();
+    void setRedLightOn();
+    void setRedLightOff();
+    void setGreenLightOn();
+    void setGreenLightOff();
+    bool isSolved();
+    void display();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
-    bool _disabled = true;
+    bool _solved;
 };
 
 LifeSupportStatus::LifeSupportStatus(){}
@@ -28,29 +31,42 @@ void LifeSupportStatus::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip,
 {
   _strip = strip;
   _lightPins = lightPins;
+  _solved = false;
 }
 
-void LifeSupportStatus::update()
+void LifeSupportStatus::listen()
 {
   // TO-DO: 
 }
 
-void LifeSupportStatus::disable() 
+void LifeSupportStatus::setRedLightOn() 
 {
-  _disabled = true;
   // TO-DO: 
 }
 
-void LifeSupportStatus::enable() 
+void LifeSupportStatus::setRedLightOff() 
 {
-  _disabled = false;
   // TO-DO: 
 }
 
-bool LifeSupportStatus::isDisabled()
+void LifeSupportStatus::setGreenLightOn()
 {
-  return _disabled;
+  // TO-DO:
 }
 
+void LifeSupportStatus::setGreenLightOff()
+{
+  // TO-DO:
+}
+
+bool LifeSupportStatus::isSolved()
+{
+  return _solved;
+}
+
+void LifeSupportStatus::display()
+{
+  // TO-DO:
+}
 
 #endif
