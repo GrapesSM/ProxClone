@@ -14,6 +14,7 @@ class EnergySupp
     void update();
     void disable();
     void enable();
+    void display();
     bool isDisabled();
   private:
     bool _disabled = true;
@@ -49,6 +50,11 @@ void EnergySupp::enable()
 bool EnergySupp::isDisabled()
 {
   return _disabled;
+}
+
+void EnergySupp::display()
+{
+  // TO-DO:
 }
 
 #endif
