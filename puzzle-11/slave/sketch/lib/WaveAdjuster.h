@@ -13,19 +13,21 @@ class WaveAdjuster
 {
   public:
     WaveAdjuster();
-    void set(ESP32Encoder * encoder, Adafruit_7segment * matrix);
+    void set(ESP32Encoder * encoder1, ESP32Encoder * encoder2, ESP32Encoder * encoder3, Adafruit_7segment * matrix);
     void update();
     void display();
     void disable();
     void enable();
     bool isDisabled();
   private:
-    ESP32Encoder *_encoder;
+    ESP32Encoder *_encoder1;
+    ESP32Encoder *_encoder2;
+    ESP32Encoder *_encoder3;
     Adafruit_7segment *_matrix;
     int _val;
     int _min;
     int _max;
-    int _disabled = true;
+    int _disabled;
 };
 
 WaveAdjuster::WaveAdjuster() {
@@ -34,9 +36,12 @@ WaveAdjuster::WaveAdjuster() {
   _max = 100;
 }
 
-void WaveAdjuster::set(ESP32Encoder *encoder, Adafruit_7segment *matrix) {
-  _encoder = encoder;
+void WaveAdjuster::set(ESP32Encoder * encoder1, ESP32Encoder * encoder2, ESP32Encoder * encoder3, Adafruit_7segment * matrix) {
+  _encoder1 = encoder1;
+  _encoder2 = encoder2;
+  _encoder3 = encoder3;
   _matrix = matrix;
+  _disabled = true;
 }
 
 void WaveAdjuster::update() {
