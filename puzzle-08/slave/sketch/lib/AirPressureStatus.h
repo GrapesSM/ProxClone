@@ -15,6 +15,7 @@ class AirPressureStatus
     void disable();
     void enable();
     bool isDisabled();
+    void display();
   private:
     bool _disabled = true;
 };
@@ -48,5 +49,9 @@ bool AirPressureStatus::isDisabled()
   return _disabled;
 }
 
+void AirPressureStatus::display()
+{
+  // TO-DO:
+}
 
 #endif
