@@ -19,14 +19,13 @@ namespace ShipPrepAux {
     STATE state;
   } Components;
 
-  void run(Components c) 
+  void run(Components &c) 
   {
     if (c.powerSwitch.isSwitchOff()) {
       c.state = OFF;
       c.powerSwitch.setLightOff();
       c.batteryMatrix.disable();
       c.generator.disable();
-      return;
     } else {
       c.state = ON;
       c.powerSwitch.setLightOn();
@@ -44,7 +43,7 @@ namespace ShipPrepAux {
 
   }
 
-  void show(Components c)
+  void show(Components &c)
   {
     c.powerSwitch.display();
   }

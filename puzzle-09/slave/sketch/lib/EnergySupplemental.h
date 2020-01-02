@@ -24,6 +24,7 @@ namespace EnergySupplemental {
     if (c.powerSwitch.isSwitchOff()) {
       c.state = OFF;
       c.powerSwitch.setLightOff();
+      c.powerAdjuster.setDefaultValues();
       c.powerAdjuster.disable();
       c.syncroReader.disable();
       return;

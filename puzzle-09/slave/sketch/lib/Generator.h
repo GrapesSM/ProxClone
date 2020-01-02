@@ -11,7 +11,7 @@ class Generator
 {
   public:
     Generator();
-    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], Adafruit_MCP23017 *mcp);
+    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], Adafruit_MCP23017 *mcp, int switchPins[]);
     void update();
     void disable();
     void enable();
@@ -19,26 +19,28 @@ class Generator
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
+    int *_switchPins;
     Adafruit_MCP23017 *_mcp;
     bool _disabled = true;
 };
 
 Generator::Generator(){}
 
-void Generator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], Adafruit_MCP23017 *mcp)
+void Generator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], Adafruit_MCP23017 *mcp, int switchPins[])
 {
   _strip = strip;
   _lightPins = lightPins;
   _mcp = mcp;
+  _switchPins = switchPins;
 }
 
 void Generator::update()
 {
-  for (int i = 1; i <= NUMBER_OF_SWITCHES_2; i++) {
-    if (_mcp->digitalRead(i)) {
-      _strip->SetPixelColor(_lightPins[i-1], RgbColor(127, 127, 127));
+  for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
+    if (_mcp->digitalRead(_switchPins[i])) {
+      _strip->SetPixelColor(_lightPins[i], RgbColor(127, 127, 127));
     } else {
-      _strip->SetPixelColor(_lightPins[i-1], RgbColor(0, 0, 0));
+      _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
     }
   }
 }
@@ -46,8 +48,8 @@ void Generator::update()
 void Generator::disable() 
 {
   _disabled = true;
-  for (int i = 1; i <= NUMBER_OF_SWITCHES_1; i++) {
-    _strip->SetPixelColor(_lightPins[i-1], RgbColor(0, 0, 0));
+  for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
+    _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
   }
 }
 

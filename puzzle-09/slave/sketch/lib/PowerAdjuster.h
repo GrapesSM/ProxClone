@@ -13,6 +13,7 @@ class PowerAdjuster
 {
   public:
     PowerAdjuster();
+    void setDefaultValues();
     void set(ESP32Encoder * encoder, Adafruit_7segment * matrix);
     void update();
     void display();
@@ -32,6 +33,11 @@ PowerAdjuster::PowerAdjuster() {
   _val = 0;
   _min = 0;
   _max = 100;
+}
+
+void PowerAdjuster::setDefaultValues() {
+  _val = 0;
+  _encoder->setCount(_val);
 }
 
 void PowerAdjuster::set(ESP32Encoder *encoder, Adafruit_7segment *matrix) {
@@ -67,7 +73,6 @@ bool PowerAdjuster::isDisabled()
 }
 
 void PowerAdjuster::display() {
-  Serial.println(_val);
   _matrix->clear();
   _matrix->print(_val);
   _matrix->writeDisplay();

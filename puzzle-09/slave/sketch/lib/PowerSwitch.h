@@ -11,7 +11,7 @@ class PowerSwitch
 {
   public:
     PowerSwitch();
-    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin, int pin);
+    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin, int pin, bool reversed);
     void setLightOn();
     void setLightOff();
     void display();
@@ -25,21 +25,23 @@ class PowerSwitch
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
     int _lightPin;
     int _pin;
+    bool _reversed;
 };
 
 PowerSwitch::PowerSwitch() {}
 
-void PowerSwitch::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin, int pin) 
+void PowerSwitch::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin, int pin, bool reversed = false) 
 {
   _strip = strip;
   _lightPin = lightPin;
   _pin = pin;
   _state = OFF;
+  _reversed = reversed;
 }
 
 bool PowerSwitch::isSwitchOn()
 {
-  return digitalRead(_pin);
+  return _reversed ? ! digitalRead(_pin) : digitalRead(_pin);
 }
 
 bool PowerSwitch::isSwitchOff()
