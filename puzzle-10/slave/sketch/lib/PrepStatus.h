@@ -25,7 +25,7 @@ namespace PrepStatus {
     STATE state;
   } Components;
 
-  void run(Components c) 
+  void run(Components & c) 
   {
     if (c.powerSwitch.isSwitchOff()) {
       c.powerSwitch.setLightOff();
@@ -60,7 +60,7 @@ namespace PrepStatus {
     }
   }
 
-  void show(Components c)
+  void show(Components & c)
   {
     c.powerSwitch.display();
     c.batteryMatrix.display();
