@@ -18,6 +18,7 @@ class BatteryMatrix
     bool isDisabled();
     bool isAllSwitchesOff();
     void readSwitches();
+    int getKey();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
