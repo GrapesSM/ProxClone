@@ -38,19 +38,19 @@ void EnergySupp::switchToRed()
 {
   _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
   _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
-  _strip->SetPixelColor(_lightPins[2], RgbColor(255, 0, 0));
+  _strip->SetPixelColor(_lightPins[2], RgbColor(200, 200, 200));
 }
 
 void EnergySupp::switchToYellow() 
 {
   _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
-  _strip->SetPixelColor(_lightPins[1], RgbColor(255, 255, 0));
+  _strip->SetPixelColor(_lightPins[1], RgbColor(200, 200, 200));
   _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
 }
 
 void EnergySupp::switchToGreen() 
 {
-  _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 255));
+  _strip->SetPixelColor(_lightPins[0], RgbColor(200, 200, 200));
   _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
   _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
 }

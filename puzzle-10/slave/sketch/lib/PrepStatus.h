@@ -48,7 +48,7 @@ namespace PrepStatus {
     }
 
     // if (! c.batteryMatrix.isDisabled()) {
-      c.batteryMatrix.switchToYellow();
+      c.batteryMatrix.switchToRed();
     // }
 
     // if (! c.energySupp.isDisabled()) {
@@ -56,7 +56,7 @@ namespace PrepStatus {
     // }
 
     // if (! c.generator.isDisabled()) {
-      c.generator.switchToYellow();
+      c.generator.switchToGreen();
     // }
   }
 
