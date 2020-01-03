@@ -27,47 +27,47 @@ namespace PrepStatus {
 
   void run(Components & c) 
   {
-    if (c.powerSwitch.isSwitchOff()) {
-      c.powerSwitch.setLightOff();
-      c.batteryMatrix.disable();
-      c.energySupp.disable();
-      c.generator.disable();
-      c.syncroReader.disable();
-      c.lightEffect.disable();
-    } else {
+    // if (c.powerSwitch.isSwitchOff()) {
+    //   c.powerSwitch.setLightOff();
+    //   c.batteryMatrix.disable();
+    //   c.energySupp.disable();
+    //   c.generator.disable();
+      // c.syncroReader.disable();
+    //   c.lightEffect.disable();
+    // } else {
       c.powerSwitch.setLightOn();
-      c.batteryMatrix.enable();
-      c.energySupp.enable();
-      c.generator.enable();
+    //   c.batteryMatrix.enable();
+    //   c.energySupp.enable();
+    //   c.generator.enable();
       c.syncroReader.enable();
-      c.lightEffect.enable();
-    }
+    //   c.lightEffect.enable();
+    // }
 
     if (! c.syncroReader.isDisabled()) {
-      c.syncroReader.update();
+      // c.syncroReader.update();
     }
 
-    if (! c.batteryMatrix.isDisabled()) {
-      c.batteryMatrix.update();
-    }
+    // if (! c.batteryMatrix.isDisabled()) {
+      c.batteryMatrix.switchToYellow();
+    // }
 
-    if (! c.energySupp.isDisabled()) {
-      c.energySupp.update();
-    }
+    // if (! c.energySupp.isDisabled()) {
+      c.energySupp.switchToYellow();
+    // }
 
-    if (! c.generator.isDisabled()) {
-      c.generator.update();
-    }
+    // if (! c.generator.isDisabled()) {
+      c.generator.switchToYellow();
+    // }
   }
 
   void show(Components & c)
   {
     c.powerSwitch.display();
-    c.batteryMatrix.display();
-    c.energySupp.display();
-    c.generator.display();
-    c.syncroReader.display();
-    c.lightEffect.display();
+    // c.batteryMatrix.display();
+    // c.energySupp.display();
+    // c.generator.display();
+    // c.syncroReader.display();
+    // c.lightEffect.display();
   }
 }
 

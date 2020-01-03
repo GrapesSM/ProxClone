@@ -11,7 +11,7 @@ class SyncroReader
 {
   public:
     SyncroReader();
-    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
+    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], int pin);
     void disable();
     void enable();
     void update();
@@ -21,14 +21,16 @@ class SyncroReader
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
     int *_lightPins;
     bool _disabled = true;
+    int _pin;
 };
 
 SyncroReader::SyncroReader() {}
 
-void SyncroReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[])
+void SyncroReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], int pin)
 {
   _strip = strip;
   _lightPins = lightPins;
+  _pin = pin;
 }
 
 void SyncroReader::disable()

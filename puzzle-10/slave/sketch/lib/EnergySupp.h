@@ -5,46 +5,67 @@
 #define EnergySupp_h
 
 #include <Arduino.h>
+#include <NeoPixelBus.h>
 
 class EnergySupp
 {
   public:
     EnergySupp();
-    void set();
-    void update();
+    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[]);\
+    void switchToRed(); 
+    void switchToYellow();
+    void switchToGreen();
     void disable();
     void enable();
     void display();
     bool isDisabled();
   private:
-    bool _disabled = true;
+    NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
+    int *_lightPins;
+    bool _disabled;
 };
 
-EnergySupp::EnergySupp() 
+EnergySupp::EnergySupp() {}
+
+void EnergySupp::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[])
 {
-  // TO-DO:
+  _strip = strip;
+  _lightPins = lightPins;
+  _disabled = true;
 }
 
-void EnergySupp::set() 
-{ 
-  // TO-DO:
+void EnergySupp::switchToRed() 
+{
+  _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
+  _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
+  _strip->SetPixelColor(_lightPins[2], RgbColor(255, 0, 0));
 }
 
-void EnergySupp::update() 
+void EnergySupp::switchToYellow() 
 {
-  // TO-DO:
+  _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
+  _strip->SetPixelColor(_lightPins[1], RgbColor(255, 255, 0));
+  _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
+}
+
+void EnergySupp::switchToGreen() 
+{
+  _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 255));
+  _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
+  _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
 }
 
 void EnergySupp::disable() 
 {
   _disabled = true;
-  // TO-DO: 
+  for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_ENERGY_SUPP; i++) {
+    _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+  }
 }
 
 void EnergySupp::enable() 
 {
   _disabled = false;
-  // TO-DO:
 }
 
 bool EnergySupp::isDisabled()
@@ -54,7 +75,7 @@ bool EnergySupp::isDisabled()
 
 void EnergySupp::display()
 {
-  // TO-DO:
+  _strip->Show();
 }
 
 #endif

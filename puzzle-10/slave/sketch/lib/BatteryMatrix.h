@@ -11,8 +11,10 @@ class BatteryMatrix
 {
   public:
     BatteryMatrix();
-    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[], Adafruit_MCP23017 *mcp);
-    void update();
+    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[]);
+    void switchToRed(); 
+    void switchToYellow();
+    void switchToGreen();
     void disable();
     void enable();
     void display();
@@ -20,35 +22,44 @@ class BatteryMatrix
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
-    Adafruit_MCP23017 * _mcp;
-    bool _disabled = true;
+    bool _disabled;
 };
 
 BatteryMatrix::BatteryMatrix() {}
 
-void BatteryMatrix::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[], Adafruit_MCP23017 *mcp)
+void BatteryMatrix::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[])
 {
   _strip = strip;
   _lightPins = lightPins;
-  _mcp = mcp;
+  _disabled = true;
 }
 
-void BatteryMatrix::update()
+void BatteryMatrix::switchToRed() 
 {
-  for (int i = 1; i <= NUMBER_OF_SWITCHES_1; i++) {
-    if (_mcp->digitalRead(i)) {
-      _strip->SetPixelColor(_lightPins[i-1], RgbColor(127, 127, 127));
-    } else {
-      _strip->SetPixelColor(_lightPins[i-1], RgbColor(0, 0, 0));
-    }
-  }
+  _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
+  _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
+  _strip->SetPixelColor(_lightPins[2], RgbColor(255, 0, 0));
+}
+
+void BatteryMatrix::switchToYellow() 
+{
+  _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
+  _strip->SetPixelColor(_lightPins[1], RgbColor(255, 255, 0));
+  _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
+}
+
+void BatteryMatrix::switchToGreen() 
+{
+  _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 255));
+  _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
+  _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
 }
 
 void BatteryMatrix::disable() 
 {
   _disabled = true;
-  for (int i = 1; i <= NUMBER_OF_SWITCHES_1; i++) {
-    _strip->SetPixelColor(_lightPins[i-1], RgbColor(0, 0, 0));
+  for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_BATTERY_MATRIX; i++) {
+    _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
   }
 }
 
@@ -64,7 +75,7 @@ bool BatteryMatrix::isDisabled()
 
 void BatteryMatrix::display() 
 {
-  // TO-DO:
+  _strip->Show();
 }
 
 #endif

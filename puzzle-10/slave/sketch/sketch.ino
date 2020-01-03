@@ -1,10 +1,6 @@
 #include "Constants.h"
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
-#include <Adafruit_MCP23017.h>
-#include <Adafruit_GFX.h>
-#include "Adafruit_LEDBackpack.h"
-#include <ESP32Encoder.h>
 #include "lib/PrepStatus.h"
 
 struct Puzzle {
@@ -62,6 +58,7 @@ void setup()
 
 void loop()
 {
+  Serial.println();
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
@@ -77,10 +74,11 @@ void loop()
 
 void setupPrepStatus()
 {
-  psComponents.batteryMatrix.set();
-  psComponents.energySupp.set();
-  psComponents.lightEffect.set();
-  psComponents.generator.set();
-  psComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader);
   psComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
+  psComponents.batteryMatrix.set(parts.strip, lightPinsForBatteryMatrix);
+  psComponents.energySupp.set(parts.strip, lightPinsForEnergySupp);
+  psComponents.generator.set(parts.strip, lightPinsForGenerator);
+  psComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader, PIN_SWITCH_2);  
+//  psComponents.lightEffect.set();
+  
 }
