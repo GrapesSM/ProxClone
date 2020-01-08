@@ -20,19 +20,44 @@ class PowerAdjuster
     void disable();
     void enable();
     bool isDisabled();
+    bool isSolved();
+    void setSolved(bool solved);
+    int getInputKey();
   private:
     ESP32Encoder *_encoder;
     Adafruit_7segment *_matrix;
     int _val;
+    int _checkVal;
+    int _submittedVal;
     int _min;
     int _max;
     int _disabled = true;
+    bool _solved = false;
+    const unsigned long _waitTimeMillis = 3000; // ms
+	  unsigned long lastRefreshTime;
 };
+
+
 
 PowerAdjuster::PowerAdjuster() {
   _val = 0;
-  _min = 0;
-  _max = 100;
+  _min = 600;
+  _max = 700;
+  _checkVal = -1;
+  _submittedVal = 0;
+  lastRefreshTime = 0;
+}
+
+bool PowerAdjuster::isSolved() {
+  return _solved;
+}
+
+void PowerAdjuster::setSolved(bool solved = true) {
+  _solved = solved;
+}
+
+int PowerAdjuster::getInputKey() {
+  return _submittedVal;
 }
 
 void PowerAdjuster::setDefaultValues() {
@@ -53,6 +78,10 @@ void PowerAdjuster::update() {
   } else if (_val <= _min) {
     _val = _min;
     _encoder->setCount(_min);
+  }
+  if(millis() - lastRefreshTime >= _waitTimeMillis){
+      lastRefreshTime = millis();
+      _submittedVal = _val;
   }
 }
 

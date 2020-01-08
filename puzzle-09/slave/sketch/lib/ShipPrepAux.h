@@ -35,10 +35,16 @@ namespace ShipPrepAux {
 
     if (! c.batteryMatrix.isDisabled()) {
       c.batteryMatrix.update();
+      if(c.batteryMatrix.getInputKey() == keyForBatteryMatrix){
+        c.batteryMatrix.setSolved();
+      }
     }
 
     if (! c.generator.isDisabled()) {    
       c.generator.update();
+      if(c.generator.getInputKey() == keyForGenerator){
+        c.generator.setSolved();
+      }
     }
 
   }
