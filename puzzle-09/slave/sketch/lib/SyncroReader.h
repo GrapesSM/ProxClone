@@ -88,7 +88,6 @@ void SyncroReader::update()
   _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
   _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
 
-  // TO-DO: Reader Input
   _count = 0;
   if(millis() - lastRefreshTime >= _waitTimeMillis / 4){
     _strip->SetPixelColor(_lightPins[0], RgbColor(127, 127, 127));
@@ -112,11 +111,6 @@ void SyncroReader::update()
   }else{
     _inputKey = 0;
   }
-  Serial.println(_inputKey);
-
-  //for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
-    
-  //}
 }
 
 void SyncroReader::display()
