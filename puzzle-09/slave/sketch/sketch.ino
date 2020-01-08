@@ -111,13 +111,13 @@ void loop()
 void setupEnergySupplemental()
 {
   esComponents.powerAdjuster.set(&parts.encoder, &parts.matrix);
-  esComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader);
+  esComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader, PIN_SWITCH_2);
   esComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitchOfEnergySupplemental, PIN_SWITCH_1, true);
 }
 
 void setupShipPrepAux()
 {
   spComponents.batteryMatrix.set(parts.strip, lightPinsForBatteryMatrix, &parts.mcp2, switchPinsForBatteryMatrix, labelsForBatteryMatrix);
-  spComponents.generator.set(parts.strip, lightPinsForGenerator, &parts.mcp1, switchPinsForGenerator);
+  spComponents.generator.set(parts.strip, lightPinsForGenerator, &parts.mcp1, switchPinsForGenerator, labelsForGenerator);
   spComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitchOfShipPrep, PIN_SWITCH_2);
 }

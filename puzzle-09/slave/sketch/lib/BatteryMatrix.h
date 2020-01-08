@@ -18,12 +18,15 @@ class BatteryMatrix
     bool isDisabled();
     bool isAllSwitchesOff();
     void readSwitches();
-    int getKey();
+    int getInputKey();
+    bool isSolved();
+    void setSolved(bool solved);
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
     Adafruit_MCP23017 * _mcp;
     bool _disabled = true;
+    bool _solved;
     int *_switchPins;
     int _input[7];
     int _order[10];
@@ -43,7 +46,21 @@ void BatteryMatrix::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, in
   _labels = labels;
   _count = 0;
   _reset = false;
+  _solved = false;
 }
+
+bool BatteryMatrix::isSolved() 
+{
+  return _solved;
+} 
+
+void BatteryMatrix::setSolved(bool solved = true) 
+{
+  _solved = solved;
+  for (int i = 0; i < NUMBER_OF_SWITCHES_1; i++) {
+    _strip->SetPixelColor(_lightPins[i], RgbColor(0, 127, 0));
+  }
+} 
 
 bool BatteryMatrix::isAllSwitchesOff() 
 {
@@ -64,15 +81,24 @@ void BatteryMatrix::readSwitches()
   }
 }
 
-int BatteryMatrix::getKey() {
-  // TO-DO:
-  
-  return key;
+int BatteryMatrix::getInputKey() {
+  int input = 0;
+  int max = 0;
+  for (int i = 0; i < NUMBER_OF_SWITCHES_1; i++) {
+    if(max < _order[i]){max = _order[i];}
+  }
+  for (int i = 0; i < NUMBER_OF_SWITCHES_1; i++) {
+    if(_order[_labels[i]] != 0){
+      input +=  pow(10,(max-_order[_labels[i]])) * _labels[i]  ;
+    }
+  }
+  return input;
 }
 
 void BatteryMatrix::update()
 {
   readSwitches();
+  getInputKey();
   
   if (! _reset) {
     for (int i = 0; i < NUMBER_OF_SWITCHES_1; i++) {
@@ -104,15 +130,6 @@ void BatteryMatrix::update()
     }
     _count = 0;
   }
-
-  for (int i = 0; i < NUMBER_OF_SWITCHES_1; i++) {
-    Serial.print(_labels[i]);
-    Serial.print(": ");  
-    Serial.print(_order[_labels[i]]); 
-    if (i < NUMBER_OF_SWITCHES_1 - 1) Serial.print(", "); 
-  }
-  Serial.print("---");
-  Serial.println(_count);
 }
 
 void BatteryMatrix::disable() 
