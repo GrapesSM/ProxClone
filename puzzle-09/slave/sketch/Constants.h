@@ -55,8 +55,12 @@ extern int labelsForBatteryMatrix[] = {1, 2, 3, 4, 5, 6, 7};
 extern int keyForBatteryMatrix = 46725;
 
 #define NUMBER_OF_LIGHTS_FOR_GENERATOR 7
-extern int lightPinsForGenerator[] = {10, 9, 8, 7, 6, 5, 4};
+extern int lightPinsForGenerator[] = {4, 5, 6, 7, 8, 9, 10};
 #define NUMBER_OF_SWITCHES_2 7
-extern int switchPinsForGenerator[] = {1, 2, 3, 4, 5, 6, 7};
+extern int switchPinsForGenerator[] = {7, 6, 5, 4, 3, 2, 1};
+extern int labelsForGenerator[] = {1, 2, 3, 4, 5, 6, 7};
+extern int keyForGenerator = 46725;
 
 extern int lightPinForPowerSwitchOfShipPrep = 18;
+
+extern int keyForPowerAdjuster = 656;
