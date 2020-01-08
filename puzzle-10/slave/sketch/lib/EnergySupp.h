@@ -19,10 +19,13 @@ class EnergySupp
     void enable();
     void display();
     bool isDisabled();
+    bool isSolved();
+    void setSolved(bool solved);
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
     bool _disabled;
+    bool _solved;
 };
 
 EnergySupp::EnergySupp() {}
@@ -71,6 +74,16 @@ void EnergySupp::enable()
 bool EnergySupp::isDisabled()
 {
   return _disabled;
+}
+
+bool EnergySupp::isSolved()
+{
+  return _solved;
+}
+
+void EnergySupp::setSolved(bool solved = true)
+{
+  _solved = solved;
 }
 
 void EnergySupp::display()

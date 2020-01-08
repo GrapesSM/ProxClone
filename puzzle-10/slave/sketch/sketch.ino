@@ -8,8 +8,8 @@ struct Puzzle {
   STATE state = INITIALIZED;
   bool forced = false;
   int totalPower = 10;
-  uint8_t numberOfRegisters = 20;
-  uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  uint8_t numberOfRegisters = 10;
+  uint16_t registers[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   unsigned long startTime = 0;
   unsigned long endTime = 0;
   unsigned long timer = 0;
@@ -45,11 +45,11 @@ void setup()
   parts.strip = &strip;
   parts.strip->Begin();
   parts.strip->Show();
-  
-  // Setup power switch
+
+  // Setup SyncroReader switch
+  pinMode(PIN_INPUT_1, INPUT);
+  // Setup Power Switch
   pinMode(PIN_SWITCH_1, INPUT);
-  pinMode(PIN_SWITCH_2, INPUT);
-  pinMode(PIN_SWITCH_3, INPUT);
   
   setupPrepStatus();
 
@@ -57,10 +57,27 @@ void setup()
 }
 
 void loop()
-{
-  Serial.println();
+{  
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+  
+  if (puzzle.registers[1] == 1) {
+    psComponents.batteryMatrix.setSolved();
+  } else {
+    psComponents.batteryMatrix.setSolved(false);
+  }
+
+  if (puzzle.registers[2] == 1) {
+    psComponents.energySupp.setSolved();
+  } else {
+    psComponents.energySupp.setSolved(false);
+  }
+
+  if (puzzle.registers[3] == 1) {
+    psComponents.generator.setSolved();
+  } else {
+    psComponents.generator.setSolved(false);
+  }
 
   // Enable Energy Supplemental
   PrepStatus::run(psComponents);
@@ -78,7 +95,6 @@ void setupPrepStatus()
   psComponents.batteryMatrix.set(parts.strip, lightPinsForBatteryMatrix);
   psComponents.energySupp.set(parts.strip, lightPinsForEnergySupp);
   psComponents.generator.set(parts.strip, lightPinsForGenerator);
-  psComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader, PIN_SWITCH_2);  
+  psComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader, PIN_INPUT_1);  
 //  psComponents.lightEffect.set();
-  
 }

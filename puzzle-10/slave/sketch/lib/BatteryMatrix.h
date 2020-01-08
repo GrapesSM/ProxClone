@@ -19,10 +19,13 @@ class BatteryMatrix
     void enable();
     void display();
     bool isDisabled();
+    bool isSolved();
+    void setSolved(bool solved);
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
     bool _disabled;
+    bool _solved;
 };
 
 BatteryMatrix::BatteryMatrix() {}
@@ -32,6 +35,7 @@ void BatteryMatrix::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, in
   _strip = strip;
   _lightPins = lightPins;
   _disabled = true;
+  _solved = false;
 }
 
 void BatteryMatrix::switchToRed() 
@@ -71,6 +75,16 @@ void BatteryMatrix::enable()
 bool BatteryMatrix::isDisabled()
 {
   return _disabled;
+}
+
+bool BatteryMatrix::isSolved()
+{
+  return _solved;
+}
+
+void BatteryMatrix::setSolved(bool solved = true)
+{
+  _solved = solved;
 }
 
 void BatteryMatrix::display() 

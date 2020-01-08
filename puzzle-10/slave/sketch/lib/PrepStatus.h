@@ -27,37 +27,51 @@ namespace PrepStatus {
 
   void run(Components & c) 
   {
-    // if (c.powerSwitch.isSwitchOff()) {
-    //   c.powerSwitch.setLightOff();
-    //   c.batteryMatrix.disable();
-    //   c.energySupp.disable();
-    //   c.generator.disable();
-      // c.syncroReader.disable();
-    //   c.lightEffect.disable();
-    // } else {
-      c.powerSwitch.setLightOn();
-    //   c.batteryMatrix.enable();
-    //   c.energySupp.enable();
-    //   c.generator.enable();
-      c.syncroReader.enable();
-    //   c.lightEffect.enable();
-    // }
-
-    if (! c.syncroReader.isDisabled()) {
-      // c.syncroReader.update();
+    if (c.powerSwitch.isSwitchOff()) {
+      c.state = OFF;
+    } else {
+      c.state = ON;
     }
 
-    // if (! c.batteryMatrix.isDisabled()) {
-      c.batteryMatrix.switchToRed();
-    // }
+    if (c.state == OFF) {
+      c.powerSwitch.setLightOff();
+    } 
+    
+    if (c.state == ON) {
+      c.powerSwitch.setLightOn();
+    }
 
-    // if (! c.energySupp.isDisabled()) {
-      c.energySupp.switchToYellow();
-    // }
+    if (c.state == ON) {
+      c.syncroReader.update();
 
-    // if (! c.generator.isDisabled()) {
+      if (c.batteryMatrix.isSolved()) {
+        c.batteryMatrix.switchToYellow();
+      } else {
+        c.batteryMatrix.switchToRed();
+      }
+    
+      if (c.energySupp.isSolved()) {
+        c.energySupp.switchToYellow();
+      } else {
+        c.energySupp.switchToRed();
+      }
+    
+      if (c.generator.isSolved()) {
+        c.generator.switchToYellow();
+      } else {
+        c.generator.switchToRed();
+      }
+    
+      if (c.batteryMatrix.isSolved() && c.energySupp.isSolved() && c.generator.isSolved()) {
+        c.state = SOLVED;
+      } 
+    }
+
+    if (c.state == SOLVED) {
+      c.batteryMatrix.switchToGreen();
+      c.energySupp.switchToGreen();
       c.generator.switchToGreen();
-    // }
+    }
   }
 
   void show(Components & c)

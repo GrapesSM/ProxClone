@@ -19,10 +19,13 @@ class Generator
     void enable();
     void display();
     bool isDisabled();
+    bool isSolved();
+    void setSolved(bool solved);
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
     bool _disabled;
+    bool _solved;
 };
 
 Generator::Generator(){}
@@ -71,6 +74,16 @@ void Generator::enable()
 bool Generator::isDisabled()
 {
   return _disabled;
+}
+
+bool Generator::isSolved()
+{
+  return _solved;
+}
+
+void Generator::setSolved(bool solved = true)
+{
+  _solved = solved;
 }
 
 void Generator::display() 
