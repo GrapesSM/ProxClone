@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Puzzle 9</title>
+    <title>Puzzle 10</title>
     <!-- Bootstrap core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SI27wrMjH3ZZ89r4o+fGIJtnzkAnFs3E4qz9DIYioCQ5l9Rd/7UAa8DHcaL8jkWt" crossorigin="anonymous">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Favicons -->
     <link rel="apple-touch-icon" href="img/apple-touch-icon.png" sizes="180x180">
@@ -41,27 +41,17 @@
 </head>
 <body>
     
-    <h1>Puzzle 9</h1>
+    <h1>Puzzle 10</h1>
     <form method="POST" action="/update">
-        <div>
-            <label>
-                <input type="submit" value="Update" />
-            </label>
+        <div class="form-group">
+            <label>Label</label>
         </div>
-    {% for i in range(output |count): %}
-        <div>
-            <label> {{ 'R' ~ i ~ ':' }}
-            <input type="number" name="{{ 'R' ~ i }}" value="{{ output[i] }}" />
-            </label>
-        </div>
-    {% endfor %}
+        <button class="btn btn-primary" type="submit">Button</button>
     </form>
     
-    <script src="js/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="js/jquery-3.4.1.slim.min.js"></script>
     <script>window.jQuery || document.write('<script src="js/vendor/jquery.slim.min.js"><\/script>')</script>
-    <script src="js/bootstrap.bundle.min.js" integrity="sha384-Iep5TjrwnXOp2AdreAjhlprhxI5Ix8Y3I/zJd1tNQZQmonaE3i6fTdrvIG9YjOWl" crossorigin="anonymous"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
     <script src="js/feather.min.js"></script>
-    <script src="js/Chart.min.js"></script>
-    <script src="js/dashboard.js"></script>
 </body>
 </html>
