@@ -44,7 +44,16 @@
     <h1>Puzzle 10</h1>
     <form method="POST" action="/update">
         <div class="form-group">
-            <label>Label</label>
+          <table>
+          {% for user in users %}
+            <tr>
+              <td>{{ user.id }}</td>
+              <td>{{ user.username }}</td>
+              <td>{{ user.password }}</td>
+              <td>{{ user.activated }}</td>
+            </tr>  
+          {% endfor %}
+        </table>
         </div>
         <button class="btn btn-primary" type="submit">Button</button>
     </form>

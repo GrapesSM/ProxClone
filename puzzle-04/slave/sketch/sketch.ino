@@ -2,9 +2,8 @@
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
 #include <Adafruit_MCP23017.h>
-#include <Adafruit_GFX.h>
-#include "Adafruit_LEDBackpack.h"
 #include <ESP32Encoder.h>
+#include "lib/SevenSegment.h"
 #include "lib/Datamatic.h"
 
 struct Puzzle {
@@ -25,10 +24,10 @@ struct Puzzle {
 struct Parts {
   Modbus * slave;
   NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip;
-  Adafruit_MCP23017 mcp;
+  Adafruit_MCP23017 mcp1;
+  Adafruit_MCP23017 mcp2;
   ESP32Encoder encoder;
-  Adafruit_7segment matrix1 = Adafruit_7segment();
-  Adafruit_7segment matrix2 = Adafruit_7segment();
+  SevenSegment matrix = SevenSegment();
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
@@ -63,19 +62,26 @@ void setup()
   parts.encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
   
   // Setup 7 segment LED
-  parts.matrix1.begin(ADDR_SEVENSEGMENT);
-  // Setup 7 segment LED
-  parts.matrix2.begin(ADDR_SEVENSEGMENT);
+  parts.matrix.begin(ADDR_SEVENSEGMENT);
   
   // Setup power switch
   pinMode(PIN_SWITCH_1, INPUT);
   pinMode(PIN_SWITCH_2, INPUT);
   pinMode(PIN_SWITCH_3, INPUT);
 
-  // Setup pins for bottom I2C switches
-  parts.mcp.begin(ADDR_SWITCH_1);
-  for (uint8_t i = 1; i <= NUMBER_OF_SWITCHES_1; i++) {
-    parts.mcp1.pinMode(i, INPUT);
+  // Setup input switch
+  pinMode(PIN_INPUT_1, INPUT);
+  pinMode(PIN_INPUT_2, INPUT);
+  pinMode(PIN_INPUT_3, INPUT);
+
+  // Setup pins for I2C buttons
+  parts.mcp1.begin(ADDR_BUTTON_1);
+  for (uint8_t i = 0; i < NUMBER_OF_BUTTONS_1; i++) {
+    parts.mcp1.pinMode(buttonPins1[i], INPUT);
+  }
+  parts.mcp2.begin(ADDR_BUTTON_2);
+  for (uint8_t i = 0; i < NUMBER_OF_BUTTONS_2; i++) {
+    parts.mcp2.pinMode(buttonPins2[i], INPUT);
   }
   
   setupDatamatic();
@@ -100,9 +106,9 @@ void loop()
 
 void setupDatamatic()
 {
-  dmComponents.infomationDisplay.set();
-  dmComponents.codeReader.set();
-  dmComponents.powerSwitch.set();
-  dmComponents.lightEffect.set();
-  dmComponents.speaker.set();
+//  dmComponents.infomationDisplay.set();
+    dmComponents.codeReader.set(&parts.matrix, &parts.mcp1, buttonPins1, &parts.mcp2, buttonPins2, buttonLabels, PIN_INPUT_1, PIN_INPUT_2);
+    dmComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
+//  dmComponents.lightEffect.set();
+//  dmComponents.speaker.set();
 }
