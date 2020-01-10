@@ -1,16 +1,16 @@
 #!/usr/bin/etc python3
 
-class Controller:
-    def __init__(self, state, puzzles):
-        self.state = state
-        self.puzzles = puzzles
+# class Controller:
+#     def __init__(self, state, puzzles):
+#         self.state = state
+#         self.puzzles = puzzles
 
-    def run(self):
-        # TO-DO:
-        print("Running!")
+#     def run(self):
+#         # TO-DO:
+#         print("Running!")
             
 
-state=[]
+state=0
 puzzles=[]
 
-controller = Controller(state, puzzles)
+print("Controller is running")

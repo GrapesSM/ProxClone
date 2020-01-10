@@ -60,6 +60,8 @@ void loop()
 {  
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+
+  puzzle.registers[0] = psComponents.powerSwitch.isSwitchOff();
   
   if (puzzle.registers[1] == 1) {
     psComponents.batteryMatrix.setSolved();

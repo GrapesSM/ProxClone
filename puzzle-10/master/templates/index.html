@@ -42,12 +42,11 @@
 <body>
     
     <h1>Puzzle 10</h1>
-    <form method="POST" action="/update">
-        <div class="form-group">
-            <label>Label</label>
-        </div>
-        <button class="btn btn-primary" type="submit">Button</button>
-    </form>
+    <p>{{ puzzle.id }}</p>
+    <p>{{ puzzle.name }}</p>
+    <p>{{ puzzle.description }}</p>
+    <p>{{ puzzle.key_name }}</p>
+    <p>{{ puzzle.state }}</p>
     
     <script src="js/jquery-3.4.1.slim.min.js"></script>
     <script>window.jQuery || document.write('<script src="js/vendor/jquery.slim.min.js"><\/script>')</script>
