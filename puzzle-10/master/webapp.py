@@ -12,8 +12,7 @@ app = Flask(__name__,
 
 @app.route('/')
 def index():
-    puzzle = Puzzle.get(Puzzle.id == 3)
-    return render_template('index.html', puzzle=puzzle)
+    return render_template('index.html', puzzle=Puzzle.select())
 
 @app.route('/update', methods=['POST'])
 def update():
@@ -24,3 +23,6 @@ def update():
 @app.errorhandler(404)
 def not_found(error):
     return '404 Not Found', 404
+
+if __name__ == "__main__":
+    app.run(host=cfg.server['host'], port=cfg.server['port'], debug=cfg.server['debug'])

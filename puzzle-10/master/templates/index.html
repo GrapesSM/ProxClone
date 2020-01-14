@@ -41,12 +41,13 @@
 </head>
 <body>
     
-    <h1>Puzzle 10</h1>
-    <p>{{ puzzle.id }}</p>
-    <p>{{ puzzle.name }}</p>
-    <p>{{ puzzle.description }}</p>
-    <p>{{ puzzle.key_name }}</p>
-    <p>{{ puzzle.state }}</p>
+    {% for p in puzzle: %}
+    <h1>Puzzle {{p.id}}</h1>
+    <p>{{ p.name }}</p>
+    <p>{{ p.description }}</p>
+    <p>{{ p.key_name }}</p>
+    <p>{{ p.state }}</p>
+    {% endfor %}
     
     <script src="js/jquery-3.4.1.slim.min.js"></script>
     <script>window.jQuery || document.write('<script src="js/vendor/jquery.slim.min.js"><\/script>')</script>

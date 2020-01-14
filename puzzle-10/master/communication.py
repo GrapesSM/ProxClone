@@ -28,8 +28,16 @@ def queryPuzzle(slaveAddress, numberOfRegisters, step=20):
     return a
 
 
-count = 0
+timer=0
+counter=0
 while True:
+    if (time.time() - timer) < 0.800:
+        continue
+
+    if counter > 1000000:
+        break
+    counter = counter + 1
+    timer = time.time()
     # ModBus: Open ModBus connection ----------------------
     if not master:
         try:
@@ -52,23 +60,19 @@ while True:
 
     # ModBus: Read all puzzles ----------------------------
     for p_id in puzzles.keys():
-        if states[p_id]['address'] == 10:
-            states[p_id]['registers'] = queryPuzzle(states[p_id]['address'], states[p_id]['number_of_registers'])
+        states[p_id]['registers'] = queryPuzzle(states[p_id]['address'], states[p_id]['number_of_registers'])
     #------------------------------------------------------
 
     # DB: Update all puzzles ------------------------------
     for p_id in puzzles.keys():
-        if states[p_id]['address'] == 10:
-            puzzles[p_id].state = json.dumps(states[p_id])
-            puzzles[p_id].save()
+        puzzles[p_id].state = json.dumps(states[p_id])
+        puzzles[p_id].save()
     # -----------------------------------------------------
-    
-    time.sleep(2)
 
     # Count number of iterations
-    count = count + 1
-    if count > 30:
-        break
+    # count = count + 1
+    # if count > 30:
+    #     break
 
     
 
