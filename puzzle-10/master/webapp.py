@@ -3,6 +3,7 @@ from flask import Flask
 from flask import render_template, request, redirect, url_for
 from flask import send_from_directory
 import config as cfg
+from db import *
 
 app = Flask(__name__, 
             static_url_path='', 
@@ -11,7 +12,7 @@ app = Flask(__name__,
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', puzzle=Puzzle.select())
 
 @app.route('/update', methods=['POST'])
 def update():
@@ -22,3 +23,6 @@ def update():
 @app.errorhandler(404)
 def not_found(error):
     return '404 Not Found', 404
+
+if __name__ == "__main__":
+    app.run(host=cfg.server['host'], port=cfg.server['port'], debug=cfg.server['debug'])
