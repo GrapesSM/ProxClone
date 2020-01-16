@@ -106,7 +106,7 @@ void loop()
 
 void setupDatamatic()
 {
-//  dmComponents.infomationDisplay.set();
+    dmComponents.informationDisplay.set(&parts.encoder);
     dmComponents.codeReader.set(&parts.matrix, &parts.mcp1, buttonPins1, &parts.mcp2, buttonPins2, buttonLabels, PIN_INPUT_1, PIN_INPUT_2);
     dmComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
 //  dmComponents.lightEffect.set();

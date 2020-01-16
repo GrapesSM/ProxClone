@@ -23,39 +23,46 @@ class CodeReader
       int buttonPins1[],
       Adafruit_MCP23017 *mcp2,
       int buttonPins2[],
-      int buttonLabels[],
+      char buttonLabels[],
       int modePin,
-      int transmitPin);
+      int transmitPin
+      );
     void disable();
     void enable();
     void update();
     void display();
     bool isDisabled();
-    int readInput();
-    int getInputValue();
+    char readInput();
+    String getInputKey();
     MODE readMode();
+    bool isSolved();
+    void setSolved(bool);
   private:
     SevenSegment *_matrix;
     Adafruit_MCP23017 *_mcp1;
     int *_buttonPins1;
     Adafruit_MCP23017 *_mcp2;
     int *_buttonPins2;
-    int *_buttonLabels;
+    char *_buttonLabels;
     int _modePin;
     int _transmitPin;
     bool _disabled;
-    int _input;
-    int _number;
+    char _input;
+    String _number;
     bool _entered;
     int _counter;
+    bool _solved;
+    bool _transmittingMode = false;
+    String _transmitInput;
 };
 
 CodeReader::CodeReader() {
   _disabled = true;
-  _input = -1;
-  _number = 0;
+  _input = 'n';
+  _number = "";
   _entered = false;
   _counter = 0;
+  _solved = false;
 }
 
 void CodeReader::set(
@@ -64,7 +71,7 @@ void CodeReader::set(
       int buttonPins1[],
       Adafruit_MCP23017 *mcp2,
       int buttonPins2[],
-      int buttonLabels[],
+      char buttonLabels[],
       int modePin,
       int transmitPin)
 {
@@ -76,6 +83,21 @@ void CodeReader::set(
   _buttonLabels = buttonLabels;
   _modePin = modePin;
   _transmitPin = transmitPin;
+  _transmitInput = "";
+}
+
+bool CodeReader::isSolved() {
+  return _solved;
+}
+
+void CodeReader::setSolved(bool solved = true) {
+  _solved = solved;
+  _number = "5";
+}
+
+
+String CodeReader::getInputKey() {
+  return _number;
 }
 
 void CodeReader::disable()
@@ -95,7 +117,7 @@ bool CodeReader::isDisabled()
   return _disabled;
 }
 
-int CodeReader::readInput()
+char CodeReader::readInput()
 {
   String _buttons = String("0000000000");
 
@@ -131,7 +153,7 @@ int CodeReader::readInput()
       return _buttonLabels[9];    
     
     default:
-      return -1;
+      return 'n';
   }
 }
 
@@ -146,43 +168,45 @@ MODE CodeReader::readMode()
 
 void CodeReader::update()
 {
-  int val = readInput();
-  MODE mode = readMode();
-
-  switch(mode) {
-    case INPUT_MODE: 
-      // Update number -----------------
-      if (val >= 0) {
-        _entered = true;
-        _input = val;
-      }
-
-      if (_entered && val == -1 && _counter < 5) {
-        _counter++;
-        _number = _number * 10 + _input;
+  if(_transmittingMode == false){
+    char val = readInput();
+    MODE mode = readMode();
+    switch(mode) {
+      case INPUT_MODE: 
+        // Update number -----------------
+        if (val != 'n') {
+          _entered = true;
+          _input = val;
+        }
+        if (_entered && val == 'n' && _counter < 5) {
+          _counter++;
+          _number += _input;
+          _entered = false;
+        }
+        // ------------------------------
+        break;
+      case CLEAR_MODE:
+        _input = 'n';
+        _number = "";
         _entered = false;
-      }
-      // ------------------------------
-      break;
-    case CLEAR_MODE:
-      _input = -1;
-      _number = 0;
-      _entered = false;
-      _counter = 0;
-      break;
-  } 
+        _counter = 0;
+        break;
+    } 
+    if(digitalRead(_transmitPin) == HIGH){
+      _transmitInput = _input;
+      _transmittingMode = true;
+    }
+  }else{
+    _number = "00000";
+  }
 }
 
 void CodeReader::display()
 {
   _matrix->clear();
-  if (_input >= 0) _matrix->printNumber(_number);
+  if (_counter > 0) _matrix->printString(_number);
   _matrix->writeDisplay();
 }
 
-int CodeReader::getInputValue()
-{
-  return _input;
-}
 
 #endif

@@ -29,8 +29,11 @@ namespace PrepStatus {
   {
     if (c.powerSwitch.isSwitchOff()) {
       c.state = OFF;
+      c.syncroReader.disable();
+      return;
     } else {
       c.state = ON;
+      c.syncroReader.enable();
     }
 
     if (c.state == OFF) {
@@ -42,7 +45,6 @@ namespace PrepStatus {
     }
 
     if (c.state == ON) {
-      c.syncroReader.update();
 
       if (c.batteryMatrix.isSolved()) {
         c.batteryMatrix.switchToYellow();
@@ -65,6 +67,19 @@ namespace PrepStatus {
       if (c.batteryMatrix.isSolved() && c.energySupp.isSolved() && c.generator.isSolved()) {
         c.state = SOLVED;
       } 
+      //syncroReader
+      if (! c.syncroReader.isDisabled()) {
+        if(! c.syncroReader.isSynchronized()){
+          c.syncroReader.update();
+          if(c.syncroReader.getInputKey() == 1){
+            c.syncroReader.setSynchronized();
+          }
+        }
+        else{
+          c.syncroReader.setSynchronized();
+        }
+      }
+
     }
 
     if (c.state == SOLVED) {

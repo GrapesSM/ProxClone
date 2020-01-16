@@ -17,11 +17,20 @@ class SyncroReader
     void update();
     void display();
     bool isDisabled();
+    bool isSynchronized();
+    void setSynchronized(bool solved);
+    int getInputKey();
+    bool isSwitchOn();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
     int *_lightPins;
     bool _disabled = true;
     int _pin;
+    bool _synchronized = false;
+    int _count;
+    int _inputKey;
+    const unsigned long _waitTimeMillis = 4000; // ms
+    unsigned long lastRefreshTime;
 };
 
 SyncroReader::SyncroReader() {}
@@ -31,6 +40,28 @@ void SyncroReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int 
   _strip = strip;
   _lightPins = lightPins;
   _pin = pin;
+  _count = 0;
+  _inputKey = 0;
+}
+
+bool SyncroReader::isSwitchOn()
+{
+  return digitalRead(_pin);
+}
+
+bool SyncroReader::isSynchronized(){
+  return _synchronized;
+}
+
+void SyncroReader::setSynchronized(bool synchronized = true){
+  _synchronized = synchronized;
+  for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
+    _strip->SetPixelColor(_lightPins[i], RgbColor(0, 127, 0));
+  }
+}
+
+int SyncroReader::getInputKey() {
+  return _inputKey;
 }
 
 void SyncroReader::disable()
@@ -39,6 +70,7 @@ void SyncroReader::disable()
   for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
     _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
   }
+  _synchronized = false;
 }
 
 void SyncroReader::enable()
@@ -56,7 +88,33 @@ bool SyncroReader::isDisabled()
 
 void SyncroReader::update()
 {
-  // TO-DO: Reader Input
+  for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
+    _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+  }
+  _count = 0;
+  if(millis() - lastRefreshTime >= _waitTimeMillis / 4){
+    _strip->SetPixelColor(_lightPins[0], RgbColor(127, 127, 127));
+    _count = 3;
+    if(millis() - lastRefreshTime >= _waitTimeMillis * 2 / 4){
+      _strip->SetPixelColor(_lightPins[1], RgbColor(127, 127, 127));
+      _count = 2;
+      if(millis() - lastRefreshTime >= _waitTimeMillis * 3 / 4){
+        _strip->SetPixelColor(_lightPins[2], RgbColor(127, 127, 127));
+        _count = 1;
+        if(millis() - lastRefreshTime >= _waitTimeMillis){
+          lastRefreshTime = millis();
+        }
+      }
+    }
+  }
+  if(isSwitchOn()){
+    if(_inputKey == 0){
+      _inputKey = _count;
+    }
+  }else{
+    _inputKey = 0;
+  }
+  Serial.println(_inputKey);
 }
 
 void SyncroReader::display()

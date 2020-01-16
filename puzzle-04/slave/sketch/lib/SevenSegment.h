@@ -12,10 +12,31 @@ class SevenSegment : public Adafruit_7segment {
     void printNumber(long n);
     void printNumber(long n, uint8_t base);
     void printFloat(double n, uint8_t fracDigits, uint8_t base);
+    void printString(String s);
     void setDigits(uint8_t value);
   private:
     uint8_t _numberOfDigits = 5;
+    int availabPos = 4;
 };
+
+void SevenSegment::printString(String s) 
+{
+  int num = 0;
+  int stringLength = s.length();
+  int firstZerosCount = 0;
+  for(int i = 0; i <stringLength; i++){
+    if(s[i] == '0'){
+      firstZerosCount++;
+    }else{
+      break;
+    }
+  }
+  num = s.toInt();
+  printNumber(num);
+  for(int i = 0; i < firstZerosCount; i++){
+    writeDigitNum(_numberOfDigits - stringLength + i, 0, false);
+  }
+}
 
 void SevenSegment::setDigits(uint8_t numberOfDigits) 
 {

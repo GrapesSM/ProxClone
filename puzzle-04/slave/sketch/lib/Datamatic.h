@@ -35,15 +35,25 @@ namespace Datamatic {
     
     if (c.state == ON) {
       c.powerSwitch.setLightOn();
-    }
-
+    } 
     // if (c.state == ON) {
     //   c.informationDisplay.update();
     // } 
     
     if (c.state == ON) {
-      c.codeReader.update();
+      if(c.codeReader.isSolved()){
+        c.codeReader.setSolved();
+      }else{
+        c.codeReader.update();
+        if(c.codeReader.getInputKey() == keyForCodeReader){
+          c.codeReader.setSolved();
+          c.informationDisplay.activate();
+        }
+      } 
     }
+
+    c.informationDisplay.update();
+
 
     // if (puzzle.CODE == c.codeReader.getInputValue()) {
     //   c.lightEffect.setLightOn();
