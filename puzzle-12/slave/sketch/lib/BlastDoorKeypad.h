@@ -16,11 +16,8 @@ namespace BlastDoorKeypad{
     void run(Components & c)
     {    
         if(c.state == ON){
-            if(c.codeReader.isTransmitted()){
-                Serial.println(c.codeReader.getInputKey());
-                
+            if(c.codeReader.isTransmitted()){                
                 if(c.codeReader.isSolved()){
-                     Serial.println("Solved");
                 }
                 else
                 {
@@ -29,7 +26,6 @@ namespace BlastDoorKeypad{
                     }
                     else
                     {
-                        Serial.println("Wrong Code");
                         c.codeReader.setTransmitted(false);
                     }
                 }

@@ -96,7 +96,6 @@ void CodeReader::update()
     if(button == '*'){
       setTransmitted();
     }
-    Serial.println(_input);
     if(_input.length() >= 10){
       _input = "";
     }
