@@ -21,7 +21,7 @@ namespace PowerPanel {
     STATE state;
     float currentDemand = 0.0;
     float currentSupply = 0.0;
-    float maxDemand = 13.0;
+    float maxDemand = 7.0;
     unsigned long timer;
   } Components;
 
@@ -39,17 +39,16 @@ namespace PowerPanel {
       c.state = ON;
     }
 
-    // if (powerAdjuster.isBalanced()) {
-    //   powerLightIndicator.turnToWhite();
-    // } else {
-    //   powerLightIndicator.turnToRed();
-    // }
+    if (c.powerAdjuster.isBalanced()) {
+      
+    } else {
+      
+    }
 
-    // c.powerAdjuster.setOutputValue(c.currentSupply);
-    // // read register and add to current total value
-    // c.powerAdjuster.update();
-
-    c.powerBarIndicator.setValue(random(0, c.maxDemand)); // c.powerAdjuster.getInputValue()
+    // read register and add to current total value
+    c.powerAdjuster.setOutputValue(7);
+    c.powerAdjuster.update();
+    c.powerBarIndicator.setValue(c.powerAdjuster.getInputValue()); // 
     c.powerBarIndicator.update();
 
     // if (puzzle.MAX_POWER >= powerControl.getInputValue()) {

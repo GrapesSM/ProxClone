@@ -36,16 +36,13 @@ void PowerBarIndicator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip,
 
 void PowerBarIndicator::update()
 {
-  // 1 - 7
-  int scale = map(_value, 0.0, _maxValue, 1.0, 7.0);
-  if (scale != 7) {
-    for (int i = 0; i < scale; i++) {
-      _strip->SetPixelColor(_lightPins[i], RgbColor(127, 0, 0));
-    }
+  int scale = map(_value, 0.0, _maxValue, 0, 7);
+  for (int i = 0; i < scale; i++) {
+    _strip->SetPixelColor(_lightPins[i], RgbColor(127, 0, 0));
+  }
 
-    for (int i = scale; i < 7; i++) {
-      _strip->SetPixelColor(_lightPins[i], RgbColor(127, 127, 127));
-    }
+  for (int i = scale; i < 7; i++) {
+    _strip->SetPixelColor(_lightPins[i], RgbColor(127, 127, 127));
   }
 }
 

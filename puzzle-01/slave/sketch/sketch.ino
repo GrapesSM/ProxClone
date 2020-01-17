@@ -18,7 +18,7 @@ struct Puzzle {
   unsigned long timer = 0;
   unsigned long counter = 0;
   unsigned long checkpoint = 0;
-  unsigned long interval = 400;
+  unsigned long interval = 3000;
 } puzzle;
 
 struct Parts {
@@ -68,6 +68,17 @@ void setup()
   pinMode(PIN_SWITCH_1, INPUT);
   pinMode(PIN_SWITCH_2, INPUT);
   pinMode(PIN_SWITCH_3, INPUT);
+  
+  // configure PWM functionalitites for Analog Voltage Gauge
+  /*
+   * channel = 0 or 1 or 2 or 3
+   * frequency = 5000
+   * resolution = 8 or 10 or 12 or 15
+   * PWM value = from 0 (0%) to 1024 (100%)
+   */
+  pinMode(PIN_PWM_OUTPUT, OUTPUT);
+  ledcSetup(0, 5000, 10);
+  ledcAttachPin(PIN_PWM_OUTPUT, 0);
 
   setupPowerPanel();
 
