@@ -13,7 +13,7 @@ class PowerAdjuster
 {
   public:
     PowerAdjuster();
-    void set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2);
+    void set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2, int channel);
     void update();
     void display();
     void disable();
@@ -27,23 +27,26 @@ class PowerAdjuster
     ESP32Encoder *_encoder;
     Adafruit_7segment *_matrix1;
     Adafruit_7segment *_matrix2;
-    int _disabled;
     float _input;
     float _output;
+    int _channel;
+    bool _disabled;
     bool _balanced;
 };
 
 PowerAdjuster::PowerAdjuster() {
   _input = 0;
   _output = 0;
+  _channel = 0;
   _disabled = true;
   _balanced = false;
 }
 
-void PowerAdjuster::set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2) {
+void PowerAdjuster::set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2, int channel) {
   _encoder = encoder;
   _matrix1 = matrix1;
   _matrix2 = matrix2;
+  _channel = channel;
 }
 
 void PowerAdjuster::update() {
@@ -91,7 +94,7 @@ void PowerAdjuster::display() {
   _matrix2->writeDisplay();
 
   
-  ledcWrite(0, map(_input, 0, 7, 0, 1024));
+  ledcWrite(_channel, map(_input, 0, 7, 0, 1024));
 }
 
 bool PowerAdjuster::isBalanced() {

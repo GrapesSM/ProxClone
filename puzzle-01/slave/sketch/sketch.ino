@@ -76,9 +76,9 @@ void setup()
    * resolution = 8 or 10 or 12 or 15
    * PWM value = from 0 (0%) to 1024 (100%)
    */
-  pinMode(PIN_PWM_OUTPUT, OUTPUT);
-  ledcSetup(0, 5000, 10);
-  ledcAttachPin(PIN_PWM_OUTPUT, 0);
+  pinMode(PIN_OUTPUT_1, OUTPUT);
+  ledcSetup(PWM_OUTPUT_1_CHANNEL, PWM_OUTPUT_1_FREQUENCY, PWM_OUTPUT_1_RESOLUTION);
+  ledcAttachPin(PIN_OUTPUT_1, PWM_OUTPUT_1_CHANNEL);
 
   setupPowerPanel();
 
@@ -102,7 +102,7 @@ void loop()
 
 void setupPowerPanel()
 {
-  ppComponents.powerAdjuster.set(&parts.encoder, &parts.matrix1, &parts.matrix2);
+  ppComponents.powerAdjuster.set(&parts.encoder, &parts.matrix1, &parts.matrix2, PWM_OUTPUT_1_CHANNEL);
   ppComponents.powerLightIndicator.set(parts.strip, lightPinForPowerLightIndicator);
   ppComponents.powerBarIndicator.set(parts.strip, lightPinsForBarIndicator);
   ppComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
