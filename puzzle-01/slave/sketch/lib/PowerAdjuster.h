@@ -13,13 +13,16 @@ class PowerAdjuster
 {
   public:
     PowerAdjuster();
-    void set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2, void * dial);
+    void set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2);
     void update();
     void display();
     void disable();
     void enable();
     bool isDisabled();
     bool isBalanced();
+    float getInputValue();
+    float getOutputValue();
+    void setOutputValue(float output);
   private:
     ESP32Encoder *_encoder;
     Adafruit_7segment *_matrix1;
@@ -30,7 +33,7 @@ class PowerAdjuster
     int _disabled;
     float _input;
     float _output;
-    bool balanced;
+    bool _balanced;
 };
 
 PowerAdjuster::PowerAdjuster() {
@@ -40,10 +43,10 @@ PowerAdjuster::PowerAdjuster() {
   _disabled = true;
   _input = 0;
   _output = 0;
-  balanced = false;
+  _balanced = false;
 }
 
-void PowerAdjuster::set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2, void * dial) {
+void PowerAdjuster::set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2) {
   _encoder = encoder;
   _matrix1 = matrix1;
   _matrix2 = matrix2;
@@ -87,11 +90,11 @@ bool PowerAdjuster::isDisabled()
 
 void PowerAdjuster::display() {  
   _matrix1->clear();
-  _matrix1->print(_val);
+  _matrix1->print(_input);
   _matrix1->writeDisplay();
 
   _matrix2->clear();
-  _matrix2->print(_val);
+  _matrix2->print(_output);
   _matrix2->writeDisplay();
 }
 

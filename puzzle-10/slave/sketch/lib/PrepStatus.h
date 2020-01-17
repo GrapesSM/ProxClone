@@ -29,7 +29,9 @@ namespace PrepStatus {
   {
     if (c.powerSwitch.isSwitchOff()) {
       c.state = OFF;
-    } else {
+    } 
+    
+    if (c.powerSwitch.isSwitchOn()) {
       c.state = ON;
     }
 

@@ -1,25 +1,24 @@
 #include "Constants.h"
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
-#include <Adafruit_MCP23017.h>
 #include <Adafruit_GFX.h>
 #include "Adafruit_LEDBackpack.h"
 #include <ESP32Encoder.h>
-#include "lib/PowerControl.h"
+#include "lib/PowerPanel.h"
 
 struct Puzzle {
   uint8_t address = ADDR_SLAVE;
   STATE state = INITIALIZED;
   bool forced = false;
   int totalPower = 10;
-  uint8_t numberOfRegisters = 20;
-  uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  uint8_t numberOfRegisters = 10;
+  uint16_t registers[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   unsigned long startTime = 0;
   unsigned long endTime = 0;
   unsigned long timer = 0;
   unsigned long counter = 0;
   unsigned long checkpoint = 0;
-  unsigned long interval = 200;
+  unsigned long interval = 400;
 } puzzle;
 
 struct Parts {
@@ -28,15 +27,14 @@ struct Parts {
   ESP32Encoder encoder;
   Adafruit_7segment matrix1 = Adafruit_7segment(); 
   Adafruit_7segment matrix2 = Adafruit_7segment();
-  void dial;
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, PIN_NEOPIXEL);
 
-PowerControl::Components psComponents;
+PowerPanel::Components ppComponents;
 
-void setupPowerControl();
+void setupPowerPanel();
 
 void setup() 
 {
@@ -71,7 +69,7 @@ void setup()
   pinMode(PIN_SWITCH_2, INPUT);
   pinMode(PIN_SWITCH_3, INPUT);
 
-  setupPowerControl();
+  setupPowerPanel();
 
   puzzle.timer = millis();
 }
@@ -80,21 +78,21 @@ void loop()
 {
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-
-  // Enable Power Control
-  PowerControl::run(psComponents);
+  
+  // Enable Power Panel
+  PowerPanel::run(ppComponents);
 
   puzzle.timer = millis();
   if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
     puzzle.checkpoint = millis();
-    PowerControl::show(pcComponents);
+    PowerPanel::show(ppComponents);
   }
 }
 
-void setupPowerControl()
+void setupPowerPanel()
 {
-  psComponents.powerAdjuster.set(&parts.encoder, &parts.matrix1, &parts.matrix2, &parts.dial);
-  psComponents.powerIndicator.set(parts.strip, lightPinsForPowerIndicator);
-  psComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
-  psComponents.generator.set(parts.strip, lightPinsForGenerator);
+  ppComponents.powerAdjuster.set(&parts.encoder, &parts.matrix1, &parts.matrix2);
+  ppComponents.powerLightIndicator.set(parts.strip, lightPinForPowerLightIndicator);
+  ppComponents.powerBarIndicator.set(parts.strip, lightPinsForBarIndicator);
+  ppComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
 }
