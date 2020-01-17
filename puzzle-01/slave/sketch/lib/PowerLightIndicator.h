@@ -12,8 +12,8 @@ class PowerLightIndicator
   public:
     PowerLightIndicator();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin);
-    void setLightOn();
-    void setLightOff();
+    void setOn();
+    void setOff();
     void display();
     STATE _state;
   private:
@@ -30,12 +30,12 @@ void PowerLightIndicator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *stri
   _state = OFF;
 }
 
-void PowerLightIndicator::setLightOn()
+void PowerLightIndicator::setOn()
 {
   _strip->SetPixelColor(_lightPin, RgbColor(127, 127, 127));
 }
 
-void PowerLightIndicator::setLightOff()
+void PowerLightIndicator::setOff()
 {
   _strip->SetPixelColor(_lightPin, RgbColor(0, 0, 0));
 }

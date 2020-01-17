@@ -17,11 +17,13 @@ class PowerBarIndicator
     void enable();
     bool isDisabled();
     void setValue(float val);
+    void setMaxValue(float maxValue);
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
     bool _disabled = true;
     float _value;
+    float _maxValue;
 };
 
 PowerBarIndicator::PowerBarIndicator(){}
@@ -34,7 +36,14 @@ void PowerBarIndicator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip,
 
 void PowerBarIndicator::update()
 {
-  // TO-DO:
+  int scale = map(_value, 0.0, _maxValue, 0, 7);
+  for (int i = 0; i < scale; i++) {
+    _strip->SetPixelColor(_lightPins[i], RgbColor(127, 0, 0));
+  }
+
+  for (int i = scale; i < 7; i++) {
+    _strip->SetPixelColor(_lightPins[i], RgbColor(127, 127, 127));
+  }
 }
 
 void PowerBarIndicator::disable() 
@@ -57,6 +66,11 @@ bool PowerBarIndicator::isDisabled()
 void PowerBarIndicator::setValue(float value)
 {
   _value = value;
+}
+
+void PowerBarIndicator::setMaxValue(float maxValue)
+{
+  _maxValue = maxValue;
 }
 
 
