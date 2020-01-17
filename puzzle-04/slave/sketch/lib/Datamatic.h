@@ -21,7 +21,7 @@ namespace Datamatic {
     STATE state;
   } Components;
 
-  void run(Components & c)
+  void run(Components &c)
   {
     // if (c.powerSwitch.isSwitchOff()) {
     //   c.state = OFF;
@@ -62,7 +62,7 @@ namespace Datamatic {
     // }
   }
 
-  void show(Components & c)
+  void show(Components &c)
   {
     // c.informationDisplay.display();
     c.codeReader.display();
