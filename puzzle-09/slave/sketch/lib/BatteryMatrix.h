@@ -99,7 +99,6 @@ void BatteryMatrix::update()
 {
   readSwitches();
   getInputKey();
-  
   if (! _reset) {
     for (int i = 0; i < NUMBER_OF_SWITCHES_1; i++) {
       if (_input[i] == HIGH && _order[_labels[i]] == 0) {
