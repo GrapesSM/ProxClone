@@ -84,7 +84,6 @@ bool SyncroReader::isDisabled()
 
 void SyncroReader::update()
 {
-  Serial.println(digitalRead(_pin));
   _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
   _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
   _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
