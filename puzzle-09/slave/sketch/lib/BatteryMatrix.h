@@ -76,8 +76,9 @@ bool BatteryMatrix::isAllSwitchesOff()
 void BatteryMatrix::readSwitches()
 {
   _input[0] = LOW;
-  for (int i = 1; i < NUMBER_OF_SWITCHES_1; i++) {
+  for (int i = 0; i < NUMBER_OF_SWITCHES_1; i++) {
     _input[i] = _mcp->digitalRead(_switchPins[i]);
+      Serial.println(_mcp->digitalRead(_switchPins[i]));
   }
 }
 

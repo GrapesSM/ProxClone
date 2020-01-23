@@ -113,7 +113,7 @@ bool Generator::isAllSwitchesOff()
 void Generator::readSwitches()
 {
   _input[0] = LOW;
-  for (int i = 1; i < NUMBER_OF_SWITCHES_2; i++) {
+  for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
     _input[i] = _mcp->digitalRead(_switchPins[i]);
   }
 }

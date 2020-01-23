@@ -111,7 +111,7 @@ void loop()
 void setupEnergySupplemental()
 {
   esComponents.powerAdjuster.set(&parts.encoder, &parts.matrix);
-  esComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader, PIN_SWITCH_2);
+  esComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader, PIN_INPUT_1);
   esComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitchOfEnergySupplemental, PIN_SWITCH_1, true);
 }
 
