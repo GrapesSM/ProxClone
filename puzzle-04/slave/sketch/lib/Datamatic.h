@@ -21,14 +21,53 @@ namespace Datamatic {
     STATE state;
   } Components;
 
-  void run(Components c) 
+  void run(Components &c)
   {
+    // if (c.powerSwitch.isSwitchOff()) {
+    //   c.state = OFF;
+    // } else {
+      c.state = ON;
+    // }
+
+    if (c.state == OFF) {
+      c.powerSwitch.setLightOff();
+    } 
     
+    if (c.state == ON) {
+      c.powerSwitch.setLightOn();
+    } 
+    // if (c.state == ON) {
+    //   c.informationDisplay.update();
+    // } 
+    
+    if (c.state == ON) {
+      if(c.codeReader.isSolved()){
+        c.codeReader.setSolved();
+      }else{
+        c.codeReader.update();
+        if(c.codeReader.getInputKey() == keyForCodeReader){
+          c.codeReader.setSolved();
+          c.informationDisplay.activate();
+        }
+      } 
+    }
+
+    c.informationDisplay.update();
+
+
+    // if (puzzle.CODE == c.codeReader.getInputValue()) {
+    //   c.lightEffect.setLightOn();
+    // } else {
+    //   c.lightEffect.setLightOff();
+    // }
   }
 
-  void show(Components c)
+  void show(Components &c)
   {
-    
+    // c.informationDisplay.display();
+    c.codeReader.display();
+    c.powerSwitch.display();
+    // c.lightEffect.display();
   }
 }
 

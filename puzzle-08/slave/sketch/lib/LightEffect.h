@@ -1,5 +1,5 @@
 /*
-  LightEffect.h - Library for playing sounds and voices.
+  LightEffect.h - Library for _________.
 */
 #ifndef LightEffect_h
 #define LightEffect_h
@@ -15,6 +15,7 @@ class LightEffect
     void disable();
     void enable();
     bool isDisabled();
+    void display();
   private:
     bool _disabled = true;
 };
@@ -46,6 +47,11 @@ void LightEffect::enable()
 bool LightEffect::isDisabled()
 {
   return _disabled;
+}
+
+void LightEffect::display()
+{
+  // TO-DO:
 }
 
 

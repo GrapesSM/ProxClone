@@ -1,31 +1,32 @@
 /*
   InformationDisplay.h - Library for playing sounds and voices.
 */
-#ifndef PowerAdjuster_h
-#define PowerAdjuster_h
+#ifndef InformationDisplay_h
+#define InformationDisplay_h
+#define RXD2 10
+#define TXD2 13
 
 #include <Arduino.h>
 #include <ESP32Encoder.h>
-#include <Adafruit_GFX.h>
-#include "Adafruit_LEDBackpack.h"
 
 class InformationDisplay
 {
   public:
     InformationDisplay();
-    void set(ESP32Encoder * encoder, Adafruit_7segment * matrix);
+    void set(ESP32Encoder * encoder);
     void update();
     void display();
     void disable();
     void enable();
     bool isDisabled();
+    void activate(bool);
   private:
     ESP32Encoder *_encoder;
-    Adafruit_7segment *_matrix;
     int _val;
     int _min;
     int _max;
     int _disabled = true;
+    bool _activated = false;
 };
 
 InformationDisplay::InformationDisplay() {
@@ -34,26 +35,77 @@ InformationDisplay::InformationDisplay() {
   _max = 100;
 }
 
-void InformationDisplay::set(ESP32Encoder *encoder, Adafruit_7segment *matrix) {
+void InformationDisplay::set(ESP32Encoder *encoder) {
   _encoder = encoder;
-  _matrix = matrix;
+  Serial2.begin(115200, SERIAL_8N1, RXD2, TXD2); 
+  Serial2.print("p0.pic=0");
+  Serial2.write(0xff);
+  Serial2.write(0xff);
+  Serial2.write(0xff);
+}
+
+void InformationDisplay::activate(bool activate = true){
+  _activated = activate;
 }
 
 void InformationDisplay::update() {
-  _val = _encoder->getCount();
-  if (_val >= _max) {
-    _val = _max;
-    _encoder->setCount(_max);
-  } else if (_val <= _min) {
-    _val = _min;
-    _encoder->setCount(_min);
+
+  if(_activated){
+      _val = _encoder->getCount();
+    if (_val < _min) {
+      _val = _max;
+      _encoder->setCount(_val);
+    }
+    if(_val > _max){
+      _val = _min; 
+      _encoder->setCount(_val);
+    }
+
+    Serial.println(_val);
+    switch ((_val/10)%5) {
+      case 0:
+        Serial2.print("p0.pic=0");
+        Serial2.write(0xff);
+        Serial2.write(0xff);
+        Serial2.write(0xff);
+        break;
+      case 1:
+        Serial2.print("p0.pic=1");
+        Serial2.write(0xff);
+        Serial2.write(0xff);
+        Serial2.write(0xff);
+        break;
+      case 2:
+        Serial2.print("p0.pic=2");
+        Serial2.write(0xff);
+        Serial2.write(0xff);
+        Serial2.write(0xff);
+        break;
+      case 3:
+        Serial2.print("p0.pic=3");
+        Serial2.write(0xff);
+        Serial2.write(0xff);
+        Serial2.write(0xff);
+        break;
+      case 4:
+        Serial2.print("p0.pic=4");
+        Serial2.write(0xff);
+        Serial2.write(0xff);
+        Serial2.write(0xff);
+        break;
+      case 5:
+        Serial2.print("p0.pic=5");
+        Serial2.write(0xff);
+        Serial2.write(0xff);
+        Serial2.write(0xff);
+        break;      
+    }
   }
 }
 
 void InformationDisplay::disable() {
   _disabled = true;
   _encoder->pauseCount();
-  _matrix->clear();
 }
 
 void InformationDisplay::enable() {
@@ -68,9 +120,6 @@ bool InformationDisplay::isDisabled()
 
 void InformationDisplay::display() {
   Serial.println(_val);
-  _matrix->clear();
-  _matrix->print(_val);
-  _matrix->writeDisplay();
 }
 
 #endif

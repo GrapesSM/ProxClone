@@ -5,30 +5,29 @@
 #define KeyReader_h
 
 #include <Arduino.h>
-#include <NeoPixelBus.h>
 
 class KeyReader
 {
   public:
     KeyReader();
-    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
+    void set();
     void disable();
     void enable();
     void update();
     void display();
     bool isDisabled();
+    bool isSolved();
   private:
-    NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
-    int *_lightPins;
-    bool _disabled = true;
+    bool _disabled;
+    bool _solved;
 };
 
 KeyReader::KeyReader() {}
 
-void KeyReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[])
+void KeyReader::set()
 {
-  _strip = strip;
-  _lightPins = lightPins;
+  _solved = false;
+  _disabled = true;
 }
 
 void KeyReader::disable()
@@ -56,6 +55,11 @@ void KeyReader::update()
 void KeyReader::display()
 {
   _strip->Show();
+}
+
+bool KeyReader::isSolved()
+{
+  return _solved;
 }
 
 #endif

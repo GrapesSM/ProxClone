@@ -11,18 +11,17 @@ class BlastDoorStatus
   public:
     BlastDoorStatus();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
-    void update();
+    void listen();
+    void setRedLightOn();
+    void setRedLightOff();
+    void setGreenLightOn();
+    void setGreenLightOff();
+    bool isSolved();
     void display();
-    void disable();
-    void enable();
-    bool isDisabled();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
     int *_lightPins;
-    int _val;
-    int _min;
-    int _max;
-    int _disabled = true;
+    bool _solved;
 };
 
 BlastDoorStatus::BlastDoorStatus() {
@@ -31,31 +30,46 @@ BlastDoorStatus::BlastDoorStatus() {
   _max = 100;
 }
 
-void BlastDoorStatus::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]) {
-  
-}
-
-void BlastDoorStatus::update() {
- 
-}
-
-void BlastDoorStatus::disable() {
-  _disabled = true;
-  // TO-DO:
-}
-
-void BlastDoorStatus::enable() {
-  _disabled = false;
-  // TO-DO:
-}
-
-bool BlastDoorStatus::isDisabled()
+void BlastDoorStatus::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]) 
 {
-  return _disabled;
+  _strip = strip;
+  _lightPins = lightPins;
+  _solved = false;
 }
 
-void BlastDoorStatus::display() {  
+void BlastDoorStatus::listen() 
+{
+  // TO-DO:
+}
 
+void BlastDoorStatus::setRedLightOn() 
+{
+  // TO-DO:
+}
+
+void BlastDoorStatus::setRedLightOff() 
+{
+  // TO-DO:
+}
+
+void BlastDoorStatus::setGreenLightOn()
+{
+  // TO-DO:
+}
+
+void BlastDoorStatus::setGreenLightOff()
+{
+  // TO-DO:
+}
+
+bool BlastDoorStatus::isSolved()
+{
+  return _solved;
+}
+
+void BlastDoorStatus::display() 
+{  
+  // TO-DO:
 }
 
 #endif

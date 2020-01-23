@@ -12,14 +12,17 @@ class ShipPrepStatus
   public:
     ShipPrepStatus();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
-    void update();
-    void disable();
-    void enable();
-    bool isDisabled();
+    void listen();
+    void setRedLightOn();
+    void setRedLightOff();
+    void setGreenLightOn();
+    void setGreenLightOff();
+    bool isSolved();
+    void display();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
-    bool _disabled = true;
+    bool _solved;
 };
 
 ShipPrepStatus::ShipPrepStatus(){}
@@ -28,29 +31,42 @@ void ShipPrepStatus::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, in
 {
   _strip = strip;
   _lightPins = lightPins;
+  _solved = false;
 }
 
-void ShipPrepStatus::update()
+void ShipPrepStatus::listen()
 {
   // TO-DO:
 }
 
-void ShipPrepStatus::disable() 
+void ShipPrepStatus::setRedLightOn()
 {
-  _disabled = true;
   // TO-DO:
 }
 
-void ShipPrepStatus::enable() 
+void ShipPrepStatus::setRedLightOff()
 {
-  _disabled = false;
   // TO-DO:
 }
 
-bool ShipPrepStatus::isDisabled()
+void ShipPrepStatus::setGreenLightOn()
 {
-  return _disabled;
+  // TO-DO:
 }
 
+void ShipPrepStatus::setGreenLightOff()
+{
+  // TO-DO:
+}
+
+bool ShipPrepStatus::isSolved()
+{
+  return _solved;
+}
+
+void ShipPrepStatus::display()
+{
+  // TO-DO:
+}
 
 #endif

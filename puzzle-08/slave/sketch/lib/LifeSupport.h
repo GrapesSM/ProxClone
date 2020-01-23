@@ -1,5 +1,5 @@
 /*
-  LifeSupport.h - Library for controlling energy and syncro reader.
+  LifeSupport.h - Library for _______.
 */
 #ifndef LifeSupport_h
 #define LifeSupport_h
@@ -25,12 +25,38 @@ namespace LifeSupport {
 
   void run(Components c) 
   {
-    // TO-DO:
+    if (c.powerSwitch.isSwitchOff()) {
+      c.powerSwitch.setLightOff();
+      c.externalVent.disable();
+      c.airSupplyPump.disable();
+      c.airPressureStatus.disable();
+      c.lightEffect.disable();
+    } else {
+      c.powerSwitch.setLightOn();
+      c.externalVent.enable();
+      c.airSupplyPump.enable();
+      c.airPressureStatus.enable();
+      c.lightEffect.enable();
+    }
+
+    if (! c.externalVent.isDisabled()) {
+      c.externalVent.update();
+    } 
+
+    if (! c.airSupplyPump.isDisabled()) {
+      c.airSupplyPump.update();
+    }
+
+    if (! c.airPressureStatus.isDisabled()) {
+      c.airPressureStatus.update();
+    }
   }
 
   void show(Components c)
   {
-    // TO-DO:
+    c.airPressureStatus.display();
+    c.powerSwitch.display();
+    c.lightEffect.display();
   }
 }
 

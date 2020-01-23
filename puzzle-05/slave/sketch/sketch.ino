@@ -5,15 +5,15 @@
 #include <Adafruit_GFX.h>
 #include "Adafruit_LEDBackpack.h"
 #include <ESP32Encoder.h>
-#include "lib/Datamatic.h"
+#include "lib/Safeomatic.h"
 
 struct Puzzle {
   uint8_t address = ADDR_SLAVE;
   STATE state = INITIALIZED;
   bool forced = false;
   int totalPower = 10;
-  uint8_t numberOfRegisters = 20;
-  uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  uint8_t numberOfRegisters = 10;
+  uint16_t registers[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   unsigned long startTime = 0;
   unsigned long endTime = 0;
   unsigned long timer = 0;
@@ -86,9 +86,7 @@ void loop()
 
 void setupSafeomatic()
 {
-  smComponents.infomationDisplay.set();
-  smComponents.codeReader.set();
+  smComponents.combinationReader.set();
   smComponents.powerSwitch.set();
-  smComponents.lightEffect.set();
   smComponents.speaker.set();
 }

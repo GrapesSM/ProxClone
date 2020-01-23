@@ -7,3 +7,6 @@ __pycache__/
 *$py.class
 *.py[cod]
 *.db
+*.db-journal
+nohup.out
+bash.exe.stackdump

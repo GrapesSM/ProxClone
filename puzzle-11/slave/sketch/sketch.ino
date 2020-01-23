@@ -12,8 +12,8 @@ struct Puzzle {
   STATE state = INITIALIZED;
   bool forced = false;
   int totalPower = 10;
-  uint8_t numberOfRegisters = 20;
-  uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  uint8_t numberOfRegisters = 10;
+  uint16_t registers[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   unsigned long startTime = 0;
   unsigned long endTime = 0;
   unsigned long timer = 0;
@@ -57,10 +57,26 @@ void setup()
   // Setup and Init Encoders
   ESP32Encoder::useInternalWeakPullResistors=false;
   //-- adjust starting count value to 0
-  parts.encoder.clearCount();
-  parts.encoder.setCount(0);
+  parts.encoder1.clearCount();
+  parts.encoder1.setCount(0);
   //-- attach pins for use as encoder pins
-  parts.encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
+  parts.encoder1.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
+
+  // Setup and Init Encoders
+  ESP32Encoder::useInternalWeakPullResistors=false;
+  //-- adjust starting count value to 0
+  parts.encoder2.clearCount();
+  parts.encoder2.setCount(0);
+  //-- attach pins for use as encoder pins
+  parts.encoder2.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
+
+  // Setup and Init Encoders
+  ESP32Encoder::useInternalWeakPullResistors=false;
+  //-- adjust starting count value to 0
+  parts.encoder3.clearCount();
+  parts.encoder3.setCount(0);
+  //-- attach pins for use as encoder pins
+  parts.encoder3.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
   
   // Setup 7 segment LED
   parts.matrix.begin(ADDR_SEVENSEGMENT);
@@ -92,7 +108,7 @@ void loop()
 
 void setupLaserGrid()
 {
-  lgComponents.waveAdjuster.set();
+  lgComponents.waveAdjuster.set(parts.encoder1, parts.encoder2, parts.encoder3, parts.matrix);
   lgComponents.keyReader.set();
   lgComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
 }
