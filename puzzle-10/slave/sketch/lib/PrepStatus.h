@@ -80,6 +80,8 @@ namespace PrepStatus {
         }
       }
 
+      c.lightEffect.update();
+
     }
 
     if (c.state == SOLVED) {
@@ -96,7 +98,7 @@ namespace PrepStatus {
     // c.energySupp.display();
     // c.generator.display();
     // c.syncroReader.display();
-    // c.lightEffect.display();
+    c.lightEffect.display();
   }
 }
 

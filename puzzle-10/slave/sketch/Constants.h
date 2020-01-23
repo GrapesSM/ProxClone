@@ -20,8 +20,8 @@
 #define PIN_ANALOG_INPUT_3 37
 #define ADDR_SLAVE 10
 
-#define SERIAL_BAUDRATE 9600
-#define LED_COUNT 13
+#define SERIAL_BAUDRATE 38400
+#define LED_COUNT 31
 #define COLOR_SATURATION 128
 
 enum STATE {
@@ -52,3 +52,6 @@ extern int lightPinsForEnergySupp[] = {8, 5, 2};
 
 #define NUMBER_OF_LIGHTS_FOR_GENERATOR 3
 extern int lightPinsForGenerator[] = {9, 6, 3};
+
+#define NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT 18
+extern int lightPinsForLightEffect[] = {13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30};

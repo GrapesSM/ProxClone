@@ -1,5 +1,5 @@
-#define PIN_RX_1 5
-#define PIN_TX_1 9
+#define PIN_RX_1 9
+#define PIN_TX_1 5
 #define PIN_RX_2 10
 #define PIN_TX_2 13
 #define PIN_ENCODER_A 14
@@ -23,7 +23,7 @@
 #define ADDR_SEVENSEGMENT 0x71
 #define ADDR_SLAVE 9
 
-#define SERIAL_BAUDRATE 9600
+#define SERIAL_BAUDRATE 38400
 #define LED_COUNT 18
 #define COLOR_SATURATION 128
 

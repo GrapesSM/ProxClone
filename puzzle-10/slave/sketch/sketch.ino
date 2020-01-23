@@ -98,5 +98,5 @@ void setupPrepStatus()
   psComponents.energySupp.set(parts.strip, lightPinsForEnergySupp);
   psComponents.generator.set(parts.strip, lightPinsForGenerator);
   psComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader, PIN_INPUT_1);  
-//  psComponents.lightEffect.set();
+  psComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
 }

@@ -5,12 +5,13 @@
 #define LightEffect_h
 
 #include <Arduino.h>
+#include <NeoPixelBus.h>
 
 class LightEffect
 {
   public:
     LightEffect();
-    void set();
+    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
     void update();
     void disable();
     void enable();
@@ -18,18 +19,28 @@ class LightEffect
     void display();
   private:
     bool _disabled = true;
+    NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
+    int *_lightPins;
+    int _current;
 };
 
 LightEffect::LightEffect(){}
 
-void LightEffect::set()
+void LightEffect::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[])
 {
-  // TO-DO:
+  _strip = strip;
+  _lightPins = lightPins;
+  _current = 0;
 }
 
 void LightEffect::update()
 {
-  // TO-DO:
+  int next = _current + 1;
+  if (next == NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT) {
+    next = 0;
+  }
+  _strip->SetPixelColor(_lightPins[_current], RgbColor(0, 0, 0));
+  _strip->SetPixelColor(_lightPins[next], RgbColor(127, 0, 0));
 }
 
 void LightEffect::disable() 
@@ -51,7 +62,10 @@ bool LightEffect::isDisabled()
 
 void LightEffect::display()
 {
-  // TO-DO:
+  _current++;
+  if (_current == NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT) {
+    _current = 0;
+  }
 }
 
 #endif
