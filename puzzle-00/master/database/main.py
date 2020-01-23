@@ -4,7 +4,7 @@ from db import *
 
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import config as cfg
+import configuration as cfg
 
 def initialize_db():
     db.connect()

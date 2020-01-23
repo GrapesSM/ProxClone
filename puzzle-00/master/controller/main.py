@@ -17,7 +17,7 @@ import json
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from database.db import Puzzle
-import config as cfg
+import configuration as cfg
 
 from lib.power_panel_controller import PowerPanelController
 from lib.datamatic_controller import DatamaticController

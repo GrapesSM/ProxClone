@@ -19,7 +19,7 @@ class ProximaCommand(object):
         # TO-DO: Check registers to be copied and changed
         for sid in self._controllers.keys():
 
-            if sid not in (1, 4, 10):
+            if sid not in (9,):
                 continue
             
             controller = self._controllers[sid]

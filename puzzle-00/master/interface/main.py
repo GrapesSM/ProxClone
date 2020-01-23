@@ -1,8 +1,10 @@
 #!/usr/bin/etc python3
+import os, sys
 from flask import Flask
 from flask import render_template, request, redirect, url_for
 from flask import send_from_directory
-import config as cfg
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import configuration as cfg
 from db import *
 
 app = Flask(__name__, 

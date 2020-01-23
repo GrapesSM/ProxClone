@@ -4,8 +4,8 @@ import json
 
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import config as cfg
-
+import configuration as cfg
+print(cfg)
 file_path = "".join((os.path.dirname(os.path.abspath(__file__)), "\\" if os.name == "nt" else "/", cfg.db['sqlite']['file']))
 
 db = SqliteDatabase(file_path)
