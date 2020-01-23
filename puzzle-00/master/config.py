@@ -19,7 +19,7 @@ modbus = {
 
 db = {
     'sqlite': {
-        'file_path': 'local.db' },
+        'file': 'local.db' },
     'admin': {
         'username': 'administrator',
         'password': 'proxima123'} }

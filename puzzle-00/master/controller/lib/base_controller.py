@@ -10,4 +10,5 @@ class BaseController:
         return tuple(self._puzzle['registers'])
 
     def sayHello(self):
-        print("Hello Base Controller")
+        for i in range(len(self._puzzle['registers'])):
+            self._puzzle['registers'][i] = 1
