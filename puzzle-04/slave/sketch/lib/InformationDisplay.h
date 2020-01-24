@@ -19,7 +19,7 @@ class InformationDisplay
     void disable();
     void enable();
     bool isDisabled();
-    void activate(bool);
+    void activate(bool activate);
   private:
     ESP32Encoder *_encoder;
     int _val;
@@ -61,7 +61,6 @@ void InformationDisplay::update() {
       _encoder->setCount(_val);
     }
 
-    Serial.println(_val);
     switch ((_val/10)%5) {
       case 0:
         Serial2.print("p0.pic=0");
@@ -119,7 +118,7 @@ bool InformationDisplay::isDisabled()
 }
 
 void InformationDisplay::display() {
-  Serial.println(_val);
+  // Serial.println(_val);
 }
 
 #endif

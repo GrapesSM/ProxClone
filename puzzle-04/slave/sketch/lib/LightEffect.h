@@ -24,14 +24,15 @@ class LightEffect
     bool _disabled;
 };
 
-LightEffect::LightEffect(){}
+LightEffect::LightEffect(){
+  _current = 0;
+  _disabled = true;
+}
 
 void LightEffect::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[])
 {
   _strip = strip;
   _lightPins = lightPins;
-  _current = 0;
-  _disabled = true;
 }
 
 void LightEffect::update()
@@ -41,7 +42,7 @@ void LightEffect::update()
     next = 0;
   }
   _strip->SetPixelColor(_lightPins[_current], RgbColor(0, 0, 0));
-  _strip->SetPixelColor(_lightPins[next], RgbColor(127, 0, 0));
+  _strip->SetPixelColor(_lightPins[next], RgbColor(HtmlColor((uint32_t)random(0, 16777216))));
 }
 
 void LightEffect::enable()

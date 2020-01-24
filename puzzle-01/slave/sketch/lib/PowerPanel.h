@@ -51,6 +51,8 @@ namespace PowerPanel {
     c.powerBarIndicator.setValue(c.powerAdjuster.getInputValue()); // 
     c.powerBarIndicator.update();
 
+    c.lightEffect.update();
+
     // if (puzzle.MAX_POWER >= powerControl.getInputValue()) {
     //   // shut off all puzzles by setting register to SHUT_OFF_ALL_PUZZLES state
     // }
@@ -61,7 +63,7 @@ namespace PowerPanel {
     c.powerAdjuster.display();
     c.powerLightIndicator.display();
     // c.powerBarIndicator.display();
-    // c.lightEffect.display();
+    c.lightEffect.display();
   }
 }
 

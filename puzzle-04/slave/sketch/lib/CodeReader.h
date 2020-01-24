@@ -33,7 +33,7 @@ class CodeReader
     void display();
     bool isDisabled();
     char readInput();
-    String getTransmittedInput();
+    String getTransmittedKey();
     MODE readMode();
     bool isSolved();
     void setSolved(bool);
@@ -47,22 +47,22 @@ class CodeReader
     int _modePin;
     int _transmitPin;
     bool _disabled;
-    String _input;
-    bool _entered;
     int _counter;
     bool _solved;
+    bool _entered;
+    String _key;
     bool _transmitted;
-    String _transmittedInput;
+    String _transmittedKey;
 };
 
 CodeReader::CodeReader() {
   _disabled = true;
-  _input = "";
   _entered = false;
   _counter = 0;
   _solved = false;
   _transmitted = false;
-  _transmittedInput = "";
+  _key = "";
+  _transmittedKey = "";
 }
 
 void CodeReader::set(
@@ -94,8 +94,8 @@ void CodeReader::setSolved(bool solved = true) {
 }
 
 
-String CodeReader::getTransmittedInput() {
-  return _transmittedInput;
+String CodeReader::getTransmittedKey() {
+  return _transmittedKey;
 }
 
 void CodeReader::disable()
@@ -120,12 +120,15 @@ char CodeReader::readInput()
   String _buttons = String("0000000000");
 
   for (int i = 0; i < NUMBER_OF_BUTTONS_1; i++) {
+    Serial.print(_mcp1->digitalRead(_buttonPins1[i]));
     _buttons.setCharAt(i, _mcp1->digitalRead(_buttonPins1[i]) ? '1' : '0');
   }
 
   for (int i = NUMBER_OF_BUTTONS_1, n = NUMBER_OF_BUTTONS_1 + NUMBER_OF_BUTTONS_2; i < n; i++) {
+    Serial.print(_mcp1->digitalRead(_buttonPins2[i]));
     _buttons.setCharAt(i, _mcp2->digitalRead(_buttonPins2[i]) ? '1' : '0');
   }
+  Serial.println();
 
   switch (strtol( _buttons.c_str(), NULL, 2 ))
   {
@@ -166,49 +169,58 @@ MODE CodeReader::readMode()
 
 void CodeReader::update()
 {
-  char val = readInput();
+  char input = readInput();
   MODE mode = readMode();
   switch(mode) {
     case INPUT_MODE: 
       // Update number -----------------
-      if (_entered == false && val != 'n' && _counter < 5) {
+      if (_entered == false && input != 'n' && _counter < 5) {
         _counter++;
         _entered = true;
       }
 
-      if (_entered == true && val != 'n' && _counter > _input.length()) {
-        _input += String(val);
+      if (_entered == true && input != 'n' && _counter > _key.length()) {
+        _key += String(input);
       }
 
-      if (val == 'n') {
+      if (input == 'n') {
         _entered = false;
       }
       // ------------------------------
       break;
     case CLEAR_MODE:
-      _input = "";
+      _key = "";
       _entered = false;
       _counter = 0;
       break;
   } 
-  Serial.println(_input);
 
-  if (digitalRead(_transmitPin) == HIGH && _transmitted == false) {
-    _transmitted = true;
-    _transmittedInput = _input;
+  if (digitalRead(_transmitPin) == HIGH) { 
+    delay(1);
+    if (digitalRead(_transmitPin) == HIGH && _transmitted == false) {
+      _transmitted = true;
+      _transmittedKey = _key;
+    }
   }
 
-  if (digitalRead(_transmitPin) == LOW && _transmitted == true) {
-    _transmitted = false;
-    _input = "";
+  if (digitalRead(_transmitPin) == LOW) { 
+    delay(1);
+    if (digitalRead(_transmitPin) == LOW && _transmitted == true) {
+      _transmitted = false;
+    }
   }
+  // Serial.print(_key);
+  // Serial.print(", ");
+  // Serial.println(_transmittedKey);
 }
 
 void CodeReader::display()
 {
+  // if (_matrix->getOutput() != _key) {
   _matrix->clear();
-  if (_counter > 0) _matrix->printString(_input);
+  _matrix->printString(_key);
   _matrix->writeDisplay();
+  // }
 }
 
 

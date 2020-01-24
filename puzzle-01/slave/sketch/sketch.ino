@@ -1,3 +1,8 @@
+/*
+ * Power Panel puzzle is first puzzle connected to others.
+ * There are 
+ * 
+ */
 #include "Constants.h"
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"

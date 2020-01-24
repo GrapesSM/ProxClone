@@ -28,7 +28,7 @@
 #define PWM_OUTPUT_1_RESOLUTION 10 // 8, 10, 12, or 15
 
 #define SERIAL_BAUDRATE 38400
-#define LED_COUNT 8
+#define LED_COUNT 27
 #define COLOR_SATURATION 128
 
 enum STATE {

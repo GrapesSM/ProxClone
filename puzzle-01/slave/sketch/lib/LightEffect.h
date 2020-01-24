@@ -1,5 +1,5 @@
 /*
-  LightEffect.h - Library for playing sounds and voices.
+  LightEffect.h - Library for ______.
 */
 #ifndef LightEffect_h
 #define LightEffect_h
@@ -13,16 +13,21 @@ class LightEffect
     LightEffect();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
     void update();
-    void disable();
     void enable();
+    void disable();
     bool isDisabled();
+    void display();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
-    bool _disabled = true;
+    int _current;
+    bool _disabled;
 };
 
-LightEffect::LightEffect(){}
+LightEffect::LightEffect(){
+  _disabled = true;
+  _current = 0;
+}
 
 void LightEffect::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[])
 {
@@ -32,7 +37,12 @@ void LightEffect::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int l
 
 void LightEffect::update()
 {
-  // TO-DO: 
+  int next = _current + 1;
+  if (next == NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT) {
+    next = 0;
+  }
+  _strip->SetPixelColor(_lightPins[_current], RgbColor(0, 0, 0));
+  _strip->SetPixelColor(_lightPins[next], RgbColor(HtmlColor((uint32_t)random(0, 16777216))));
 }
 
 void LightEffect::disable() 
@@ -50,6 +60,14 @@ void LightEffect::enable()
 bool LightEffect::isDisabled()
 {
   return _disabled;
+}
+
+void LightEffect::display()
+{
+  _current++;
+  if (_current == NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT) {
+    _current = 0;
+  }
 }
 
 

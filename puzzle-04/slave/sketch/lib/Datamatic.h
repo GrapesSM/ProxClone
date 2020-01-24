@@ -19,14 +19,19 @@ namespace Datamatic {
     LightEffect lightEffect;
     Speaker speaker;
     STATE state;
+    unsigned long timer4CRDisplay = 0;
   } Components;
 
   void run(Components &c)
   {
     if (c.powerSwitch.isSwitchOff()) {
       c.state = OFF;
+      c.informationDisplay.activate(false);
+      c.informationDisplay.disable();
     } else {
       c.state = ON;
+      c.informationDisplay.activate();
+      c.informationDisplay.enable();
     }
 
     if (c.state == OFF) {
@@ -37,21 +42,20 @@ namespace Datamatic {
       c.powerSwitch.setLightOn();
     } 
 
-    // if (c.state == ON) {
-    //   c.informationDisplay.update();
-    // } 
+    if (c.state == ON) {
+      c.informationDisplay.update();
+    } 
     
     if (c.state == ON) {
-      if (c.codeReader.isSolved()) {
-        c.codeReader.setSolved();
-      } else {
+      // if (c.codeReader.isSolved()) {
+      //   c.codeReader.setSolved();
+      // } else {
         c.codeReader.update();
-        if (c.codeReader.getTransmittedInput() == keyForCodeReader) {
-          Serial.println(c.codeReader.getTransmittedInput());
-          c.codeReader.setSolved();
-          c.informationDisplay.activate();
+        if (c.codeReader.getTransmittedKey() == keyForCodeReader) {
+          Serial.println(c.codeReader.getTransmittedKey());
+          // c.codeReader.setSolved();
         }
-      } 
+      // } 
     }
 
     c.informationDisplay.update();

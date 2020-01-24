@@ -40,7 +40,7 @@ void LightEffect::update()
     next = 0;
   }
   _strip->SetPixelColor(_lightPins[_current], RgbColor(0, 0, 0));
-  _strip->SetPixelColor(_lightPins[next], RgbColor(127, 0, 0));
+  _strip->SetPixelColor(_lightPins[next], RgbColor(HtmlColor((uint32_t)random(0, 16777216))));
 }
 
 void LightEffect::disable() 
