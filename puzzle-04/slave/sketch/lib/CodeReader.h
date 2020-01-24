@@ -33,7 +33,7 @@ class CodeReader
     void display();
     bool isDisabled();
     char readInput();
-    String getInputKey();
+    String getTransmittedInput();
     MODE readMode();
     bool isSolved();
     void setSolved(bool);
@@ -47,22 +47,22 @@ class CodeReader
     int _modePin;
     int _transmitPin;
     bool _disabled;
-    char _input;
-    String _number;
+    String _input;
     bool _entered;
     int _counter;
     bool _solved;
-    bool _transmittingMode = false;
-    String _transmitInput;
+    bool _transmitted;
+    String _transmittedInput;
 };
 
 CodeReader::CodeReader() {
   _disabled = true;
-  _input = 'n';
-  _number = "";
+  _input = "";
   _entered = false;
   _counter = 0;
   _solved = false;
+  _transmitted = false;
+  _transmittedInput = "";
 }
 
 void CodeReader::set(
@@ -83,7 +83,6 @@ void CodeReader::set(
   _buttonLabels = buttonLabels;
   _modePin = modePin;
   _transmitPin = transmitPin;
-  _transmitInput = "";
 }
 
 bool CodeReader::isSolved() {
@@ -92,12 +91,11 @@ bool CodeReader::isSolved() {
 
 void CodeReader::setSolved(bool solved = true) {
   _solved = solved;
-  _number = "5";
 }
 
 
-String CodeReader::getInputKey() {
-  return _number;
+String CodeReader::getTransmittedInput() {
+  return _transmittedInput;
 }
 
 void CodeReader::disable()
@@ -168,43 +166,48 @@ MODE CodeReader::readMode()
 
 void CodeReader::update()
 {
-  if(_transmittingMode == false){
-    char val = readInput();
-    MODE mode = readMode();
-    switch(mode) {
-      case INPUT_MODE: 
-        // Update number -----------------
-        if (val != 'n') {
-          _entered = true;
-          _input = val;
-        }
-        if (_entered && val == 'n' && _counter < 5) {
-          _counter++;
-          _number += _input;
-          _entered = false;
-        }
-        // ------------------------------
-        break;
-      case CLEAR_MODE:
-        _input = 'n';
-        _number = "";
+  char val = readInput();
+  MODE mode = readMode();
+  switch(mode) {
+    case INPUT_MODE: 
+      // Update number -----------------
+      if (_entered == false && val != 'n' && _counter < 5) {
+        _counter++;
+        _entered = true;
+      }
+
+      if (_entered == true && val != 'n' && _counter > _input.length()) {
+        _input += String(val);
+      }
+
+      if (val == 'n') {
         _entered = false;
-        _counter = 0;
-        break;
-    } 
-    if(digitalRead(_transmitPin) == HIGH){
-      _transmitInput = _input;
-      _transmittingMode = true;
-    }
-  }else{
-    _number = "00000";
+      }
+      // ------------------------------
+      break;
+    case CLEAR_MODE:
+      _input = "";
+      _entered = false;
+      _counter = 0;
+      break;
+  } 
+  Serial.println(_input);
+
+  if (digitalRead(_transmitPin) == HIGH && _transmitted == false) {
+    _transmitted = true;
+    _transmittedInput = _input;
+  }
+
+  if (digitalRead(_transmitPin) == LOW && _transmitted == true) {
+    _transmitted = false;
+    _input = "";
   }
 }
 
 void CodeReader::display()
 {
   _matrix->clear();
-  if (_counter > 0) _matrix->printString(_number);
+  if (_counter > 0) _matrix->printString(_input);
   _matrix->writeDisplay();
 }
 

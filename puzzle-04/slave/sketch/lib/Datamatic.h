@@ -23,11 +23,11 @@ namespace Datamatic {
 
   void run(Components &c)
   {
-    // if (c.powerSwitch.isSwitchOff()) {
-    //   c.state = OFF;
-    // } else {
+    if (c.powerSwitch.isSwitchOff()) {
+      c.state = OFF;
+    } else {
       c.state = ON;
-    // }
+    }
 
     if (c.state == OFF) {
       c.powerSwitch.setLightOff();
@@ -36,16 +36,18 @@ namespace Datamatic {
     if (c.state == ON) {
       c.powerSwitch.setLightOn();
     } 
+
     // if (c.state == ON) {
     //   c.informationDisplay.update();
     // } 
     
     if (c.state == ON) {
-      if(c.codeReader.isSolved()){
+      if (c.codeReader.isSolved()) {
         c.codeReader.setSolved();
-      }else{
+      } else {
         c.codeReader.update();
-        if(c.codeReader.getInputKey() == keyForCodeReader){
+        if (c.codeReader.getTransmittedInput() == keyForCodeReader) {
+          Serial.println(c.codeReader.getTransmittedInput());
           c.codeReader.setSolved();
           c.informationDisplay.activate();
         }
@@ -53,7 +55,8 @@ namespace Datamatic {
     }
 
     c.informationDisplay.update();
-
+    
+    c.lightEffect.update();
 
     // if (puzzle.CODE == c.codeReader.getInputValue()) {
     //   c.lightEffect.setLightOn();
@@ -67,7 +70,7 @@ namespace Datamatic {
     // c.informationDisplay.display();
     c.codeReader.display();
     c.powerSwitch.display();
-    // c.lightEffect.display();
+    c.lightEffect.display();
   }
 }
 

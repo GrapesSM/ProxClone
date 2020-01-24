@@ -24,7 +24,7 @@
 #define ADDR_SLAVE 4
 
 #define SERIAL_BAUDRATE 38400
-#define LED_COUNT 18
+#define LED_COUNT 19
 #define COLOR_SATURATION 128
 
 enum STATE {
@@ -53,3 +53,6 @@ extern int buttonPins2[] = {7, 6, 5, 4, 3};
 extern char buttonLabels[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
 extern String keyForCodeReader = "65698";
+
+#define NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT 18
+extern int lightPinsForLightEffect[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};

@@ -50,8 +50,10 @@ enum STATE {
 // Number of Lights and Pin Numbers
 extern int lightPinForPowerLightIndicator = 0;
 
-#define NUMBER_OF_LIGHTS_FOR_GENERATOR 7
+#define NUMBER_OF_LIGHTS_FOR_BAR_INDICATOR 7
 extern int lightPinsForBarIndicator[] = {7, 6, 5, 4, 3, 2, 1};
 
-#define NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT 5
-extern int lightPinsForLightEffect[] = {1, 2, 3, 4, 5};
+extern int lightPinForPinIndicator = 8;
+
+#define NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT 18
+extern int lightPinsForLightEffect[] = {9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26};
