@@ -50,8 +50,8 @@ void InformationDisplay::activate(bool activate = true){
 
 void InformationDisplay::update() {
 
-  if(_activated){
-      _val = _encoder->getCount();
+  if(_activated) {
+    _val = _encoder->getCount();
     if (_val < _min) {
       _val = _max;
       _encoder->setCount(_val);

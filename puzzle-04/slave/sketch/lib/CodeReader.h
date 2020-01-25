@@ -118,17 +118,16 @@ bool CodeReader::isDisabled()
 char CodeReader::readInput()
 {
   String _buttons = String("0000000000");
-
+  char val;
   for (int i = 0; i < NUMBER_OF_BUTTONS_1; i++) {
-    Serial.print(_mcp1->digitalRead(_buttonPins1[i]));
-    _buttons.setCharAt(i, _mcp1->digitalRead(_buttonPins1[i]) ? '1' : '0');
+    val = _mcp1->digitalRead(_buttonPins1[i]) ? '1' : '0';
+    _buttons.setCharAt(i, val);
   }
 
   for (int i = NUMBER_OF_BUTTONS_1, n = NUMBER_OF_BUTTONS_1 + NUMBER_OF_BUTTONS_2; i < n; i++) {
-    Serial.print(_mcp1->digitalRead(_buttonPins2[i]));
-    _buttons.setCharAt(i, _mcp2->digitalRead(_buttonPins2[i]) ? '1' : '0');
+    val = _mcp2->digitalRead(_buttonPins2[i]) ? '1' : '0';
+    _buttons.setCharAt(i, val);
   }
-  Serial.println();
 
   switch (strtol( _buttons.c_str(), NULL, 2 ))
   {
@@ -174,12 +173,12 @@ void CodeReader::update()
   switch(mode) {
     case INPUT_MODE: 
       // Update number -----------------
-      if (_entered == false && input != 'n' && _counter < 5) {
+      if (_entered == false && input != 'n' && _counter < _matrix->getNumberOfDigits()) {
         _counter++;
         _entered = true;
       }
 
-      if (_entered == true && input != 'n' && _counter > _key.length()) {
+      if (_entered == true && input != 'n' && _counter <= _matrix->getNumberOfDigits() && _counter > _key.length()) {
         _key += String(input);
       }
 
@@ -192,35 +191,26 @@ void CodeReader::update()
       _key = "";
       _entered = false;
       _counter = 0;
+      _transmittedKey = "";
       break;
   } 
 
-  if (digitalRead(_transmitPin) == HIGH) { 
-    delay(1);
-    if (digitalRead(_transmitPin) == HIGH && _transmitted == false) {
-      _transmitted = true;
-      _transmittedKey = _key;
-    }
+  if (digitalRead(_transmitPin) == HIGH && _transmitted == false) {
+    _transmitted = true;
+    _transmittedKey = _key;
   }
 
-  if (digitalRead(_transmitPin) == LOW) { 
-    delay(1);
-    if (digitalRead(_transmitPin) == LOW && _transmitted == true) {
-      _transmitted = false;
-    }
+  
+  if (digitalRead(_transmitPin) == LOW && _transmitted == true) {
+    _transmitted = false;
   }
-  // Serial.print(_key);
-  // Serial.print(", ");
-  // Serial.println(_transmittedKey);
 }
 
 void CodeReader::display()
 {
-  // if (_matrix->getOutput() != _key) {
   _matrix->clear();
-  _matrix->printString(_key);
+  if (_key.length() > 0) _matrix->printString(_key);
   _matrix->writeDisplay();
-  // }
 }
 
 

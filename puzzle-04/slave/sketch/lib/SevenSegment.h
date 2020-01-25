@@ -13,10 +13,10 @@ class SevenSegment : public Adafruit_7segment {
     void printNumber(long n, uint8_t base);
     void printFloat(double n, uint8_t fracDigits, uint8_t base);
     void printString(String s);
-    void setDigits(uint8_t value);
+    void setNumberOfDigits(uint8_t numberOfDigits);
+    uint8_t getNumberOfDigits();
   private:
     uint8_t _numberOfDigits = 5;
-    int availabPos = 4;
 };
 
 void SevenSegment::printString(String s) 
@@ -38,9 +38,14 @@ void SevenSegment::printString(String s)
   }
 }
 
-void SevenSegment::setDigits(uint8_t numberOfDigits) 
+void SevenSegment::setNumberOfDigits(uint8_t numberOfDigits) 
 {
   _numberOfDigits = numberOfDigits;
+}
+
+uint8_t SevenSegment::getNumberOfDigits()
+{
+  return _numberOfDigits;
 }
 
 void SevenSegment::printNumber(long n)

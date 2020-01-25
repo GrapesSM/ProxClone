@@ -63,6 +63,7 @@ void setup()
   
   // Setup 7 segment LED
   parts.matrix.begin(ADDR_SEVENSEGMENT);
+  parts.matrix.setNumberOfDigits(5);
   
   // Setup power switch
   pinMode(PIN_SWITCH_1, INPUT);

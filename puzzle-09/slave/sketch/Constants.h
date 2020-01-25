@@ -24,7 +24,7 @@
 #define ADDR_SLAVE 9
 
 #define SERIAL_BAUDRATE 38400
-#define LED_COUNT 18
+#define LED_COUNT 19
 #define COLOR_SATURATION 128
 
 enum STATE {
