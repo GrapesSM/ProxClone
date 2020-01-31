@@ -13,19 +13,19 @@ class ProximaCommand(object):
         self.update(delay=1)
         for sid in self._controllers.keys():
             self._controllers[sid].sayHello()
+        
         time.sleep(0.1)
     
     def update(self, delay):         
         # TO-DO: Check registers to be copied and changed
         for sid in self._controllers.keys():
 
-            if sid not in (10,):
+            if sid not in (4,):
                 continue
             
             controller = self._controllers[sid]
             number_of_registers = len(controller.registers)
             controllerRegisters = controller.registers
-
             for _ in range(2):
                 time.sleep(delay)
                 try: 
@@ -42,13 +42,18 @@ class ProximaCommand(object):
                 slavePart = copy.deepcopy(slaveRegisters[6:10]) 
                 controllerRegisters[6:10] = slavePart
                 print("aaaaaaaaaaaaa = " + str(controller.registers))
+                #controller.setRegisters(controllerRegisters)
                 slaveRegisters[0] = 0
                 try: 
                     LOGGER.debug(self._master.execute(sid, cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=slaveRegisters))
                     break
                 except Exception as excpt:
                     LOGGER.debug("SystemDataCollector error: %s", str(excpt))
-                 
+                
+                
+
+
+
             # Check controller registers whether are changed or not
             if  controllerRegisters[0] == 1: #check if changed
                 controllerPart = copy.deepcopy(slaveRegisters[2:6]) 
@@ -72,7 +77,7 @@ class ProximaCommand(object):
                 if slaveRegisters[2:6] ==  controllerRegisters[2:6]:
                     controllerRegisters[0] = 1
                 else: print("FAILED!")
-                        
+            
 """
             # Write to slaves's registers if change is happened
             for _ in range(2):
