@@ -12,7 +12,7 @@ struct Puzzle {
   bool forced = false;
   int totalPower = 10;
   uint8_t numberOfRegisters = 10;
-  uint16_t registers[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  uint16_t registers[10] = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1};
   unsigned long startTime = 0;
   unsigned long endTime = 0;
   unsigned long timer = 0;

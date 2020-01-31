@@ -42,3 +42,4 @@ struct Puzzle {
 - [MODBUS over Serial Line Specification & Implementation guide V1.0 ](http://www.modbus.org/docs/Modbus_over_serial_line_V1.pdf)
 ### Libraries
 - [Arduino Modbus](https://github.com/arduino-libraries/ArduinoModbus)
+- [Speaker](https://www.xtronical.com/the-dacaudio-library-download-and-installation/)
