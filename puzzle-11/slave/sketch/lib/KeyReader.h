@@ -10,36 +10,74 @@ class KeyReader
 {
   public:
     KeyReader();
-    void set();
+    void init();
+    void set(int inputPin1, int inputPin2, int inputPin3, int outputPin);
+    void update();
+    void access();
+    void latch();
+    void unlatch();
+    bool isAllInserted();
+    bool isInserted(int number);
+    bool isSolved();
+    void setSolved(bool value);    
     void disable();
     void enable();
-    void update();
-    void display();
     bool isDisabled();
-    bool isSolved();
   private:
-    bool _disabled;
+    int _inputPin1;
+    int _inputPin2;
+    int _inputPin3;
+    int _outputPin;
+    int _keys[3];
     bool _solved;
+    bool _disabled;
 };
 
-KeyReader::KeyReader() {}
+KeyReader::KeyReader()
+{
+  init();
+}
 
-void KeyReader::set()
+void KeyReader::init()
 {
   _solved = false;
   _disabled = true;
+  _keys[0] = -1;
+  _keys[1] = -1;
+  _keys[2] = -1;
+}
+
+void KeyReader::set(int inputPin1, int inputPin2, int inputPin3, int outputPin)
+{
+  _inputPin1 = inputPin1;
+  _inputPin2 = inputPin2;
+  _inputPin3 = inputPin3;
+  _outputPin = outputPin;
+}
+
+bool KeyReader::isInserted(int number)
+{
+  return _keys[number - 1];
+}
+
+void KeyReader::setSolved(bool value = true)
+{
+  _solved = value;
+}
+
+bool KeyReader::isSolved()
+{
+  return _solved;
 }
 
 void KeyReader::disable()
 {
   _disabled = true;
-  // TO-DO:
 }
 
 void KeyReader::enable()
 {
   _disabled = false;
-  // TO-DO:
 }
 
 bool KeyReader::isDisabled()
@@ -47,19 +85,34 @@ bool KeyReader::isDisabled()
   return _disabled;
 }
 
+bool KeyReader::isAllInserted()
+{
+  return _keys[0] && _keys[1] && _keys[2];
+}
+
 void KeyReader::update()
 {
-  // TO-DO:
+  _keys[0] = digitalRead(_inputPin1);
+  _keys[1] = digitalRead(_inputPin2);
+  _keys[2] = digitalRead(_inputPin3);
 }
 
-void KeyReader::display()
+void KeyReader::access()
 {
-  _strip->Show();
+  latch();
+  delay(1000);
+  unlatch();
+  delay(1000);
 }
 
-bool KeyReader::isSolved()
+void KeyReader::latch()
 {
-  return _solved;
+  digitalWrite(_outputPin, HIGH);
+}
+
+void KeyReader::unlatch()
+{
+  digitalWrite(_outputPin, LOW);
 }
 
 #endif

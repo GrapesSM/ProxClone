@@ -5,65 +5,123 @@
 #define WaveAdjuster_h
 
 #include <Arduino.h>
-#include <ESP32Encoder.h>
-#include <Adafruit_GFX.h>
-#include "Adafruit_LEDBackpack.h"
+#include "helpers.h"
 
 class WaveAdjuster
 {
   public:
     WaveAdjuster();
-    void set(ESP32Encoder * encoder1, ESP32Encoder * encoder2, ESP32Encoder * encoder3, Adafruit_7segment * matrix);
+    void set(int inputPin1, int inputPin2, int inputPin3, HardwareSerial * serial);
     void update();
     void display();
     void disable();
     void enable();
+    bool isSyncronized();
     bool isDisabled();
+    int getInputValues(int number);
   private:
-    ESP32Encoder *_encoder1;
-    ESP32Encoder *_encoder2;
-    ESP32Encoder *_encoder3;
-    Adafruit_7segment *_matrix;
-    int _val;
-    int _min;
-    int _max;
+    int _inputPin1;
+    int _inputPin2;
+    int _inputPin3;
+    HardwareSerial * _serial;
     int _disabled;
+    unsigned long timer;
+    unsigned long interval;
+    int i, j, k;
+    int _inputValues[3];
+    int _offsetValues[3];
 };
 
-WaveAdjuster::WaveAdjuster() {
-  _val = 0;
-  _min = 0;
-  _max = 100;
+WaveAdjuster::WaveAdjuster() 
+{
+  _disabled = true;
+  i = 0; j = 0; k = 0;
+  timer = 0;
+  interval = 0;
+  _offsetValues[0] = 0;
+  _offsetValues[1] = 123;
+  _offsetValues[2] = 219;
 }
 
-void WaveAdjuster::set(ESP32Encoder * encoder1, ESP32Encoder * encoder2, ESP32Encoder * encoder3, Adafruit_7segment * matrix) {
-  _encoder1 = encoder1;
-  _encoder2 = encoder2;
-  _encoder3 = encoder3;
-  _matrix = matrix;
-  _disabled = true;
+void WaveAdjuster::set(int inputPin1, int inputPin2, int inputPin3, HardwareSerial * serial) {
+  _inputPin1 = inputPin1;
+  _inputPin2 = inputPin2;
+  _inputPin3 = inputPin3;
+  _serial = serial;
+}
+
+int WaveAdjuster::getInputValues(int number)
+{
+  return _inputValues[number - 1];
 }
 
 void WaveAdjuster::update() {
-  _val = _encoder->getCount();
-  if (_val >= _max) {
-    _val = _max;
-    _encoder->setCount(_max);
-  } else if (_val <= _min) {
-    _val = _min;
-    _encoder->setCount(_min);
+  _inputValues[0] = analogRead(_inputPin1); 
+  _inputValues[1] = analogRead(_inputPin2);
+  _inputValues[2] = analogRead(_inputPin3);
+
+  if (millis() - timer > interval) {
+    timer = millis();
+    i++;
+    j++;
+    k++;
   }
+  
+  int Value = map(waveValue(i, map(_inputValues[0], 0, 4096, _offsetValues[0], _offsetValues[0] + 359)), -150, 150, 10, 250);  //Read the pot value ann map it to 0.255 (max value of waveform=255)
+  String Tosend = "add ";                                       //We send the string "add "
+  Tosend += 1;                                                  //send the id of the block you want to add the value to
+  Tosend += ",";
+  Tosend += 0;                                                  //Channel of taht id, in this case channel 0 of the waveform
+  Tosend += ",";
+  Tosend += Value;                                              //Send the value and 3 full bytes
+  Tosend += "\xFF\xFF\xFF";
+  _serial->print(Tosend);
+  
+  int Value2 = map(waveValue(j, map(_inputValues[1], 0, 4096, _offsetValues[1], _offsetValues[1] + 359)), -150, 150, 10, 250);  //Read the pot value ann map it to 0.255 (max value of waveform=255)
+  String Tosend2 = "add ";                                       //We send the string "add "
+  Tosend2 += 1;                                                  //send the id of the block you want to add the value to
+  Tosend2 += ",";
+  Tosend2 += 1;                                                  //Channel of taht id, in this case channel 0 of the waveform
+  Tosend2 += ",";
+  Tosend2 += Value2;                                              //Send the value and 3 full bytes
+  Tosend2 += "\xFF\xFF\xFF";
+  _serial->print(Tosend2);
+  
+  int Value3 = map(waveValue(k,  map(_inputValues[2], 0, 4096, _offsetValues[2], _offsetValues[2] + 359)), -150, 150, 10, 250);  //Read the pot value ann map it to 0.255 (max value of waveform=255)
+  String Tosend3 = "add ";                                       //We send the string "add "
+  Tosend3 += 1;                                                  //send the id of the block you want to add the value to
+  Tosend3 += ",";
+  Tosend3 += 2;                                                  //Channel of taht id, in this case channel 0 of the waveform
+  Tosend3 += ",";
+  Tosend3 += Value3;                                              //Send the value and 3 full bytes
+  Tosend3 += "\xFF\xFF\xFF";
+  _serial->print(Tosend3);
+  
+  if (i >= 359) {
+    i = 0;
+  }
+
+  if (j >= 359) {
+    j = 0;
+  }
+
+  if (k >= 359) {
+    k = 0;
+  }
+}
+
+bool WaveAdjuster::isSyncronized()
+{
+  return (abs(_inputValues[0] - _inputValues[1]) < EPS) && (abs(_inputValues[1] - _inputValues[2]) < EPS);
 }
 
 void WaveAdjuster::disable() {
   _disabled = true;
-  _encoder->pauseCount();
-  _matrix->clear();
+  
 }
 
 void WaveAdjuster::enable() {
-  _disabled = false;
-  _encoder->resumeCount();
+  _disabled = false; 
 }
 
 bool WaveAdjuster::isDisabled()
@@ -72,10 +130,7 @@ bool WaveAdjuster::isDisabled()
 }
 
 void WaveAdjuster::display() {
-  Serial.println(_val);
-  _matrix->clear();
-  _matrix->print(_val);
-  _matrix->writeDisplay();
+  
 }
 
 #endif

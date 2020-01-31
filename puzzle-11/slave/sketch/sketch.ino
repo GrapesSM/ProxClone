@@ -1,10 +1,7 @@
 #include "Constants.h"
+#include "SoundData.h"
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
-#include <Adafruit_MCP23017.h>
-#include <Adafruit_GFX.h>
-#include "Adafruit_LEDBackpack.h"
-#include <ESP32Encoder.h>
 #include "lib/LaserGrid.h"
 
 struct Puzzle {
@@ -25,10 +22,6 @@ struct Puzzle {
 struct Parts {
   Modbus * slave;
   NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip;
-  ESP32Encoder encoder1;
-  ESP32Encoder encoder2;
-  ESP32Encoder encoder3;
-  Adafruit_7segment matrix = Adafruit_7segment();
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
@@ -54,37 +47,26 @@ void setup()
   parts.strip->Begin();
   parts.strip->Show();
 
-  // Setup and Init Encoders
-  ESP32Encoder::useInternalWeakPullResistors=false;
-  //-- adjust starting count value to 0
-  parts.encoder1.clearCount();
-  parts.encoder1.setCount(0);
-  //-- attach pins for use as encoder pins
-  parts.encoder1.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
-
-  // Setup and Init Encoders
-  ESP32Encoder::useInternalWeakPullResistors=false;
-  //-- adjust starting count value to 0
-  parts.encoder2.clearCount();
-  parts.encoder2.setCount(0);
-  //-- attach pins for use as encoder pins
-  parts.encoder2.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
-
-  // Setup and Init Encoders
-  ESP32Encoder::useInternalWeakPullResistors=false;
-  //-- adjust starting count value to 0
-  parts.encoder3.clearCount();
-  parts.encoder3.setCount(0);
-  //-- attach pins for use as encoder pins
-  parts.encoder3.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
+  // Setup Nextion Display
+  Serial2.begin(SERIAL2_BAUDRATE, SERIAL_8N1, PIN_RX_2, PIN_TX_2);
   
-  // Setup 7 segment LED
-  parts.matrix.begin(ADDR_SEVENSEGMENT);
-  
-  // Setup power switch
+  // Setup Switches
   pinMode(PIN_SWITCH_1, INPUT);
   pinMode(PIN_SWITCH_2, INPUT);
   pinMode(PIN_SWITCH_3, INPUT);
+
+  // Setup Inputs
+  pinMode(PIN_INPUT_1, INPUT);
+  pinMode(PIN_INPUT_2, INPUT);
+  pinMode(PIN_INPUT_3, INPUT);
+
+  // Setup Potentiometers 
+  pinMode(PIN_ANALOG_INPUT_1, INPUT);
+  pinMode(PIN_ANALOG_INPUT_2, INPUT);
+  pinMode(PIN_ANALOG_INPUT_3, INPUT);
+
+  // Setup solenoid
+  pinMode(PIN_RELAY_1, OUTPUT);
 
   setupLaserGrid();
 
@@ -108,7 +90,8 @@ void loop()
 
 void setupLaserGrid()
 {
-  lgComponents.waveAdjuster.set(parts.encoder1, parts.encoder2, parts.encoder3, parts.matrix);
-  lgComponents.keyReader.set();
+  lgComponents.waveAdjuster.set(PIN_ANALOG_INPUT_1, PIN_ANALOG_INPUT_2, PIN_ANALOG_INPUT_3, &Serial2);
+  lgComponents.keyReader.set(PIN_INPUT_1, PIN_INPUT_2, PIN_INPUT_3, PIN_RELAY_1);
   lgComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
+//  lgComponents.speaker.set(parts.dacAudio, PIN_AMPLIFIER);
 }

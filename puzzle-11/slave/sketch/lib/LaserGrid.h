@@ -19,28 +19,49 @@ namespace LaserGrid {
     STATE state;
   } Components;
 
-  void run(Components c) 
+  void run(Components & c) 
   {
     if (c.powerSwitch.isSwitchOff()) {
+      c.state = OFF;
+    }
+
+    if (c.powerSwitch.isSwitchOn()) {
+      c.state = ON;
+    }
+
+    if (c.state == OFF) {
       c.powerSwitch.setLightOff();
-      c.keyReader.disable();
-      c.waveAdjuster.disable();
-    } else {
+    } 
+    
+    if (c.state == ON) {
       c.powerSwitch.setLightOn();
-      c.keyReader.enable();
-      c.waveAdjuster.enable();
     }
 
-    if (! c.keyReader.isDisabled()) {
+    if (c.state == ON) {
       c.keyReader.update();
+      if (c.keyReader.isAllInserted()) {
+        if (! c.keyReader.isSolved()) {
+          c.keyReader.access();
+        }
+        c.keyReader.setSolved();
+      }
+
     }
 
-    if (! c.waveAdjuster.isDisabled() && c.keyReader.isSolved()) {
-      c.waveAdjuster.update();
+    if (c.state == ON) {
+      if (c.keyReader.isSolved()) {
+        c.waveAdjuster.update();
+      }
+    }
+
+    if (c.state == ON) {
+      if (c.keyReader.isAllInserted() && c.waveAdjuster.isSyncronized()) {
+        c.state = SOLVED;
+      }
     }
   }
 
-  void show(Components c)
+  void show(Components & c)
   {
     c.powerSwitch.display();
     c.waveAdjuster.display();
