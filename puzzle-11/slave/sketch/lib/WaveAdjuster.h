@@ -80,8 +80,6 @@ bool WaveAdjuster::isSyncronized()
   Serial.print(abs(getValue(1) - getValue(2)));
   Serial.print(",");
   Serial.print(abs(getValue(1) - getValue(3)));
-  Serial.print(",");
-  Serial.print(abs(getValue(2) - getValue(3)));
   Serial.println();
   return (abs(_inputValues[0] - _inputValues[1]) < EPS) && (abs(_inputValues[1] - _inputValues[2]) < EPS);
 }
