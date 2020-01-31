@@ -6,6 +6,7 @@
 
 #include <Arduino.h>
 #include "helpers.h"
+#define EPS 10
 
 class WaveAdjuster
 {
@@ -18,7 +19,8 @@ class WaveAdjuster
     void enable();
     bool isSyncronized();
     bool isDisabled();
-    int getInputValues(int number);
+    int getValue(int number);
+    STATE getState();
   private:
     int _inputPin1;
     int _inputPin2;
@@ -30,6 +32,7 @@ class WaveAdjuster
     int i, j, k;
     int _inputValues[3];
     int _offsetValues[3];
+    STATE _state;
 };
 
 WaveAdjuster::WaveAdjuster() 
@@ -50,16 +53,56 @@ void WaveAdjuster::set(int inputPin1, int inputPin2, int inputPin3, HardwareSeri
   _serial = serial;
 }
 
-int WaveAdjuster::getInputValues(int number)
+int WaveAdjuster::getValue(int number)
 {
-  return _inputValues[number - 1];
+  int phase = map(_inputValues[number-1], 0, 4096, _offsetValues[number - 1], _offsetValues[number - 1] + 359);
+  return phase;
 }
 
-void WaveAdjuster::update() {
+void WaveAdjuster::update() 
+{
+  if (_disabled) return;
+
+  _state = READING;
   _inputValues[0] = analogRead(_inputPin1); 
   _inputValues[1] = analogRead(_inputPin2);
   _inputValues[2] = analogRead(_inputPin3);
 
+  display();
+
+  if (isSyncronized()) {
+    _state = SOLVED;
+  }
+}
+
+bool WaveAdjuster::isSyncronized()
+{
+  Serial.print(abs(getValue(1) - getValue(2)));
+  Serial.print(",");
+  Serial.print(abs(getValue(2) - getValue(3)));
+  Serial.println();
+  return (abs(_inputValues[0] - _inputValues[1]) < EPS) && (abs(_inputValues[1] - _inputValues[2]) < EPS);
+}
+
+void WaveAdjuster::disable() 
+{
+  _state = OFF;
+  _disabled = true;
+}
+
+void WaveAdjuster::enable() 
+{
+  _state = ON;
+  _disabled = false; 
+}
+
+bool WaveAdjuster::isDisabled()
+{
+  return _disabled;
+}
+
+void WaveAdjuster::display() 
+{
   if (millis() - timer > interval) {
     timer = millis();
     i++;
@@ -107,30 +150,12 @@ void WaveAdjuster::update() {
 
   if (k >= 359) {
     k = 0;
-  }
+  }  
 }
 
-bool WaveAdjuster::isSyncronized()
+STATE WaveAdjuster::getState()
 {
-  return (abs(_inputValues[0] - _inputValues[1]) < EPS) && (abs(_inputValues[1] - _inputValues[2]) < EPS);
-}
-
-void WaveAdjuster::disable() {
-  _disabled = true;
-  
-}
-
-void WaveAdjuster::enable() {
-  _disabled = false; 
-}
-
-bool WaveAdjuster::isDisabled()
-{
-  return _disabled;
-}
-
-void WaveAdjuster::display() {
-  
+  return _state;
 }
 
 #endif

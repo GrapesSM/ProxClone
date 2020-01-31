@@ -44,7 +44,9 @@ enum STATE {
     SYNCRONIZED = 8,
     ON = 9,
     OFF = 10,
-    INITIALIZED = 11
+    INITIALIZED = 11,
+    NOT_INITIALIZED = 12,
+    READING = 15
 };
 
 // Number of Lights and Pin Numbers

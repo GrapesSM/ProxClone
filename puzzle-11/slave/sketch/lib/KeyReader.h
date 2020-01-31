@@ -19,10 +19,11 @@ class KeyReader
     bool isAllInserted();
     bool isInserted(int number);
     bool isSolved();
-    void setSolved(bool value);    
+    void setSolved(bool value);   
     void disable();
     void enable();
     bool isDisabled();
+    STATE getState();
   private:
     int _inputPin1;
     int _inputPin2;
@@ -31,6 +32,7 @@ class KeyReader
     int _keys[3];
     bool _solved;
     bool _disabled;
+    STATE _state;
 };
 
 KeyReader::KeyReader()
@@ -72,11 +74,13 @@ bool KeyReader::isSolved()
 
 void KeyReader::disable()
 {
+  _state = OFF;
   _disabled = true;
 }
 
 void KeyReader::enable()
 {
+  _state = ON;
   _disabled = false;
 }
 
@@ -92,9 +96,26 @@ bool KeyReader::isAllInserted()
 
 void KeyReader::update()
 {
+  if (_disabled) {
+    return;
+  } 
+
+  _state = READING;
   _keys[0] = digitalRead(_inputPin1);
   _keys[1] = digitalRead(_inputPin2);
   _keys[2] = digitalRead(_inputPin3);
+  
+  if (isAllInserted()) {
+    _solved = true;
+    _state = SOLVED;
+  } else {
+    _solved = false;
+  }
+}
+
+STATE KeyReader::getState()
+{
+  return _state;
 }
 
 void KeyReader::access()

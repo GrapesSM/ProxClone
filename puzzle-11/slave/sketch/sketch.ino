@@ -6,7 +6,7 @@
 
 struct Puzzle {
   uint8_t address = ADDR_SLAVE;
-  STATE state = INITIALIZED;
+  STATE state = NOT_INITIALIZED;
   bool forced = false;
   int totalPower = 10;
   uint8_t numberOfRegisters = 10;
@@ -86,6 +86,12 @@ void loop()
     puzzle.checkpoint = millis();
     LaserGrid::show(lgComponents);
   }
+
+  ///////////////////////////////
+  puzzle.registers[5] = lgComponents.state;
+  puzzle.registers[6] = lgComponents.powerSwitch.getState();
+  puzzle.registers[7] = lgComponents.keyReader.getState();
+  puzzle.registers[8] = lgComponents.waveAdjuster.getState();
 }
 
 void setupLaserGrid()
