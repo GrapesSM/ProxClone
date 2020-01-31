@@ -77,11 +77,7 @@ void WaveAdjuster::update()
 
 bool WaveAdjuster::isSyncronized()
 {
-  Serial.print(abs(getValue(1) - getValue(2)));
-  Serial.print(",");
-  Serial.print(abs(getValue(1) - getValue(3)));
-  Serial.println();
-  return (abs(_inputValues[0] - _inputValues[1]) < EPS) && (abs(_inputValues[1] - _inputValues[2]) < EPS);
+  return (abs(abs(getValue(1) - getValue(2)) - abs(getValue(1) - getValue(3))) < EPS);
 }
 
 void WaveAdjuster::disable() 

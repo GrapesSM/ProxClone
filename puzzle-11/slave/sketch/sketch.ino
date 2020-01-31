@@ -25,11 +25,11 @@ struct Parts {
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
-//NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, PIN_NEOPIXEL);
+NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, PIN_NEOPIXEL);
 
-//LaserGrid::Components lgComponents;
+LaserGrid::Components lgComponents;
 
-//void setupLaserGrid();
+void setupLaserGrid();
 
 void setup() 
 {
