@@ -12,7 +12,7 @@ struct Puzzle {
   bool forced = false;
   int totalPower = 10;
   uint8_t numberOfRegisters = 10;
-  uint16_t registers[10] = { 1, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+  uint16_t registers[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   unsigned long startTime = 0;
   unsigned long endTime = 0;
   unsigned long timer = 0;
@@ -101,6 +101,14 @@ void loop()
   if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
     puzzle.checkpoint = millis();
     Datamatic::show(dmComponents);
+  }
+
+  if(dmComponents.powerSwitch.isSwitchOn()){
+    puzzle.registers[0] = 1;
+    puzzle.registers[9] = 1;
+  }else{
+    puzzle.registers[0] = 1;
+    puzzle.registers[9] = 2;
   }
 }
 

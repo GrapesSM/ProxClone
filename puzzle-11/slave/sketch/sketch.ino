@@ -1,11 +1,11 @@
 #include "Constants.h"
 #include "lib/ModbusRtu.h"
-#include "NeoPixelBus.h"
-#include <Adafruit_MCP23017.h>
-#include <Adafruit_GFX.h>
-#include "Adafruit_LEDBackpack.h"
-#include <ESP32Encoder.h>
-#include "lib/LaserGrid.h"
+//#include "NeoPixelBus.h"
+//#include <Adafruit_MCP23017.h>
+//#include <Adafruit_GFX.h>
+//#include "Adafruit_LEDBackpack.h"
+//#include <ESP32Encoder.h>
+//#include "lib/LaserGrid.h"
 
 struct Puzzle {
   uint8_t address = ADDR_SLAVE;
@@ -24,19 +24,19 @@ struct Puzzle {
 
 struct Parts {
   Modbus * slave;
-  NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip;
-  ESP32Encoder encoder1;
-  ESP32Encoder encoder2;
-  ESP32Encoder encoder3;
-  Adafruit_7segment matrix = Adafruit_7segment();
+//  NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip;
+//  ESP32Encoder encoder1;
+//  ESP32Encoder encoder2;
+//  ESP32Encoder encoder3;
+//  Adafruit_7segment matrix = Adafruit_7segment();
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
-NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, PIN_NEOPIXEL);
+//NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, PIN_NEOPIXEL);
 
-LaserGrid::Components lgComponents;
+//LaserGrid::Components lgComponents;
 
-void setupLaserGrid();
+//void setupLaserGrid();
 
 void setup() 
 {
@@ -49,44 +49,44 @@ void setup()
     clock_prescale_set(clock_div_1);
   #endif
 
-  // Setup NeoPixelBus for all lights
-  parts.strip = &strip;
-  parts.strip->Begin();
-  parts.strip->Show();
-
-  // Setup and Init Encoders
-  ESP32Encoder::useInternalWeakPullResistors=false;
-  //-- adjust starting count value to 0
-  parts.encoder1.clearCount();
-  parts.encoder1.setCount(0);
-  //-- attach pins for use as encoder pins
-  parts.encoder1.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
-
-  // Setup and Init Encoders
-  ESP32Encoder::useInternalWeakPullResistors=false;
-  //-- adjust starting count value to 0
-  parts.encoder2.clearCount();
-  parts.encoder2.setCount(0);
-  //-- attach pins for use as encoder pins
-  parts.encoder2.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
-
-  // Setup and Init Encoders
-  ESP32Encoder::useInternalWeakPullResistors=false;
-  //-- adjust starting count value to 0
-  parts.encoder3.clearCount();
-  parts.encoder3.setCount(0);
-  //-- attach pins for use as encoder pins
-  parts.encoder3.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
-  
-  // Setup 7 segment LED
-  parts.matrix.begin(ADDR_SEVENSEGMENT);
-  
-  // Setup power switch
-  pinMode(PIN_SWITCH_1, INPUT);
-  pinMode(PIN_SWITCH_2, INPUT);
-  pinMode(PIN_SWITCH_3, INPUT);
-
-  setupLaserGrid();
+//  // Setup NeoPixelBus for all lights
+//  parts.strip = &strip;
+//  parts.strip->Begin();
+//  parts.strip->Show();
+//
+//  // Setup and Init Encoders
+//  ESP32Encoder::useInternalWeakPullResistors=false;
+//  //-- adjust starting count value to 0
+//  parts.encoder1.clearCount();
+//  parts.encoder1.setCount(0);
+//  //-- attach pins for use as encoder pins
+//  parts.encoder1.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
+//
+//  // Setup and Init Encoders
+//  ESP32Encoder::useInternalWeakPullResistors=false;
+//  //-- adjust starting count value to 0
+//  parts.encoder2.clearCount();
+//  parts.encoder2.setCount(0);
+//  //-- attach pins for use as encoder pins
+//  parts.encoder2.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
+//
+//  // Setup and Init Encoders
+//  ESP32Encoder::useInternalWeakPullResistors=false;
+//  //-- adjust starting count value to 0
+//  parts.encoder3.clearCount();
+//  parts.encoder3.setCount(0);
+//  //-- attach pins for use as encoder pins
+//  parts.encoder3.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
+//  
+//  // Setup 7 segment LED
+//  parts.matrix.begin(ADDR_SEVENSEGMENT);
+//  
+//  // Setup power switch
+//  pinMode(PIN_SWITCH_1, INPUT);
+//  pinMode(PIN_SWITCH_2, INPUT);
+//  pinMode(PIN_SWITCH_3, INPUT);
+//
+//  setupLaserGrid();
 
   puzzle.timer = millis();
 }
@@ -96,19 +96,19 @@ void loop()
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
-  // Enable Laser Grid
-  LaserGrid::run(lgComponents);
-
-  puzzle.timer = millis();
-  if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
-    puzzle.checkpoint = millis();
-    LaserGrid::show(lgComponents);
-  }
+//  // Enable Laser Grid
+//  LaserGrid::run(lgComponents);
+//
+//  puzzle.timer = millis();
+//  if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
+//    puzzle.checkpoint = millis();
+//    LaserGrid::show(lgComponents);
+//  }
 }
 
-void setupLaserGrid()
-{
-  lgComponents.waveAdjuster.set(parts.encoder1, parts.encoder2, parts.encoder3, parts.matrix);
-  lgComponents.keyReader.set();
-  lgComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
-}
+//void setupLaserGrid()
+//{
+//  lgComponents.waveAdjuster.set(parts.encoder1, parts.encoder2, parts.encoder3, parts.matrix);
+//  lgComponents.keyReader.set();
+//  lgComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
+//}

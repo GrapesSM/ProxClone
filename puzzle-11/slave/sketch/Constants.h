@@ -1,15 +1,15 @@
-#define PIN_RX_1 2
-#define PIN_TX_1 4
-#define PIN_RX_2 5
-#define PIN_TX_2 10
-#define PIN_ENCODER_A 33
-#define PIN_ENCODER_B 14
+#define PIN_RX_1 9
+#define PIN_TX_1 5
+#define PIN_RX_2 10
+#define PIN_TX_2 13
+#define PIN_ENCODER_A 14
+#define PIN_ENCODER_B 38
 #define PIN_485_EN 15
-#define PIN_INPUT_1 13
-#define PIN_INPUT_2 9
+#define PIN_INPUT_1 4
+#define PIN_INPUT_2 33
 #define PIN_INPUT_3 18
 #define PIN_NEOPIXEL 26
-#define PIN_SPEAKER 12
+#define PIN_SPEAKER 25
 #define PIN_RELAY_1 23
 #define PIN_RELAY_2 19
 #define PIN_SWITCH_1 27
@@ -25,7 +25,7 @@
 #define ADDR_SEVENSEGMENT 0x71
 #define ADDR_SLAVE 11
 
-#define SERIAL_BAUDRATE 9600
+#define SERIAL_BAUDRATE 38400
 #define LED_COUNT 18
 #define COLOR_SATURATION 128
 
