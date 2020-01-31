@@ -56,7 +56,6 @@ namespace LaserGrid {
   void show(Components & c)
   {
     c.powerSwitch.display();
-    c.waveAdjuster.display();
   }
 }
 
