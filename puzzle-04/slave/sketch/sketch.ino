@@ -103,6 +103,14 @@ void loop()
     puzzle.checkpoint = millis();
     Datamatic::show(dmComponents);
   }
+
+  if(dmComponents.powerSwitch.isSwitchOn()){
+    puzzle.registers[0] = 1;
+    puzzle.registers[9] = 1;
+  }else{
+    puzzle.registers[0] = 1;
+    puzzle.registers[9] = 2;
+  }
 }
 
 void setupDatamatic()

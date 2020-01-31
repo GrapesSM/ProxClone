@@ -95,7 +95,6 @@ void loop()
 {
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-
   // Enable Energy Supplemental
   EnergySupplemental::run(esComponents);
   ShipPrepAux::run(spComponents);
@@ -105,6 +104,9 @@ void loop()
     puzzle.checkpoint = millis();
     EnergySupplemental::show(esComponents);
     ShipPrepAux::show(spComponents);
+  }
+  if(spComponents.batteryMatrix.isSolved()){
+    puzzle.registers[9] = 1;
   }
 }
 
@@ -117,6 +119,7 @@ void setupEnergySupplemental()
 
 void setupShipPrepAux()
 {
+  
   spComponents.batteryMatrix.set(parts.strip, lightPinsForBatteryMatrix, &parts.mcp2, switchPinsForBatteryMatrix, labelsForBatteryMatrix);
   spComponents.generator.set(parts.strip, lightPinsForGenerator, &parts.mcp1, switchPinsForGenerator, labelsForGenerator);
   spComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitchOfShipPrep, PIN_SWITCH_2);

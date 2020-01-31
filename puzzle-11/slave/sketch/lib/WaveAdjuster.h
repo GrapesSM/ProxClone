@@ -55,7 +55,7 @@ void WaveAdjuster::set(int inputPin1, int inputPin2, int inputPin3, HardwareSeri
 
 int WaveAdjuster::getValue(int number)
 {
-  int phase = map(_inputValues[number-1], 0, 4096, _offsetValues[number - 1], _offsetValues[number - 1] + 359);
+  int phase = map(_inputValues[number - 1], 0, 4096, _offsetValues[number - 1], _offsetValues[number - 1] + 359);
   return phase;
 }
 
@@ -78,6 +78,8 @@ void WaveAdjuster::update()
 bool WaveAdjuster::isSyncronized()
 {
   Serial.print(abs(getValue(1) - getValue(2)));
+  Serial.print(",");
+  Serial.print(abs(getValue(1) - getValue(3)));
   Serial.print(",");
   Serial.print(abs(getValue(2) - getValue(3)));
   Serial.println();

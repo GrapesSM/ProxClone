@@ -7,8 +7,8 @@ class BaseController:
     
     @property
     def registers(self):
-        return tuple(self._puzzle['registers'])
-
+        return self._puzzle['registers']
+    
     def sayHello(self):
         for i in range(len(self._puzzle['registers'])):
-            self._puzzle['registers'][i] = 1
+            self._puzzle['registers'][i] = 0
