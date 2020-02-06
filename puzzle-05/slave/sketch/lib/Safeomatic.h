@@ -31,8 +31,9 @@ namespace Safeomatic {
 
     if (c.state == OFF) {
       c.powerSwitch.setLightOff();
-      //c.door.close();
-      //c.combinationReader.disable();
+      c.door.reset();
+      c.accessPanel.reset();
+      c.combinationReader.disable();
     }
 
     if (c.state == ON) {
@@ -42,14 +43,10 @@ namespace Safeomatic {
         if(c.accessPanel.isClosed()) {
           Serial.println("opening access panel");
           c.accessPanel.open();
-          // if (c.combinationReader.isDisabled) {
           c.combinationReader.enable();
-          c.combinationReader.setLightsRed();
-          // }
-        
         } 
       } else {
-          c.accessPanel.close();
+          c.accessPanel.reset();
           c.combinationReader.disable();
       }
 
@@ -64,7 +61,7 @@ namespace Safeomatic {
           c.door.open();
         }
       } else {
-        c.door.close();
+        c.door.reset();
       }
     }
 

@@ -15,7 +15,7 @@ class AccessPanel
     bool keyInserted();
     bool isClosed();
     void open();
-    void close();
+    void reset();
     void display();
     // void enable();
     // void disable();
@@ -60,7 +60,7 @@ void AccessPanel::open()
   _closed = false;
 }
 
-void AccessPanel::close()
+void AccessPanel::reset()
 {
   // TO-DO:
   _closed = true;

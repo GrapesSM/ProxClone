@@ -14,7 +14,7 @@ class Door
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPin, int pin);
     bool isClosed();
     void open();
-    void close();
+    void reset();
     void display();
     STATE _state;
   private:
@@ -50,7 +50,7 @@ void Door::open()
   _strip->SetPixelColor(_lightPin, RgbColor(127, 127, 127));
 }
 
-void Door::close()
+void Door::reset()
 {
   _strip->SetPixelColor(_lightPin, RgbColor(0, 0, 0));
   _closed = true;
