@@ -23,38 +23,33 @@ namespace Datamatic {
 
   void run(Components &c)
   {
-    if (c.powerSwitch.isSwitchOff()) {
+    c.powerSwitch.update();
+    if (c.powerSwitch.getState() == OFF) {
       c.state = OFF;
-      c.informationDisplay.activate(false);
+      c.powerSwitch.setLightOff();
+      c.codeReader.disable();
       c.informationDisplay.disable();
-    } else {
+    } 
+    if (c.powerSwitch.getState() == ON)
+    {
       c.state = ON;
-      c.informationDisplay.activate();
+      c.powerSwitch.setLightOn();
+      c.codeReader.enable();
       c.informationDisplay.enable();
     }
 
-    if (c.state == OFF) {
-      c.powerSwitch.setLightOff();
-    } 
-    
-    if (c.state == ON) {
-      c.powerSwitch.setLightOn();
-    } 
+    c.codeReader.update();
+    c.informationDisplay.update();
+    c.lightEffect.update();
 
     if (c.state == ON) {
-      c.informationDisplay.update();
-    } 
-    
-    if (c.state == ON) {
-      if (! c.codeReader.isSolved()) {
-        c.codeReader.update();
-        if (c.codeReader.getTransmittedKey() == keyForCodeReader) {
-          c.codeReader.setSolved();
-        }
+      if (c.codeReader.getTransmittedKey() == keyForCodeReader1){
+        c.informationDisplay.setCurrentSeries(1);
+      }
+      if (c.codeReader.getTransmittedKey() == keyForCodeReader2) {
+        c.informationDisplay.setCurrentSeries(2);
       } 
     }
-    
-    c.lightEffect.update();
   }
 
   void show(Components &c)

@@ -21,6 +21,7 @@ class Generator
     int getInputKey();
     bool isSolved();
     void setSolved(bool solved);
+    STATE getState();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
@@ -33,6 +34,7 @@ class Generator
     int _count;
     bool _reset;
     int *_labels;
+    STATE _state;
 };
 
 Generator::Generator(){}
@@ -51,6 +53,8 @@ void Generator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lig
 
 void Generator::update()
 {
+  if (_disabled) return;
+  _state = READING;
   readSwitches();
   getInputKey();
   
@@ -93,6 +97,7 @@ bool Generator::isSolved()
 
 void Generator::setSolved(bool solved = true) 
 {
+  _state = SOLVED;
   _solved = solved;
   for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
     _strip->SetPixelColor(_lightPins[i], RgbColor(0, 127, 0));
@@ -134,6 +139,7 @@ int Generator::getInputKey() {
 
 void Generator::disable() 
 {
+  _state = OFF;
   _disabled = true;
   for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
     _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
@@ -142,12 +148,18 @@ void Generator::disable()
 
 void Generator::enable() 
 {
+  _state = ON;
   _disabled = false;
 }
 
 bool Generator::isDisabled()
 {
   return _disabled;
+}
+
+STATE Generator::getState()
+{
+  return _state;
 }
 
 

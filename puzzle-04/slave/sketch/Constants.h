@@ -38,7 +38,9 @@ enum STATE {
     SYNCRONIZED = 8,
     ON = 9,
     OFF = 10,
-    INITIALIZED = 11
+    INITIALIZED = 11,
+    NOT_INITIALIZED = 12,
+    READING = 15
 };
 
 // Number of Lights and Pin Numbers
@@ -52,7 +54,9 @@ extern int buttonPins2[] = {7, 6, 5, 4, 3};
 
 extern char buttonLabels[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
-extern String keyForCodeReader = "65698";
+extern String keyForCodeReader1 = "65432";
+extern String keyForCodeReader2 = "23456";
+
 
 #define NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT 18
 extern int lightPinsForLightEffect[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};

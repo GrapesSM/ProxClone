@@ -12,3 +12,5 @@ class BaseController:
     def sayHello(self):
         for i in range(len(self._puzzle['registers'])):
             self._puzzle['registers'][i] = 0
+
+    

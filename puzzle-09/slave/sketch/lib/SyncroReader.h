@@ -21,6 +21,7 @@ class SyncroReader
     void setSynchronized(bool solved);
     int getInputKey();
     bool isSwitchOn();
+    STATE getState();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
     int *_lightPins;
@@ -31,6 +32,7 @@ class SyncroReader
     int _inputKey;
     const unsigned long _waitTimeMillis = 4000; // ms
     unsigned long lastRefreshTime;
+    STATE _state;
 };
 
 SyncroReader::SyncroReader() {}
@@ -58,6 +60,7 @@ void SyncroReader::setSynchronized(bool synchronized = true){
   for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
     _strip->SetPixelColor(_lightPins[i], RgbColor(0, 127, 0));
   }
+  _state = SOLVED;
 }
 
 int SyncroReader::getInputKey() {
@@ -70,10 +73,12 @@ void SyncroReader::disable()
   for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
     _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
   }
+  _state = OFF;
 }
 
 void SyncroReader::enable()
 {
+  _state = ON;
   _disabled = false;
 }
 
@@ -84,6 +89,8 @@ bool SyncroReader::isDisabled()
 
 void SyncroReader::update()
 {
+  if (_disabled) return;
+  _state = READING;
   _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
   _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
   _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
@@ -116,6 +123,11 @@ void SyncroReader::update()
 void SyncroReader::display()
 {
   _strip->Show();
+}
+
+STATE SyncroReader::getState()
+{
+  return _state;
 }
 
 #endif
