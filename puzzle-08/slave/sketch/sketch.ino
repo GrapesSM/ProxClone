@@ -4,6 +4,9 @@
 #include <Adafruit_GFX.h>
 #include "Adafruit_LEDBackpack.h"
 #include "lib/LifeSupport.h"
+#include "sounds/soundPowerUp.h"
+//#include "sounds/soundPowerDown.h"
+//#include "sounds/soundKeyInsert.h"
 
 struct Puzzle {
   uint8_t address = ADDR_SLAVE;
@@ -24,6 +27,8 @@ struct Parts {
   Modbus * slave;
   NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip;
   Adafruit_7segment matrix = Adafruit_7segment(); 
+  unsigned char* listOfSounds[NUMBER_OF_SOUNDS];
+  unsigned int listOfLengthOfSounds[NUMBER_OF_SOUNDS];
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
@@ -56,7 +61,22 @@ void setup()
   pinMode(PIN_SWITCH_1, INPUT);
   pinMode(PIN_SWITCH_2, INPUT);
   pinMode(PIN_SWITCH_3, INPUT);
-  
+
+  // Setup speaker pins
+  pinMode(PIN_SPEAKER, OUTPUT);
+  ledcSetup(PWM_CHANNEL, PWM_FREQUENCY, PWM_RESOLUTION);
+  ledcAttachPin(PIN_SPEAKER, PWM_CHANNEL);
+  pinMode(PIN_AMPLIFIER, OUTPUT);
+  digitalWrite(PIN_AMPLIFIER, HIGH);
+
+  // Setup sound list
+  parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
+  parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
+  // parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
+  // parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+  // parts.listOfSounds[SOUND_KEY_INSERT] = soundKeyInsert;
+  // parts.listOfLengthOfSounds[SOUND_KEY_INSERT] = sizeof(soundKeyInsert)/sizeof(soundKeyInsert[0]);
+
   setupLifeSupport();
 
   puzzle.timer = millis();
@@ -83,6 +103,6 @@ void setupLifeSupport()
   lsComponents.airSupplyPump.set();
   lsComponents.airPressureStatus.set();
   lsComponents.powerSwitch.set();
-  lsComponents.speaker.set();
+  lsComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
   lsComponents.lightEffect.set();
 }
