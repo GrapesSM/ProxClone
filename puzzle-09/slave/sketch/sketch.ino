@@ -7,6 +7,9 @@
 #include <ESP32Encoder.h>
 #include "lib/EnergySupplemental.h"
 #include "lib/ShipPrepAux.h"
+#include "sounds/soundPowerUp.h"
+// #include "sounds/soundPowerDown.h"
+// #include "sounds/soundKeyInsert.h"
 
 struct Puzzle {
   uint8_t address = ADDR_SLAVE;
@@ -30,6 +33,8 @@ struct Parts {
   Adafruit_MCP23017 mcp2;
   ESP32Encoder encoder;
   Adafruit_7segment matrix = Adafruit_7segment();
+  unsigned char* listOfSounds[NUMBER_OF_SOUNDS];
+  unsigned int listOfLengthOfSounds[NUMBER_OF_SOUNDS];
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
@@ -85,6 +90,21 @@ void setup()
     parts.mcp2.pinMode(i, INPUT);
   }
 
+  // Setup speaker pins
+  pinMode(PIN_SPEAKER, OUTPUT);
+  ledcSetup(PWM_CHANNEL, PWM_FREQUENCY, PWM_RESOLUTION);
+  ledcAttachPin(PIN_SPEAKER, PWM_CHANNEL);
+  pinMode(PIN_AMPLIFIER, OUTPUT);
+  digitalWrite(PIN_AMPLIFIER, HIGH);
+
+  // Setup sound list
+  parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
+  parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
+  // parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
+  // parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+  // parts.listOfSounds[SOUND_KEY_INSERT] = soundKeyInsert;
+  // parts.listOfLengthOfSounds[SOUND_KEY_INSERT] = sizeof(soundKeyInsert)/sizeof(soundKeyInsert[0]);
+
   setupEnergySupplemental();
   setupShipPrepAux();
 
@@ -113,12 +133,13 @@ void setupEnergySupplemental()
   esComponents.powerAdjuster.set(&parts.encoder, &parts.matrix);
   esComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader, PIN_INPUT_1);
   esComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitchOfEnergySupplemental, PIN_SWITCH_1);
+  esComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
 }
 
 void setupShipPrepAux()
 {
-  
   spComponents.batteryMatrix.set(parts.strip, lightPinsForBatteryMatrix, &parts.mcp2, switchPinsForBatteryMatrix, labelsForBatteryMatrix);
   spComponents.generator.set(parts.strip, lightPinsForGenerator, &parts.mcp1, switchPinsForGenerator, labelsForGenerator);
   spComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitchOfShipPrep, PIN_SWITCH_2);
+  spComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
 }
