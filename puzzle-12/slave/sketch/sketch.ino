@@ -2,6 +2,8 @@
 #include "lib/ModbusRtu.h"
 #include "lib/BlastDoorKeyPad.h"
 #include <ESP32Encoder.h>
+#include "sounds/soundPowerUp.h"
+//#include "sounds/soundPowerDown.h"
 
 
 struct Puzzle {
@@ -23,6 +25,8 @@ struct Parts {
   Modbus * slave;
   KEYPAD keypad;
   ESP32Encoder encoder;
+  unsigned char* listOfSounds[NUMBER_OF_SOUNDS];
+  unsigned int listOfLengthOfSounds[NUMBER_OF_SOUNDS];
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
@@ -58,6 +62,19 @@ void setup()
     Serial.println("Keypad does not appear to be connected. Please check wiring. Freezing...");
     while (1);
   }
+
+  // Setup speaker pins
+  pinMode(PIN_SPEAKER, OUTPUT);
+  ledcSetup(PWM_CHANNEL, PWM_FREQUENCY, PWM_RESOLUTION);
+  ledcAttachPin(PIN_SPEAKER, PWM_CHANNEL);
+  pinMode(PIN_AMPLIFIER, OUTPUT);
+  digitalWrite(PIN_AMPLIFIER, HIGH);
+
+  parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
+  parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
+//  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
+//  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+
   
   setupBlastDoorKeypad();
   puzzle.timer = millis();
@@ -79,6 +96,6 @@ void loop()
 
 void setupBlastDoorKeypad()
 {
-    bdComponents.codeReader.set(&parts.keypad, PIN_INPUT_1);
-   // dmComponents.speaker.set();
+  bdComponents.codeReader.set(&parts.keypad, PIN_INPUT_1);
+  bdComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
 }
