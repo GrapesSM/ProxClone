@@ -30,7 +30,7 @@
 
 #define PWM_FREQUENCY 1500
 #define PWM_CHANNEL 0
-#define PWM_RESOLUTION 12
+#define PWM_RESOLUTION 8
 #define PWM_DUTYCYCLE 200
 
 enum STATE {

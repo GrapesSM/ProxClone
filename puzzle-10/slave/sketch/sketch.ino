@@ -2,6 +2,9 @@
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
 #include "lib/PrepStatus.h"
+#include "sounds/soundPowerUp.h"
+//#include "sounds/soundPowerDown.h"
+//#include "sounds/soundKeyInsert.h"
 
 struct Puzzle {
   uint8_t address = ADDR_SLAVE;
@@ -21,6 +24,8 @@ struct Puzzle {
 struct Parts {
   Modbus * slave;
   NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip;
+  unsigned char* listOfSounds[NUMBER_OF_SOUNDS];
+  unsigned int listOfLengthOfSounds[NUMBER_OF_SOUNDS];
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
@@ -50,6 +55,21 @@ void setup()
   pinMode(PIN_INPUT_1, INPUT);
   // Setup Power Switch
   pinMode(PIN_SWITCH_1, INPUT);
+
+  // Setup speaker pins
+  pinMode(PIN_SPEAKER, OUTPUT);
+  ledcSetup(PWM_CHANNEL, PWM_FREQUENCY, PWM_RESOLUTION);
+  ledcAttachPin(PIN_SPEAKER, PWM_CHANNEL);
+  pinMode(PIN_AMPLIFIER, OUTPUT);
+  digitalWrite(PIN_AMPLIFIER, HIGH);
+
+  // Setup sound list
+  parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
+  parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
+  // parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
+  // parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+  // parts.listOfSounds[SOUND_KEY_INSERT] = soundKeyInsert;
+  // parts.listOfLengthOfSounds[SOUND_KEY_INSERT] = sizeof(soundKeyInsert)/sizeof(soundKeyInsert[0]);
   
   setupPrepStatus();
 
@@ -89,6 +109,15 @@ void loop()
     puzzle.checkpoint = millis();
     PrepStatus::show(psComponents);
   }
+
+  /////////////////////////////
+  // puzzle.registers[1] = psComponents.state;
+  // puzzle.registers[5] = psComponents.powerSwitch.getState();
+  // puzzle.registers[6] = psComponents.batteryMatrix.getState();
+  // puzzle.registers[7] = psComponents.energySupp.getState();
+  // puzzle.registers[8] = psComponents.generator.getState();
+  // puzzle.registers[9] = psComponents.syncroReader.getState();
+  // puzzle.registers[10] = psComponents.speaker.getState();
 }
 
 void setupPrepStatus()
@@ -99,4 +128,5 @@ void setupPrepStatus()
   psComponents.generator.set(parts.strip, lightPinsForGenerator);
   psComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader, PIN_INPUT_1);  
   psComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
+  psComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
 }

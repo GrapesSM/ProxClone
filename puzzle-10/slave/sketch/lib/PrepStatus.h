@@ -23,6 +23,7 @@ namespace PrepStatus {
     PowerSwitch powerSwitch;
     Speaker speaker;
     STATE state;
+    boolean flag;
   } Components;
 
   void run(Components & c) 
@@ -98,7 +99,8 @@ namespace PrepStatus {
     // c.energySupp.display();
     // c.generator.display();
     // c.syncroReader.display();
-    c.lightEffect.display();
+    // c.lightEffect.display();
+    c.speaker.play();
   }
 }
 
