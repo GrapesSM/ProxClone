@@ -73,7 +73,7 @@ void setup()
   pinMode(PIN_RELAY_1, OUTPUT);
 
   // Setup speaker pins
-//  pinMode(PIN_SPEAKER, OUTPUT);
+  pinMode(PIN_SPEAKER, OUTPUT);
   ledcSetup(PWM_CHANNEL, PWM_FREQUENCY, PWM_RESOLUTION);
   ledcAttachPin(PIN_SPEAKER, PWM_CHANNEL);
   pinMode(PIN_AMPLIFIER, OUTPUT);
