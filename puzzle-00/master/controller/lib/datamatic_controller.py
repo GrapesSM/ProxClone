@@ -9,13 +9,13 @@ class DatamaticController(BaseController):
     def sayHello(self):
         print()
         print()
-
-        if self._puzzle['registers'][9] == 1 :
-            print("enabled")
-        elif self._puzzle['registers'][9] == 2:
-            print("disabled")
-        else:
-            print("unknown")
+        
+        #if self._puzzle['registers'][9] == 1 :
+        #    print("enabled")
+        #elif self._puzzle['registers'][9] == 2:
+        #    print("disabled")
+        #else:
+        #    print("unknown")
     
 
 

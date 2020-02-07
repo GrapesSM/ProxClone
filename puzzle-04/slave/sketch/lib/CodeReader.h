@@ -37,6 +37,7 @@ class CodeReader
     MODE readMode();
     bool isSolved();
     void setSolved(bool);
+    STATE getState();
   private:
     SevenSegment *_matrix;
     Adafruit_MCP23017 *_mcp1;
@@ -53,6 +54,7 @@ class CodeReader
     String _key;
     bool _transmitted;
     String _transmittedKey;
+    STATE _state;
 };
 
 CodeReader::CodeReader() {
@@ -90,6 +92,7 @@ bool CodeReader::isSolved() {
 }
 
 void CodeReader::setSolved(bool solved = true) {
+    _state = SOLVED;
   _solved = solved;
 }
 
@@ -100,12 +103,14 @@ String CodeReader::getTransmittedKey() {
 
 void CodeReader::disable()
 {
+  _state = OFF;
   _disabled = true;
   // TO-DO:
 }
 
 void CodeReader::enable()
 {
+  _state = ON;
   _disabled = false;
   // TO-DO:
 }
@@ -168,6 +173,8 @@ MODE CodeReader::readMode()
 
 void CodeReader::update()
 {
+  if (_disabled) return;
+  _state = READING;
   char input = readInput();
   MODE mode = readMode();
   switch(mode) {
@@ -212,6 +219,9 @@ void CodeReader::display()
   if (_key.length() > 0) _matrix->printString(_key);
   _matrix->writeDisplay();
 }
-
+STATE CodeReader::getState()
+{
+  return _state;
+}
 
 #endif

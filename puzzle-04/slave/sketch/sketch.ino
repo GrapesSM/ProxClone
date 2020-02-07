@@ -104,13 +104,9 @@ void loop()
     Datamatic::show(dmComponents);
   }
 
-  if(dmComponents.powerSwitch.isSwitchOn()){
-    puzzle.registers[0] = 1;
-    puzzle.registers[9] = 1;
-  }else{
-    puzzle.registers[0] = 1;
-    puzzle.registers[9] = 2;
-  }
+  puzzle.registers[5] = dmComponents.state;
+  puzzle.registers[6] = dmComponents.powerSwitch.getState();
+  puzzle.registers[7] = dmComponents.codeReader.getState();
 }
 
 void setupDatamatic()

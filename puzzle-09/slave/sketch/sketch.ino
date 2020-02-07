@@ -105,9 +105,7 @@ void loop()
     EnergySupplemental::show(esComponents);
     ShipPrepAux::show(spComponents);
   }
-  if(spComponents.batteryMatrix.isSolved()){
-    puzzle.registers[9] = 1;
-  }
+  puzzle.registers[5] = spComponents.powerSwitch.getState();
 }
 
 void setupEnergySupplemental()

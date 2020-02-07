@@ -23,17 +23,24 @@ namespace Datamatic {
 
   void run(Components &c)
   {
-    if (c.powerSwitch.isSwitchOff()) {
+    c.powerSwitch.update();
+    if (c.powerSwitch.getState() == OFF) {
       c.state = OFF;
-      c.informationDisplay.activate(false);
-      c.informationDisplay.disable();
-    } else {
+      c.powerSwitch.setLightOff();
+      c.codeReader.disable();
+      //c.informationDisplay.activate(false);
+      //c.informationDisplay.disable();
+    } 
+    if (c.powerSwitch.getState() == ON)
+    {
       c.state = ON;
-      c.informationDisplay.activate();
-      c.informationDisplay.enable();
+      c.powerSwitch.setLightOn();
+      c.codeReader.enable();
     }
 
-    if (c.state == OFF) {
+    c.codeReader.update();
+
+    if (c.codeReader.getState() == SOLVED) {
       c.powerSwitch.setLightOff();
     } 
     

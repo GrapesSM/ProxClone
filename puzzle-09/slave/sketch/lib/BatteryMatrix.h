@@ -21,6 +21,7 @@ class BatteryMatrix
     int getInputKey();
     bool isSolved();
     void setSolved(bool solved);
+    STATE getState();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
@@ -33,6 +34,7 @@ class BatteryMatrix
     int _count;
     bool _reset;
     int *_labels;
+    STATE = _state;
 };
 
 BatteryMatrix::BatteryMatrix() {}
@@ -56,6 +58,7 @@ bool BatteryMatrix::isSolved()
 
 void BatteryMatrix::setSolved(bool solved = true) 
 {
+  _state = SOLVED;
   _solved = solved;
   for (int i = 0; i < NUMBER_OF_SWITCHES_1; i++) {
     _strip->SetPixelColor(_lightPins[i], RgbColor(0, 127, 0));
@@ -133,6 +136,7 @@ void BatteryMatrix::update()
 
 void BatteryMatrix::disable() 
 {
+  _state = OFF;
   _disabled = true;
   for (int i = 0; i < NUMBER_OF_SWITCHES_1; i++) {
     _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
@@ -141,12 +145,17 @@ void BatteryMatrix::disable()
 
 void BatteryMatrix::enable() 
 {
+
   _disabled = false;
 }
 
 bool BatteryMatrix::isDisabled()
 {
   return _disabled;
+}
+STATE BatteryMatrix::getState()
+{
+  return _state;
 }
 
 #endif
