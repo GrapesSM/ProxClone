@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 #include "helpers.h"
-#define EPS 10
+#define TOLERANCE 10
 
 class WaveAdjuster
 {
@@ -20,6 +20,7 @@ class WaveAdjuster
     bool isSyncronized();
     bool isDisabled();
     int getPhase(int number);
+    int getInputValue(int number);
     STATE getState();
   private:
     int _inputPin1;
@@ -76,7 +77,7 @@ void WaveAdjuster::update()
 
 bool WaveAdjuster::isSyncronized()
 {
-  return (abs(abs(getPhase(1) - getPhase(2)) - abs(getPhase(1) - getPhase(3))) < EPS);
+  return (abs(abs(getPhase(1) - getPhase(2)) - abs(getPhase(1) - getPhase(3))) < TOLERANCE);
 }
 
 void WaveAdjuster::disable() 
@@ -146,6 +147,11 @@ void WaveAdjuster::display()
   if (k >= 359) {
     k = 0;
   }  
+}
+
+int WaveAdjuster::getInputValue(int number)
+{
+  return _inputValues[number];
 }
 
 STATE WaveAdjuster::getState()
