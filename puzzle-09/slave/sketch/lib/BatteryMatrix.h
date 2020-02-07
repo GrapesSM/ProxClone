@@ -34,7 +34,7 @@ class BatteryMatrix
     int _count;
     bool _reset;
     int *_labels;
-    STATE = _state;
+    STATE _state;
 };
 
 BatteryMatrix::BatteryMatrix() {}
@@ -78,7 +78,6 @@ bool BatteryMatrix::isAllSwitchesOff()
 
 void BatteryMatrix::readSwitches()
 {
-  _input[0] = LOW;
   for (int i = 0; i < NUMBER_OF_SWITCHES_1; i++) {
     _input[i] = _mcp->digitalRead(_switchPins[i]);
   }
@@ -100,6 +99,8 @@ int BatteryMatrix::getInputKey() {
 
 void BatteryMatrix::update()
 {
+  if (_disabled) return;
+  _state = READING;
   readSwitches();
   getInputKey();
   if (! _reset) {
@@ -145,7 +146,7 @@ void BatteryMatrix::disable()
 
 void BatteryMatrix::enable() 
 {
-
+  _state = ON;
   _disabled = false;
 }
 

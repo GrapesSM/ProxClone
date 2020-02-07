@@ -92,7 +92,7 @@ bool CodeReader::isSolved() {
 }
 
 void CodeReader::setSolved(bool solved = true) {
-    _state = SOLVED;
+  _state = SOLVED;
   _solved = solved;
 }
 

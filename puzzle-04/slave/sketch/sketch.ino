@@ -107,6 +107,7 @@ void loop()
   puzzle.registers[5] = dmComponents.state;
   puzzle.registers[6] = dmComponents.powerSwitch.getState();
   puzzle.registers[7] = dmComponents.codeReader.getState();
+  puzzle.registers[8] = dmComponents.informationDisplay.getState();
 }
 
 void setupDatamatic()

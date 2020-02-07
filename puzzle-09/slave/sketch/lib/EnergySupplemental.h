@@ -21,44 +21,47 @@ namespace EnergySupplemental {
 
   void run(Components &c) 
   {
-    if (c.powerSwitch.isSwitchOff()) {
+    c.powerSwitch.update();
+    if (c.powerSwitch.getState() == OFF) {
       c.state = OFF;
       c.powerSwitch.setLightOff();
       c.powerAdjuster.setDefaultValues();
       c.powerAdjuster.disable();
       c.syncroReader.disable();
       return;
-    } else {
+    } 
+
+    if(c.powerSwitch.getState() == ON){
       c.state = ON;
       c.powerSwitch.setLightOn();
       c.powerAdjuster.enable();
       c.syncroReader.enable();
-    }
+    }  
 
-    if (! c.powerAdjuster.isDisabled()) {
-      if(! c.powerAdjuster.isSolved()){
-        c.powerAdjuster.update();
+    c.powerAdjuster.update();
+    c.syncroReader.update();
+
+    if(c.powerSwitch.getState() == ON){
+      if(c.powerAdjuster.isSolved()){
+        c.powerAdjuster.setSolved();
+        delay(10);
+        c.powerAdjuster.display();
+      }else{
         delay(10);
         c.powerAdjuster.display();
         if(c.powerAdjuster.getInputKey() == keyForPowerAdjuster){
-        c.powerAdjuster.setSolved();
+          c.powerAdjuster.setSolved();
         }
-      }else{
-        c.powerAdjuster.setSolved();
-        delay(10);
-        c.powerAdjuster.display();
-      }  
+      }
     }
 
-    if (! c.syncroReader.isDisabled()) {
-      if(! c.syncroReader.isSynchronized()){
-        c.syncroReader.update();
+    if(c.powerSwitch.getState() == ON){
+      if(c.syncroReader.isSynchronized()){
+        c.syncroReader.setSynchronized();
+      }else{
         if(c.syncroReader.getInputKey() == 1){
           c.syncroReader.setSynchronized();
         }
-      }
-      else{
-        c.syncroReader.setSynchronized();
       }
     }
   }

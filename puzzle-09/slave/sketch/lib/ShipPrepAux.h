@@ -21,32 +21,33 @@ namespace ShipPrepAux {
 
   void run(Components &c) 
   {
-    if (c.powerSwitch.isSwitchOff()) {
+    c.powerSwitch.update();
+    if (c.powerSwitch.getState() == OFF) {
       c.state = OFF;
       c.powerSwitch.setLightOff();
       c.batteryMatrix.disable();
       c.generator.disable();
-    } else {
+    } 
+
+    if (c.powerSwitch.getState() == ON)
+    {
       c.state = ON;
       c.powerSwitch.setLightOn();
       c.batteryMatrix.enable();
       c.generator.enable();
     }
 
-    if (! c.batteryMatrix.isDisabled()) {
-      c.batteryMatrix.update();
+    c.batteryMatrix.update();
+    c.generator.update();
+
+    if(c.state == ON){
       if(c.batteryMatrix.getInputKey() == keyForBatteryMatrix){
         c.batteryMatrix.setSolved();
       }
-    }
-
-    if (! c.generator.isDisabled()) {    
-      c.generator.update();
       if(c.generator.getInputKey() == keyForGenerator){
         c.generator.setSolved();
       }
     }
-
   }
 
   void show(Components &c)
