@@ -1,9 +1,6 @@
 #include "Constants.h"
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
-#include <Adafruit_MCP23017.h>
-#include <Adafruit_GFX.h>
-#include "Adafruit_LEDBackpack.h"
 #include <ESP32Encoder.h>
 #include "lib/Safeomatic.h"
 
@@ -60,9 +57,11 @@ void setup()
   parts.encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
    
   // Setup power switch
-  pinMode(PIN_SWITCH_1, INPUT);
-  pinMode(PIN_SWITCH_2, INPUT);
-  pinMode(PIN_SWITCH_3, INPUT);
+  pinMode(PIN_INPUT_1, INPUT);
+  pinMode(PIN_RELAY_1, OUTPUT);
+  digitalWrite(PIN_RELAY_1, LOW);
+  pinMode(PIN_RELAY_2, OUTPUT);
+  digitalWrite(PIN_RELAY_2, LOW);
 
   setupSafeomatic();
 
@@ -86,7 +85,9 @@ void loop()
 
 void setupSafeomatic()
 {
-  smComponents.combinationReader.set();
-  smComponents.powerSwitch.set();
-  smComponents.speaker.set();
+  smComponents.combinationReader.set(parts.strip, &parts.encoder);
+  smComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
+  //smComponents.speaker.set(&parts.speaker);
+  smComponents.accessPanel.set(PIN_INPUT_1, PIN_RELAY_1);
+  smComponents.door.set(parts.strip, safeLightPin, PIN_RELAY_2);
 }
