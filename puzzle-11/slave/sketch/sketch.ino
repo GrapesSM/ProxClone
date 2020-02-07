@@ -1,8 +1,10 @@
 #include "Constants.h"
-#include "SoundData.h"
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
 #include "lib/LaserGrid.h"
+#include "sounds/soundPowerUp.h"
+//#include "sounds/soundPowerDown.h"
+//#include "sounds/soundKeyInsert.h"
 
 struct Puzzle {
   uint8_t address = ADDR_SLAVE;
@@ -22,6 +24,8 @@ struct Puzzle {
 struct Parts {
   Modbus * slave;
   NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip;
+  unsigned char* listOfSounds[NUMBER_OF_SOUNDS];
+  unsigned int listOfLengthOfSounds[NUMBER_OF_SOUNDS];
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
@@ -68,6 +72,20 @@ void setup()
   // Setup solenoid
   pinMode(PIN_RELAY_1, OUTPUT);
 
+  // Setup speaker pins
+  pinMode(PIN_SPEAKER, OUTPUT);
+  ledcSetup(PWM_CHANNEL, PWM_FREQUENCY, PWM_RESOLUTION);
+  ledcAttachPin(PIN_SPEAKER, PWM_CHANNEL);
+  pinMode(PIN_AMPLIFIER, OUTPUT);
+  digitalWrite(PIN_AMPLIFIER, HIGH);
+
+  parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
+  parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
+//  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
+//  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+//  parts.listOfSounds[SOUND_KEY_INSERT] = soundKeyInsert;
+//  parts.listOfLengthOfSounds[SOUND_KEY_INSERT] = sizeof(soundKeyInsert)/sizeof(soundKeyInsert[0]);
+
   setupLaserGrid();
 
   puzzle.timer = millis();
@@ -99,5 +117,5 @@ void setupLaserGrid()
   lgComponents.waveAdjuster.set(PIN_ANALOG_INPUT_1, PIN_ANALOG_INPUT_2, PIN_ANALOG_INPUT_3, &Serial2);
   lgComponents.keyReader.set(PIN_INPUT_1, PIN_INPUT_2, PIN_INPUT_3, PIN_RELAY_1);
   lgComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
-//  lgComponents.speaker.set(parts.dacAudio, PIN_AMPLIFIER);
+  lgComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
 }

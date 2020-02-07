@@ -29,7 +29,7 @@
 #define COLOR_SATURATION 128
 
 #define PWM_FREQUENCY 1500
-#define PWM_LEDCHANNEL 0
+#define PWM_CHANNEL 0
 #define PWM_RESOLUTION 12
 #define PWM_DUTYCYCLE 200
 
@@ -46,8 +46,17 @@ enum STATE {
     OFF = 10,
     INITIALIZED = 11,
     NOT_INITIALIZED = 12,
-    READING = 15
+    READING = 15,
+    PLAYING = 16
 };
 
 // Number of Lights and Pin Numbers
 extern int lightPinForPowerSwitch = 0;
+
+#define NUMBER_OF_SOUNDS 1
+enum {  // enumeration from 0, 1, 2 ...
+  SOUND_POWER_UP,
+  SOUND_POWER_DOWN,
+  SOUND_KEY_INSERT,
+  SOUND_SINE_WAVE_DIAL
+};

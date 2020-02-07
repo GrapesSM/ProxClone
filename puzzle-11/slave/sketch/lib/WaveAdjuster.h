@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 #include "helpers.h"
-#define EPS 10
+#define TOLERANCE 10
 
 class WaveAdjuster
 {
@@ -19,7 +19,8 @@ class WaveAdjuster
     void enable();
     bool isSyncronized();
     bool isDisabled();
-    int getValue(int number);
+    int getPhase(int number);
+    int getInputValue(int number);
     STATE getState();
   private:
     int _inputPin1;
@@ -53,10 +54,9 @@ void WaveAdjuster::set(int inputPin1, int inputPin2, int inputPin3, HardwareSeri
   _serial = serial;
 }
 
-int WaveAdjuster::getValue(int number)
+int WaveAdjuster::getPhase(int number)
 {
-  int phase = map(_inputValues[number - 1], 0, 4096, _offsetValues[number - 1], _offsetValues[number - 1] + 359);
-  return phase;
+  return map(_inputValues[number - 1], 0, 4096, _offsetValues[number - 1], _offsetValues[number - 1] + 359);
 }
 
 void WaveAdjuster::update() 
@@ -77,13 +77,7 @@ void WaveAdjuster::update()
 
 bool WaveAdjuster::isSyncronized()
 {
-  Serial.print(abs(getValue(1) - getValue(2)));
-  Serial.print(",");
-  Serial.print(abs(getValue(1) - getValue(3)));
-  Serial.print(",");
-  Serial.print(abs(getValue(2) - getValue(3)));
-  Serial.println();
-  return (abs(_inputValues[0] - _inputValues[1]) < EPS) && (abs(_inputValues[1] - _inputValues[2]) < EPS);
+  return (abs(abs(getPhase(1) - getPhase(2)) - abs(getPhase(1) - getPhase(3))) < TOLERANCE);
 }
 
 void WaveAdjuster::disable() 
@@ -112,7 +106,7 @@ void WaveAdjuster::display()
     k++;
   }
   
-  int Value = map(waveValue(i, map(_inputValues[0], 0, 4096, _offsetValues[0], _offsetValues[0] + 359)), -150, 150, 10, 250);  //Read the pot value ann map it to 0.255 (max value of waveform=255)
+  int Value = map(waveValue(i, getPhase(1)), -150, 150, 10, 250);  //Read the pot value ann map it to 0.255 (max value of waveform=255)
   String Tosend = "add ";                                       //We send the string "add "
   Tosend += 1;                                                  //send the id of the block you want to add the value to
   Tosend += ",";
@@ -122,7 +116,7 @@ void WaveAdjuster::display()
   Tosend += "\xFF\xFF\xFF";
   _serial->print(Tosend);
   
-  int Value2 = map(waveValue(j, map(_inputValues[1], 0, 4096, _offsetValues[1], _offsetValues[1] + 359)), -150, 150, 10, 250);  //Read the pot value ann map it to 0.255 (max value of waveform=255)
+  int Value2 = map(waveValue(j, getPhase(2)), -150, 150, 10, 250);  //Read the pot value ann map it to 0.255 (max value of waveform=255)
   String Tosend2 = "add ";                                       //We send the string "add "
   Tosend2 += 1;                                                  //send the id of the block you want to add the value to
   Tosend2 += ",";
@@ -132,7 +126,7 @@ void WaveAdjuster::display()
   Tosend2 += "\xFF\xFF\xFF";
   _serial->print(Tosend2);
   
-  int Value3 = map(waveValue(k,  map(_inputValues[2], 0, 4096, _offsetValues[2], _offsetValues[2] + 359)), -150, 150, 10, 250);  //Read the pot value ann map it to 0.255 (max value of waveform=255)
+  int Value3 = map(waveValue(k,  getPhase(3)), -150, 150, 10, 250);  //Read the pot value ann map it to 0.255 (max value of waveform=255)
   String Tosend3 = "add ";                                       //We send the string "add "
   Tosend3 += 1;                                                  //send the id of the block you want to add the value to
   Tosend3 += ",";
@@ -153,6 +147,11 @@ void WaveAdjuster::display()
   if (k >= 359) {
     k = 0;
   }  
+}
+
+int WaveAdjuster::getInputValue(int number)
+{
+  return _inputValues[number];
 }
 
 STATE WaveAdjuster::getState()

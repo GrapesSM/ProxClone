@@ -6,43 +6,72 @@
 
 #include <Arduino.h>
 #include "CombinationReader.h"
+#include "AccessPanel.h"
 #include "Door.h"
 #include "PowerSwitch.h"
 #include "Speaker.h"
 
 namespace Safeomatic {
   typedef struct {
-    CombinationReader combinationReader;
-    Door door;
     PowerSwitch powerSwitch;
     Speaker speaker;
+    AccessPanel accessPanel;
+    CombinationReader combinationReader;
+    Door door;
     STATE state;
   } Components;
 
-  void run(Components c) 
+  void run(Components & c) 
   {
     if (c.powerSwitch.isSwitchOff()) {
+      c.state = OFF;
+    } else {
+      c.state = ON;
+    }
+
+    if (c.state == OFF) {
       c.powerSwitch.setLightOff();
+      c.door.reset();
+      c.accessPanel.reset();
       c.combinationReader.disable();
-    } else {
+    }
+
+    if (c.state == ON) {
       c.powerSwitch.setLightOn();
-      c.combinationReader.enable();
+      if (c.accessPanel.keyInserted()) {
+        //Serial.println("key inserted");
+        if(c.accessPanel.isClosed()) {
+          Serial.println("opening access panel");
+          c.accessPanel.open();
+          c.combinationReader.enable();
+        } 
+      } else {
+          c.accessPanel.reset();
+          c.combinationReader.disable();
+      }
+
+      if (!c.combinationReader.isDisabled()&&!c.combinationReader.isSolved()) {
+        c.combinationReader.update();
+        //c.combinationReader.checkDirection();
+        c.combinationReader.checkNumber();
+      }
+
+      if (c.combinationReader.isSolved()) {
+        if(c.door.isClosed()) {
+          c.door.open();
+        }
+      } else {
+        c.door.reset();
+      }
     }
 
-    if (! c.combinationReader.isDisabled()) {
-      c.combinationReader.update();
-    } 
 
-    if (! c.combinationReader.isCorrect() && c.door.isClosed()) {
-      c.door.open();
-    } else {
-      c.door.close();
-    }
   }
 
-  void show(Components c)
+  void show(Components & c)
   {
     c.combinationReader.display();
+    c.accessPanel.display();
     c.powerSwitch.display();
   }
 }

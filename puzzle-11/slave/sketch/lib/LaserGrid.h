@@ -17,6 +17,8 @@ namespace LaserGrid {
     PowerSwitch powerSwitch;
     Speaker speaker;
     STATE state;
+    boolean in;
+    boolean flag;
   } Components;
 
   void run(Components & c) 
@@ -24,15 +26,25 @@ namespace LaserGrid {
     c.powerSwitch.update();
     
     if (c.powerSwitch.getState() == OFF) {
+      if (c.state == ON) c.flag = false;
       c.state = OFF;
       c.powerSwitch.setLightOff();
       c.keyReader.disable();
+      if (c.flag == false) {
+        c.flag = true;
+        // c.speaker.addToPlay(SOUND_POWER_DOWN);
+      }
     }
 
     if (c.powerSwitch.getState() == ON) {
+      if (c.state == OFF) c.flag = false;
       c.state = ON;
       c.powerSwitch.setLightOn();
       c.keyReader.enable();
+      if (c.flag == false) {
+        c.flag = true;
+        // c.speaker.addToPlay(SOUND_POWER_UP);
+      }
     }
 
     c.keyReader.update();
@@ -45,6 +57,11 @@ namespace LaserGrid {
 
     c.waveAdjuster.update();
 
+    if (c.keyReader.getState() == SOLVED) {
+      Serial.println(c.waveAdjuster.getInputValue(0));
+      c.speaker.speak(c.waveAdjuster.getInputValue(0));
+    }
+
     if (
       c.keyReader.getState() == SOLVED && 
       c.waveAdjuster.getState() == SOLVED
@@ -56,7 +73,7 @@ namespace LaserGrid {
   void show(Components & c)
   {
     c.powerSwitch.display();
-    c.waveAdjuster.display();
+    c.speaker.play();
   }
 }
 
