@@ -18,6 +18,7 @@
 #define PIN_ANALOG_INPUT_1 34
 #define PIN_ANALOG_INPUT_2 35
 #define PIN_ANALOG_INPUT_3 37
+#define PIN_AMPLIFIER 2
 #define ADDR_SEVENSEGMENT_1 0x71
 #define ADDR_SEVENSEGMENT_2 0x72
 #define ADDR_SLAVE 1
@@ -31,6 +32,11 @@
 #define LED_COUNT 27
 #define COLOR_SATURATION 128
 
+#define PWM_FREQUENCY 1500
+#define PWM_CHANNEL 0
+#define PWM_RESOLUTION 8
+#define PWM_DUTYCYCLE 200
+
 enum STATE {
     ACTIVE = 1,
     STANDBY = 2,
@@ -43,8 +49,11 @@ enum STATE {
     ON = 9,
     OFF = 10,
     INITIALIZED = 11,
-    START = 12,
-    END = 13
+    NOT_INITIALIZED = 12,
+    START = 13,
+    END = 14,
+    READING = 15,
+    PLAYING = 16
 };
 
 // Number of Lights and Pin Numbers
@@ -57,3 +66,9 @@ extern int lightPinForPinIndicator = 8;
 
 #define NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT 18
 extern int lightPinsForLightEffect[] = {9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26};
+
+#define NUMBER_OF_SOUNDS 2
+enum {  // enumeration from 0, 1, 2 ...
+  SOUND_POWER_UP,
+  SOUND_POWER_DOWN
+};

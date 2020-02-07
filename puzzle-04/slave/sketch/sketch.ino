@@ -5,6 +5,8 @@
 #include <ESP32Encoder.h>
 #include "lib/SevenSegment.h"
 #include "lib/Datamatic.h"
+#include "sounds/soundPowerUp.h"
+//#include "sounds/soundPowerDown.h"
 
 struct Puzzle {
   uint8_t address = ADDR_SLAVE;
@@ -28,6 +30,8 @@ struct Parts {
   Adafruit_MCP23017 mcp2;
   ESP32Encoder encoder;
   SevenSegment matrix = SevenSegment();
+  unsigned char* listOfSounds[NUMBER_OF_SOUNDS];
+  unsigned int listOfLengthOfSounds[NUMBER_OF_SOUNDS];
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
@@ -85,6 +89,19 @@ void setup()
     parts.mcp2.pinMode(buttonPins2[i], INPUT);
   }
   
+  // Setup speaker pins
+  pinMode(PIN_SPEAKER, OUTPUT);
+  ledcSetup(PWM_CHANNEL, PWM_FREQUENCY, PWM_RESOLUTION);
+  ledcAttachPin(PIN_SPEAKER, PWM_CHANNEL);
+  pinMode(PIN_AMPLIFIER, OUTPUT);
+  digitalWrite(PIN_AMPLIFIER, HIGH);
+
+  // Setup sound list
+  parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
+  parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
+  // parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
+  // parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+  
   setupDatamatic();
 
   puzzle.timer = millis();
@@ -116,5 +133,5 @@ void setupDatamatic()
   dmComponents.codeReader.set(&parts.matrix, &parts.mcp1, buttonPins1, &parts.mcp2, buttonPins2, buttonLabels, PIN_INPUT_1, PIN_INPUT_2);
   dmComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
   dmComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
-//  dmComponents.speaker.set();
+  dmComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
 }

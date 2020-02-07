@@ -18,6 +18,7 @@
 #define PIN_ANALOG_INPUT_1 34
 #define PIN_ANALOG_INPUT_2 35
 #define PIN_ANALOG_INPUT_3 37
+#define PIN_AMPLIFIER 2
 #define ADDR_BUTTON_1 4 // 0x24
 #define ADDR_BUTTON_2 0 // 0x20
 #define ADDR_SEVENSEGMENT 0x72
@@ -26,6 +27,11 @@
 #define SERIAL_BAUDRATE 38400
 #define LED_COUNT 19
 #define COLOR_SATURATION 128
+
+#define PWM_FREQUENCY 1500
+#define PWM_CHANNEL 0
+#define PWM_RESOLUTION 8
+#define PWM_DUTYCYCLE 200
 
 enum STATE {
     ACTIVE = 1,
@@ -40,7 +46,8 @@ enum STATE {
     OFF = 10,
     INITIALIZED = 11,
     NOT_INITIALIZED = 12,
-    READING = 15
+    READING = 15,
+    PLAYING = 16
 };
 
 // Number of Lights and Pin Numbers
@@ -60,3 +67,9 @@ extern String keyForCodeReader2 = "23456";
 
 #define NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT 18
 extern int lightPinsForLightEffect[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};
+
+#define NUMBER_OF_SOUNDS 2
+enum {  // enumeration from 0, 1, 2 ...
+  SOUND_POWER_UP,
+  SOUND_POWER_DOWN
+};
