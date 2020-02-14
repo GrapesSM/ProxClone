@@ -56,7 +56,8 @@ enum STATE {
   PLAYING = 16,
   BALANCED = 17,
   SETUP = 18,
-  FLASH = 19
+  FLASH = 19,
+  UNBALANCED = 20
 };
 
 // Number of Lights and Pin Numbers
@@ -106,5 +107,5 @@ typedef struct {
   unsigned long timer = 0;
   unsigned long counter = 0;
   unsigned long checkpoint = 0;
-  unsigned long interval = 3000;
+  unsigned long interval = 200;
 } Puzzle; 

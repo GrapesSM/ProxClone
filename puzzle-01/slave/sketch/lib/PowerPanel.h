@@ -11,7 +11,7 @@
 #include "LightEffect.h"
 #include "Speaker.h"
 
-#include <EventManager.h>
+// #include <EventManager.h>
 
 namespace PowerPanel {
   typedef struct {
@@ -20,7 +20,7 @@ namespace PowerPanel {
     Battery battery;
     LightEffect lightEffect;
     Speaker speaker;
-    EventManager eventManager;
+    // EventManager eventManager;
     STATE state;
     float currentDemand = 0.0;
     float currentSupply = 0.0;
@@ -48,7 +48,7 @@ namespace PowerPanel {
     
     if (c.state == SETUP) {
       c.state = INITIALIZING;
-      c.powerLightIndicator.setState(FLASH);
+      c.powerLightIndicator.setState(ON);
       // c.battery.init();
       // c.powerAdjuster.init();
       // c.speaker.init();
@@ -69,33 +69,31 @@ namespace PowerPanel {
       c.powerAdjuster.update();
       c.battery.setValue(c.powerAdjuster.getSupplyValue());
 
-      if (c.powerAdjuster.getState() != BALANCED) {
-        // if (c.timer.start == 0) {
-        //   c.timer.start = millis();
-        // }
+      if (c.powerAdjuster.getState() == UNBALANCED) {
+        if (c.timer.start == 0) {
+          c.timer.start = millis();
+        }
 
-        // if ((c.timer.current - c.timer.start) > 9000) {
-        //   c.speaker.setAlarmOff();
-        //   c.powerLightIndicator.setOff();
-        //   c.lightEffect.setOff();
+        if ((c.timer.current - c.timer.start) > 9000) {
+          // c.speaker.setAlarmOff();
+          c.powerLightIndicator.setState(OFF);
+          // c.lightEffect.setOff();
         //   c.powerAdjuster.setSupplyValue(0);
         //   c.powerAdjuster.setDemandValue(0);
         //   c.battery.setValue(0);
-        //   c.state = FAILURE;
-        // } else if ((c.timer.current - c.timer.start) > 6000) {
+          // c.state = FAILURE;
+        } else if ((c.timer.current - c.timer.start) > 6000) {
         //   c.speaker.setAlarmOn();
         //   c.lightEffect.setFlashOn();
-        //   c.powerLightIndicator.setFlashOn();
-        //   c.state = STANDBY;
-        // } else if ((c.timer.current - c.timer.start) > 3000) {
-        //   c.powerLightIndicator.setFlashOn();
-        //   c.state = STANDBY;
-        // } 
+          c.powerLightIndicator.setState(FLASH);
+        } else if ((c.timer.current - c.timer.start) > 3000) {
+          c.powerLightIndicator.setState(FLASH);
+        } 
       }
 
       if (c.powerAdjuster.getState() == BALANCED) {
-        // c.powerLightIndicator.setOn();
-        // c.timer.start = 0;
+        c.powerLightIndicator.setState(ON);
+        c.timer.start = 0;
       }
     }
   }

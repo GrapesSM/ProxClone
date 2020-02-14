@@ -56,7 +56,6 @@ void PowerAdjuster::set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Ada
 
 void PowerAdjuster::init()
 {
-  Serial.println("PowerAdjuster: Init");
   _state = INITIALIZED;
 }
 
@@ -68,18 +67,18 @@ STATE PowerAdjuster::getState()
 void PowerAdjuster::update() 
 {
   _supply = random(0, _demand + 1); // _encoder->getCount();
-  if (_supply >= _demand) {
-    _supply = _demand;
-    // _encoder->setCount(_max);
-  } else if (_supply <= 0) {
-    _supply = 0;
-    // _encoder->setCount(_min);
-  }
+  // if (_supply >= _demand) {
+  //   _supply = _demand;
+  //   // _encoder->setCount(_max);
+  // } else if (_supply <= 0) {
+  //   _supply = 0;
+  //   // _encoder->setCount(_min);
+  // }
 
   if (_supply == _demand) {
-    _balanced == true;
+    _state = BALANCED;
   } else {
-    _balanced = false;
+    _state = UNBALANCED;
   }
 }
 
