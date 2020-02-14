@@ -109,8 +109,9 @@ void Speaker::play()
   if (_queue.isEmpty()) {
     return;
   }
-  Serial.println(_queue.item_count());
-  play(_queue.dequeue());
+  int val = _queue.dequeue();
+  Serial.println(val);
+  play(val);
 }
 
 #endif

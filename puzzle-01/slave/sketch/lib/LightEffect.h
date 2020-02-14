@@ -12,16 +12,19 @@ class LightEffect
   public:
     LightEffect();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
+    void init();
     void update();
     void enable();
     void disable();
     bool isDisabled();
     void display();
+    STATE getState();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
     int _current;
     bool _disabled;
+    STATE _state;
 };
 
 LightEffect::LightEffect(){
@@ -33,6 +36,17 @@ void LightEffect::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int l
 {
   _strip = strip;
   _lightPins = lightPins;
+}
+
+void LightEffect::init()
+{
+  Serial.println("LightEffect: Init");
+  _state = INITIALIZED;
+}
+
+STATE LightEffect::getState()
+{
+  return _state;
 }
 
 void LightEffect::update()

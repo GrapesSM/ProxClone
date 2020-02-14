@@ -1,40 +1,49 @@
 /*
-  PowerBarIndicator.h - Library for ______.
+  Battery.h - Library for ______.
 */
-#ifndef PowerBarIndicator_h
-#define PowerBarIndicator_h
+#ifndef Battery_h
+#define Battery_h
 
 #include <Arduino.h>
 #include <NeoPixelBus.h>
 
-class PowerBarIndicator
+class Battery
 {
   public:
-    PowerBarIndicator();
+    Battery();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
+    void init();
     void update();
     void disable();
     void enable();
     bool isDisabled();
     void setValue(float val);
     void setMaxValue(float maxValue);
+    STATE getState();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
     bool _disabled = true;
     float _value;
     float _maxValue;
+    STATE _state;
 };
 
-PowerBarIndicator::PowerBarIndicator(){}
+Battery::Battery(){}
 
-void PowerBarIndicator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[])
+void Battery::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[])
 {
   _strip = strip;
   _lightPins = lightPins;
 }
 
-void PowerBarIndicator::update()
+void Battery::init()
+{
+  Serial.println("Battery: Init");
+  _state = INITIALIZED;
+}
+
+void Battery::update()
 {
   int scale = map(_value, 0.0, _maxValue, 0, 7);
   for (int i = 0; i < scale; i++) {
@@ -46,31 +55,36 @@ void PowerBarIndicator::update()
   }
 }
 
-void PowerBarIndicator::disable() 
+void Battery::disable() 
 {
   _disabled = true;
   // TO-DO:
 }
 
-void PowerBarIndicator::enable() 
+void Battery::enable() 
 {
   _disabled = false;
   // TO-DO:
 }
 
-bool PowerBarIndicator::isDisabled()
+bool Battery::isDisabled()
 {
   return _disabled;
 }
 
-void PowerBarIndicator::setValue(float value)
+void Battery::setValue(float value)
 {
   _value = value;
 }
 
-void PowerBarIndicator::setMaxValue(float maxValue)
+void Battery::setMaxValue(float maxValue)
 {
   _maxValue = maxValue;
+}
+
+STATE Battery::getState()
+{
+  return _state;
 }
 
 

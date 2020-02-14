@@ -38,22 +38,25 @@
 #define PWM_DUTYCYCLE 200
 
 enum STATE {
-    ACTIVE = 1,
-    STANDBY = 2,
-    SOLVED = 3,
-    OFFLINE = 4,
-    FAILURE = 5,
-    SYSTEM_ERROR = 6,
-    ERROR = 7,
-    SYNCRONIZED = 8,
-    ON = 9,
-    OFF = 10,
-    INITIALIZED = 11,
-    NOT_INITIALIZED = 12,
-    START = 13,
-    END = 14,
-    READING = 15,
-    PLAYING = 16
+  ACTIVE = 1,
+  STANDBY = 2,
+  SOLVED = 3,
+  OFFLINE = 4,
+  FAILURE = 5,
+  SYSTEM_ERROR = 6,
+  ERROR = 7,
+  SYNCRONIZED = 8,
+  ON = 9,
+  OFF = 10,
+  INITIALIZING = 11,
+  INITIALIZED = 12,
+  START = 13,
+  END = 14,
+  READING = 15,
+  PLAYING = 16,
+  BALANCED = 17,
+  SETUP = 18,
+  FLASH = 19
 };
 
 // Number of Lights and Pin Numbers
@@ -72,3 +75,36 @@ enum {  // enumeration from 0, 1, 2 ...
   SOUND_POWER_UP,
   SOUND_POWER_DOWN
 };
+
+enum REGISTER_INDEX {
+  REG_DATA_STATE = 0,
+  REG_POWER_STATE = 1,
+  REG_MASTER_FORCE = 2,
+  REG_MASTER_COMMAND = 3,
+  REG_MASTER_CONFIRM = 4,
+  REG_SLAVE_STATE = 5,
+  REG_SLAVE_POWER_ADJUSTER_STATE = 6,
+  REG_SLAVE_BATTERY_STATE = 7,
+  REG_SLAVE_POWER_LIGHT_INDICATOR_STATE = 8,
+  REG_SLAVE_SPEAKER_STATE = 9,
+  REG_SLAVE_LIGHT_EFFECT_STATE = 10,
+  REG_SLAVE_BATTERY = 11,
+  REG_SLAVE_SUPPLY = 12,
+  REG_SLAVE_DEMAND = 13,
+  REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER = 14
+};
+
+typedef struct {
+  uint8_t address = ADDR_SLAVE;
+  STATE state = OFFLINE;
+  bool forced = false;
+  int totalPower = 10;
+  uint8_t numberOfRegisters = 15;
+  uint16_t registers[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  unsigned long startTime = 0;
+  unsigned long endTime = 0;
+  unsigned long timer = 0;
+  unsigned long counter = 0;
+  unsigned long checkpoint = 0;
+  unsigned long interval = 3000;
+} Puzzle; 

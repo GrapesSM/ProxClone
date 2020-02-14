@@ -21,6 +21,7 @@ class Speaker
     void enable();
     void disable();
     void isDisabled();
+    STATE getState();
     void play();
     void play(int number);
     void speak(int frequency = PWM_FREQUENCY, int dutycycle = PWM_DUTYCYCLE);
@@ -61,6 +62,15 @@ void Speaker::set(
   _listOfSounds = listOfSounds;
   _listOfLengthOfSounds = listOfLengthOfSounds;
   _numberOfSounds = sizeof(listOfSounds)/sizeof(unsigned char*);
+}
+
+void Speaker::init() {
+  Serial.println("Speaker: Init");
+}
+
+STATE Speaker::getState()
+{
+  return _state;
 }
 
 void Speaker::enable()

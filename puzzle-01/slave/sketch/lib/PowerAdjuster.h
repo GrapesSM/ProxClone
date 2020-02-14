@@ -14,67 +14,86 @@ class PowerAdjuster
   public:
     PowerAdjuster();
     void set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2, int channel);
+    void init();
     void update();
     void display();
     void disable();
     void enable();
     bool isDisabled();
     bool isBalanced();
-    float getInputValue();
-    float getOutputValue();
-    void setOutputValue(float output);
+    float getSupplyValue();
+    float getDemandValue();
+    STATE getState();
+    void setDemandValue(float demand);
   private:
     ESP32Encoder *_encoder;
     Adafruit_7segment *_matrix1;
     Adafruit_7segment *_matrix2;
-    float _input;
-    float _output;
+    float _supply;
+    float _demand;
     int _channel;
     bool _disabled;
     bool _balanced;
+    STATE _state;
 };
 
-PowerAdjuster::PowerAdjuster() {
-  _input = 0;
-  _output = 0;
+PowerAdjuster::PowerAdjuster() 
+{
+  _supply = 0;
+  _demand = 0;
   _channel = 0;
   _disabled = true;
   _balanced = false;
 }
 
-void PowerAdjuster::set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2, int channel) {
+void PowerAdjuster::set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2, int channel) 
+{
   _encoder = encoder;
   _matrix1 = matrix1;
   _matrix2 = matrix2;
   _channel = channel;
 }
 
-void PowerAdjuster::update() {
-  _input = random(0, _output + 1); // _encoder->getCount();
-  if (_input >= _output) {
-    _input = _output;
+void PowerAdjuster::init()
+{
+  Serial.println("PowerAdjuster: Init");
+  _state = INITIALIZED;
+}
+
+STATE PowerAdjuster::getState()
+{
+  return _state;
+}
+
+void PowerAdjuster::update() 
+{
+  _supply = random(0, _demand + 1); // _encoder->getCount();
+  if (_supply >= _demand) {
+    _supply = _demand;
     // _encoder->setCount(_max);
-  } else if (_input <= 0) {
-    _input = 0;
+  } else if (_supply <= 0) {
+    _supply = 0;
     // _encoder->setCount(_min);
   }
 
-  if (_input == _output) {
+  if (_supply == _demand) {
     _balanced == true;
   } else {
     _balanced = false;
   }
 }
 
-void PowerAdjuster::disable() {
+void PowerAdjuster::disable() 
+{
   _disabled = true;
   _encoder->clearCount();
-  _input = 0;
-  _encoder->setCount(_input);
+  _supply = 0;
+  _encoder->setCount(_supply);
   _encoder->pauseCount();
 }
 
-void PowerAdjuster::enable() {
+void PowerAdjuster::enable() 
+{
   _disabled = false;
   _encoder->resumeCount();
 }
@@ -84,33 +103,37 @@ bool PowerAdjuster::isDisabled()
   return _disabled;
 }
 
-void PowerAdjuster::display() {  
+void PowerAdjuster::display() 
+{  
   _matrix1->clear();
-  _matrix1->print(_input);
+  _matrix1->print(_supply);
   _matrix1->writeDisplay();
 
   _matrix2->clear();
-  _matrix2->print(_output);
+  _matrix2->print(_demand);
   _matrix2->writeDisplay();
-
   
-  ledcWrite(_channel, map(_input, 0, 7, 0, 1024));
+  ledcWrite(_channel, map(_supply, 0, 7, 0, 1024));
 }
 
-bool PowerAdjuster::isBalanced() {
+bool PowerAdjuster::isBalanced() 
+{
   return _balanced;
 }
 
-float PowerAdjuster::getInputValue() {
-  return _input;
+float PowerAdjuster::getSupplyValue()
+{
+  return _supply;
 }
 
-float PowerAdjuster::getOutputValue() {
-  return _output;
+float PowerAdjuster::getDemandValue() 
+{
+  return _demand;
 }
 
-void PowerAdjuster::setOutputValue(float output) {
-  _output = output;
+void PowerAdjuster::setDemandValue(float demand) 
+{
+  _demand = demand;
 }
 
 #endif

@@ -3,8 +3,8 @@
 #include "NeoPixelBus.h"
 #include "lib/LaserGrid.h"
 #include "sounds/soundPowerUp.h"
-//#include "sounds/soundPowerDown.h"
-//#include "sounds/soundKeyInsert.h"
+#include "sounds/soundPowerDown.h"
+#include "sounds/soundKeyInsert.h"
 
 struct Puzzle {
   uint8_t address = ADDR_SLAVE;
@@ -81,10 +81,10 @@ void setup()
 
   parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
   parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
-//  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
-//  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
-//  parts.listOfSounds[SOUND_KEY_INSERT] = soundKeyInsert;
-//  parts.listOfLengthOfSounds[SOUND_KEY_INSERT] = sizeof(soundKeyInsert)/sizeof(soundKeyInsert[0]);
+  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
+  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+  parts.listOfSounds[SOUND_KEY_INSERT] = soundKeyInsert;
+  parts.listOfLengthOfSounds[SOUND_KEY_INSERT] = sizeof(soundKeyInsert)/sizeof(soundKeyInsert[0]);
 
   setupLaserGrid();
 
