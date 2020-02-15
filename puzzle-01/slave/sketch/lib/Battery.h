@@ -39,19 +39,37 @@ void Battery::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int light
 
 void Battery::init()
 {
-  Serial.println("Battery: Init");
   _state = INITIALIZED;
 }
 
 void Battery::update()
 {
-  int scale = map(_value, 0.0, _maxValue, 0, 7);
-  for (int i = 0; i < scale; i++) {
-    _strip->SetPixelColor(_lightPins[i], RgbColor(127, 0, 0));
+  int scale = map(_value, 0.0, 100.00, 7, 0);
+  RgbColor color;
+  switch (scale)
+  {
+    case 7:
+    case 6:
+    case 5:
+    case 4:
+      color = RgbColor(0, 255, 0);
+      break;
+    case 3:
+    case 2:
+      color = RgbColor(255, 255, 0);
+      break;
+    case 1:
+      color = RgbColor(255, 0, 0);
+    default:
+      break;
+  }
+  
+  for (int i = 0; i < scale; i++) {  
+    _strip->SetPixelColor(_lightPins[i], color);
   }
 
   for (int i = scale; i < 7; i++) {
-    _strip->SetPixelColor(_lightPins[i], RgbColor(127, 127, 127));
+    _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
   }
 }
 

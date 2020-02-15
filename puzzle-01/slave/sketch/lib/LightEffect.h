@@ -18,6 +18,7 @@ class LightEffect
     void disable();
     bool isDisabled();
     void display();
+    void setState(STATE state);
     STATE getState();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
@@ -42,6 +43,11 @@ void LightEffect::init()
 {
   Serial.println("LightEffect: Init");
   _state = INITIALIZED;
+}
+
+void LightEffect::setState(STATE state)
+{
+  _state = state;
 }
 
 STATE LightEffect::getState()

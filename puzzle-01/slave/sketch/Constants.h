@@ -33,7 +33,7 @@
 #define COLOR_SATURATION 128
 
 #define PWM_FREQUENCY 1500
-#define PWM_CHANNEL 0
+#define PWM_CHANNEL 1
 #define PWM_RESOLUTION 8
 #define PWM_DUTYCYCLE 200
 
@@ -57,7 +57,8 @@ enum STATE {
   BALANCED = 17,
   SETUP = 18,
   FLASH = 19,
-  UNBALANCED = 20
+  UNBALANCED = 20,
+  ALARM = 21
 };
 
 // Number of Lights and Pin Numbers
@@ -107,5 +108,5 @@ typedef struct {
   unsigned long timer = 0;
   unsigned long counter = 0;
   unsigned long checkpoint = 0;
-  unsigned long interval = 200;
+  unsigned long interval = 100;
 } Puzzle; 

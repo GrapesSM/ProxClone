@@ -21,6 +21,7 @@ class Speaker
     void enable();
     void disable();
     void isDisabled();
+    void setState(STATE state);
     STATE getState();
     void play();
     void play(int number);
@@ -68,6 +69,11 @@ void Speaker::init() {
   Serial.println("Speaker: Init");
 }
 
+void Speaker::setState(STATE state)
+{
+  _state = state;
+}
+
 STATE Speaker::getState()
 {
   return _state;
@@ -106,7 +112,9 @@ void Speaker::speak(int frequency, int dutycycle)
     _dutycycle = dutycycle;
     ledcWrite(PWM_CHANNEL, dutycycle);
   }
-  delayMicroseconds(_rate);
+
+  if (_frequency && dutycycle)
+    delayMicroseconds(_rate);
 }
 
 void Speaker::addToPlay(int number)
@@ -116,11 +124,30 @@ void Speaker::addToPlay(int number)
 
 void Speaker::play()
 {
-  if (_queue.isEmpty()) {
-    return;
+  switch (_state)
+  {
+    case ON:
+      if (_queue.isEmpty()) {
+        speak(0, 0);
+        return;
+      }
+      Serial.println(_queue.item_count());
+      play(_queue.dequeue());    
+      break;
+    
+    case OFF:
+      speak(0, 0);
+      break;
+    
+    case ALARM:
+      unsigned long sec = millis()/1000; 
+      if (sec % 3 == 0) {
+        speak(1000);
+      } else {
+        speak(0, 0);
+      }
+      break;
   }
-  Serial.println(_queue.item_count());
-  play(_queue.dequeue());
 }
 
 #endif

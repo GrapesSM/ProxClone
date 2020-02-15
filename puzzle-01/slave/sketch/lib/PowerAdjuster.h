@@ -21,6 +21,8 @@ class PowerAdjuster
     void enable();
     bool isDisabled();
     bool isBalanced();
+    void setMaxSupply(float maxSupply);
+    void setMaxDemand(float maxDemand);
     float getSupplyValue();
     float getDemandValue();
     STATE getState();
@@ -31,9 +33,11 @@ class PowerAdjuster
     Adafruit_7segment *_matrix2;
     float _supply;
     float _demand;
+    float _maxSupply;
     int _channel;
     bool _disabled;
     bool _balanced;
+    float _maxDemand;
     STATE _state;
 };
 
@@ -44,6 +48,8 @@ PowerAdjuster::PowerAdjuster()
   _channel = 0;
   _disabled = true;
   _balanced = false;
+  _maxSupply = 0;
+  _maxDemand = 0;
 }
 
 void PowerAdjuster::set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2, int channel) 
@@ -66,7 +72,11 @@ STATE PowerAdjuster::getState()
 
 void PowerAdjuster::update() 
 {
-  _supply = random(0, _demand + 1); // _encoder->getCount();
+  if (Serial.available() > 1) {
+    _supply = Serial.parseFloat();
+  } 
+  // Serial.println(_supply);
+  // _supply = 0; //_encoder->getCount();
   // if (_supply >= _demand) {
   //   _supply = _demand;
   //   // _encoder->setCount(_max);
@@ -86,7 +96,6 @@ void PowerAdjuster::disable()
 {
   _disabled = true;
   _encoder->clearCount();
-  _supply = 0;
   _encoder->setCount(_supply);
   _encoder->pauseCount();
 }
@@ -112,7 +121,7 @@ void PowerAdjuster::display()
   _matrix2->print(_demand);
   _matrix2->writeDisplay();
   
-  ledcWrite(_channel, map(_supply, 0, 7, 0, 1024));
+  ledcWrite(_channel, map(_demand - _supply, -_maxDemand, _maxDemand, 255, 0));
 }
 
 bool PowerAdjuster::isBalanced() 
@@ -120,9 +129,24 @@ bool PowerAdjuster::isBalanced()
   return _balanced;
 }
 
+void PowerAdjuster::setMaxSupply(float maxSupply)
+{
+  _maxSupply = maxSupply;
+}
+
+void PowerAdjuster::setMaxDemand(float maxDemand)
+{
+  _maxDemand = maxDemand;
+}
+
 float PowerAdjuster::getSupplyValue()
 {
   return _supply;
+}
+
+float PowerAdjuster::getSupplyValueMax()
+{
+  return _maxSupply;
 }
 
 float PowerAdjuster::getDemandValue() 
