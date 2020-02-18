@@ -86,11 +86,13 @@ void setup()
 
   setupPowerPanel();
   ppComponents.state = SETUP;
-  puzzle.timer = millis();
+  puzzle.startTime = millis();
 }
 
 void loop() 
-{
+{ 
+  // Save timer to the variable
+  puzzle.timer = millis();
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   
@@ -100,11 +102,7 @@ void loop()
   // Enable Power Panel
   PowerPanel::run(ppComponents);
 
-  puzzle.timer = millis();
-  if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
-    puzzle.checkpoint = millis();
-    PowerPanel::show(ppComponents);
-  }
+  PowerPanel::show(ppComponents);
 }
 
 void setupPowerPanel()
@@ -114,5 +112,4 @@ void setupPowerPanel()
   ppComponents.battery.set(parts.strip, lightPinsForBarIndicator);
   ppComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
   ppComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
-  // ppComponents.eventManager.addListener(EVENT_POWER_SWITCH, PowerPanel::onPowerSwitchChange)
 }

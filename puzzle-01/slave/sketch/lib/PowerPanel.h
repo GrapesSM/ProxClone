@@ -11,8 +11,6 @@
 #include "LightEffect.h"
 #include "Speaker.h"
 
-// #include <EventManager.h>
-
 namespace PowerPanel {
   typedef struct {
     PowerAdjuster powerAdjuster;
@@ -20,17 +18,22 @@ namespace PowerPanel {
     Battery battery;
     LightEffect lightEffect;
     Speaker speaker;
-    // EventManager eventManager;
     STATE state;
     struct Timer {
       unsigned long start = 0;
       unsigned long end = 0;
       unsigned long current = 0;
     } timer;
+    struct ShowTimer {
+      unsigned long current = 0;
+      unsigned long showpoint = 0;
+      unsigned long interval = 200;
+    } showTimer;
   } Components;
 
   void update(Puzzle & p, Components & c) 
   {
+    p.registers[REG_POWER_STATE] = ON;
     p.registers[REG_SLAVE_STATE] = c.state;
     p.registers[REG_SLAVE_POWER_ADJUSTER_STATE] = c.powerAdjuster.getState();
     p.registers[REG_SLAVE_BATTERY_STATE] = c.battery.getState();
@@ -41,17 +44,17 @@ namespace PowerPanel {
     c.battery.setMaxValue(13.00);
     c.powerAdjuster.setMaxSupply(13.00);
     c.powerAdjuster.setMaxDemand(16.00);
-    p.registers[REG_SLAVE_SUPPLY] = c.powerAdjuster.getSupplyValue();
-    c.powerAdjuster.setDemandValue(p.registers[REG_SLAVE_DEMAND]);
+    p.registers[REG_SLAVE_SUPPLY] = c.powerAdjuster.getSupply();
+    c.powerAdjuster.setDemand(p.registers[REG_SLAVE_DEMAND]);
     // c.lightEffect.setPatternNumber(p.registers[REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER]);    
     
     if (c.state == SETUP) {
       c.state = INITIALIZING;
       c.powerLightIndicator.setState(ON);
-      // c.battery.init();
-      // c.powerAdjuster.init();
-      // c.speaker.init();
-      // c.lightEffect.init();
+      c.battery.setState(ON);
+      c.powerAdjuster.setState(ON);
+      c.speaker.setState(ON);
+      c.lightEffect.setState(ON);
       c.state = INITIALIZED;
     }
   }
@@ -66,36 +69,37 @@ namespace PowerPanel {
 
     if (c.state == STANDBY) {
       c.powerAdjuster.update();
-      int batteryLevel = map(c.powerAdjuster.getSupplyValue(), c.powerAdjuster.getSupplyValueMax() , 0.0, 0, 100);
+      int batteryLevel = map(c.powerAdjuster.getSupply(), 0.0, c.powerAdjuster.getMaxDemand(), 0, 100);
       c.battery.setValue(batteryLevel);
       c.battery.update();
+      c.lightEffect.update();
 
       if (c.powerAdjuster.getState() == UNBALANCED) {
         if (c.timer.start == 0) {
           c.timer.start = millis();
         }
 
-        if ((c.timer.current - c.timer.start) > 9000 + 3000) {
-          // c.speaker.setState(OFF);
+        if ((c.timer.current - c.timer.start) > FAILURE_PERIOD_3) {
+          c.speaker.setState(OFF);
           c.powerLightIndicator.setState(OFF);
-          // c.lightEffect.setState(OFF);
-        //   c.powerAdjuster.setSupplyValue(0);
-        //   c.powerAdjuster.setDemandValue(0);
-           c.battery.setValue(0);
-          // c.state = FAILURE;
-        } else if ((c.timer.current - c.timer.start) > 6000 + 3000) {
-          // c.speaker.setState(ALARM);
-          // c.lightEffect.setState(FLASH);
+          c.lightEffect.setState(OFF);
+          c.powerAdjuster.setState(RESET);
+          c.battery.setState(OFF);
+          c.state = FAILURE;
+        } else if ((c.timer.current - c.timer.start) > FAILURE_PERIOD_2) {
+          c.speaker.setState(ALARM);
+          c.lightEffect.setState(FLASH);
           c.powerLightIndicator.setState(FLASH);
-        } else if ((c.timer.current - c.timer.start) > 3000 + 3000) {
+        } else if ((c.timer.current - c.timer.start) > FAILURE_PERIOD_1) {
           c.powerLightIndicator.setState(FLASH);
         } 
       }
 
       if (c.powerAdjuster.getState() == BALANCED) {
         c.powerLightIndicator.setState(ON);
-        // c.speaker.setState(ON);
-        // c.lightEffect.setState(ON);
+        c.speaker.setState(ON);
+        c.lightEffect.setState(ON);
+        c.battery.setState(ON);
         c.timer.start = 0;
       }
     }
@@ -103,16 +107,16 @@ namespace PowerPanel {
 
   void show(Components & c)
   {
-    c.powerAdjuster.display();
-    c.powerLightIndicator.display();
-    // c.battery.display();
-    c.lightEffect.display();
-    // c.speaker.play();
-  }
+    c.showTimer.current = millis();
+    if ((c.showTimer.current - c.showTimer.showpoint) > c.showTimer.interval) {
+      c.powerAdjuster.display();
+      c.powerLightIndicator.display();
+      c.lightEffect.display();
+      // c.battery.display();
+      c.showTimer.showpoint = millis();
+    }
 
-  void onPowerChange(int event, Components & c) 
-  {
-    Serial.println("Power Switch");
+    c.speaker.play();
   }
 }
 

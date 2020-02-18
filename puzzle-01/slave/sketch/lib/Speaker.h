@@ -17,10 +17,6 @@ class Speaker
       unsigned int rate, 
       unsigned char** listOfSounds, 
       unsigned int* listOfLengthOfSounds);
-    void init();
-    void enable();
-    void disable();
-    void isDisabled();
     void setState(STATE state);
     STATE getState();
     void play();
@@ -31,7 +27,6 @@ class Speaker
   private:
     int _pin;
     int _enablePin;
-    bool _disabled;
     int _counter;
     unsigned int _rate;
     unsigned char** _listOfSounds;
@@ -45,7 +40,6 @@ class Speaker
 
 Speaker::Speaker() 
 {
-  _disabled = true;
   _counter = 0;
   _numberOfSounds = 0;
 }
@@ -65,10 +59,6 @@ void Speaker::set(
   _numberOfSounds = sizeof(listOfSounds)/sizeof(unsigned char*);
 }
 
-void Speaker::init() {
-  Serial.println("Speaker: Init");
-}
-
 void Speaker::setState(STATE state)
 {
   _state = state;
@@ -79,26 +69,12 @@ STATE Speaker::getState()
   return _state;
 }
 
-void Speaker::enable()
-{
-  _state = ON;
-  _disabled = false;
-}
-
-void Speaker::disable()
-{
-  _state = OFF;
-  _disabled = true;
-}
-
 void Speaker::play(int number)
 {
-  _state = PLAYING;
   for (int i = 0; i < _listOfLengthOfSounds[number]; i++) {
     dacWrite(_pin, _listOfSounds[number][i]);
     delayMicroseconds(_rate);
   }
-  _state = STANDBY;
 }
 
 void Speaker::speak(int frequency, int dutycycle)
@@ -113,8 +89,9 @@ void Speaker::speak(int frequency, int dutycycle)
     ledcWrite(PWM_CHANNEL, dutycycle);
   }
 
-  if (_frequency && dutycycle)
+  if (_frequency && dutycycle) {
     delayMicroseconds(_rate);
+  }
 }
 
 void Speaker::addToPlay(int number)
@@ -131,12 +108,11 @@ void Speaker::play()
         speak(0, 0);
         return;
       }
-      Serial.println(_queue.item_count());
       play(_queue.dequeue());    
       break;
     
     case OFF:
-      speak(0, 0);
+      speak(PWM_FREQUENCY, 0);
       break;
     
     case ALARM:
@@ -144,7 +120,7 @@ void Speaker::play()
       if (sec % 3 == 0) {
         speak(1000);
       } else {
-        speak(0, 0);
+        speak(PWM_FREQUENCY, 0);
       }
       break;
   }

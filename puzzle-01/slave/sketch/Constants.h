@@ -25,7 +25,7 @@
 
 #define PIN_OUTPUT_1 18
 #define PWM_OUTPUT_1_FREQUENCY 5000
-#define PWM_OUTPUT_1_CHANNEL 0 // 0, 1, 2, or 3
+#define PWM_OUTPUT_1_CHANNEL 3 // 0, 1, 2, or 3
 #define PWM_OUTPUT_1_RESOLUTION 10 // 8, 10, 12, or 15
 
 #define SERIAL_BAUDRATE 38400
@@ -33,32 +33,33 @@
 #define COLOR_SATURATION 128
 
 #define PWM_FREQUENCY 1500
-#define PWM_CHANNEL 1
+#define PWM_CHANNEL 0
 #define PWM_RESOLUTION 8
 #define PWM_DUTYCYCLE 200
 
 enum STATE {
-  ACTIVE = 1,
-  STANDBY = 2,
-  SOLVED = 3,
-  OFFLINE = 4,
-  FAILURE = 5,
-  SYSTEM_ERROR = 6,
-  ERROR = 7,
-  SYNCRONIZED = 8,
-  ON = 9,
-  OFF = 10,
-  INITIALIZING = 11,
-  INITIALIZED = 12,
-  START = 13,
-  END = 14,
-  READING = 15,
-  PLAYING = 16,
-  BALANCED = 17,
-  SETUP = 18,
-  FLASH = 19,
-  UNBALANCED = 20,
-  ALARM = 21
+  OFF = 0,
+  ON = 1,
+  ACTIVE = 2,
+  STANDBY = 3,
+  SOLVED = 4,
+  OFFLINE = 5,
+  FAILURE = 6,
+  SYSTEM_ERROR = 7,
+  ERROR = 8,
+  SYNCRONIZED = 9,
+  INITIALIZING = 10,
+  INITIALIZED = 11,
+  START = 12,
+  END = 13,
+  READING = 14,
+  PLAYING = 15,
+  BALANCED = 16,
+  SETUP = 17,
+  FLASH = 18,
+  UNBALANCED = 19,
+  ALARM = 20,
+  RESET = 21
 };
 
 // Number of Lights and Pin Numbers
@@ -107,6 +108,8 @@ typedef struct {
   unsigned long endTime = 0;
   unsigned long timer = 0;
   unsigned long counter = 0;
-  unsigned long checkpoint = 0;
-  unsigned long interval = 100;
 } Puzzle; 
+
+#define FAILURE_PERIOD_1 10000
+#define FAILURE_PERIOD_2 20000
+#define FAILURE_PERIOD_3 30000
