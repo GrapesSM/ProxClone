@@ -16,12 +16,13 @@ class Speaker
       int enablePin, 
       unsigned int rate, 
       unsigned char** listOfSounds, 
-      unsigned int* listOfLengthOfSounds);
+      unsigned int* listOfLengthOfSounds,
+      int channel);
     void setState(STATE state);
     STATE getState();
     void play();
     void play(int number);
-    void speak(int frequency = PWM_FREQUENCY, int dutycycle = PWM_DUTYCYCLE);
+    void speak(int frequency = PWM_SPEAKER_FREQUENCY, int dutycycle = PWM_SPEAKER_DUTYCYCLE);
     void addToPlay(int number);
 
   private:
@@ -36,6 +37,7 @@ class Speaker
     int _dutycycle;
     STATE _state;
     DataQueue<unsigned int> _queue;
+    int _channel;
 };
 
 Speaker::Speaker() 
@@ -49,7 +51,8 @@ void Speaker::set(
   int enablePin, 
   unsigned int rate,
   unsigned char** listOfSounds,
-  unsigned int* listOfLengthOfSounds)
+  unsigned int* listOfLengthOfSounds,
+  int channel)
 {
   _pin = pin;
   _enablePin = enablePin;
@@ -57,6 +60,7 @@ void Speaker::set(
   _listOfSounds = listOfSounds;
   _listOfLengthOfSounds = listOfLengthOfSounds;
   _numberOfSounds = sizeof(listOfSounds)/sizeof(unsigned char*);
+  _channel = channel;
 }
 
 void Speaker::setState(STATE state)
@@ -81,16 +85,16 @@ void Speaker::speak(int frequency, int dutycycle)
 {
   if (_frequency != frequency) {
     _frequency = frequency;
-    ledcWriteTone(PWM_CHANNEL, frequency);
+    ledcWriteTone(_channel, frequency);
   }
 
   if (_dutycycle != dutycycle) {
     _dutycycle = dutycycle;
-    ledcWrite(PWM_CHANNEL, dutycycle);
+    ledcWrite(_channel, dutycycle);
   }
 
   if (_frequency && dutycycle) {
-    delayMicroseconds(_rate);
+    // delayMicroseconds(_rate);
   }
 }
 
@@ -105,23 +109,30 @@ void Speaker::play()
   {
     case ON:
       if (_queue.isEmpty()) {
+        digitalWrite(_pin, LOW);
         speak(0, 0);
         return;
       }
+      digitalWrite(_pin, HIGH);
       play(_queue.dequeue());    
       break;
     
     case OFF:
-      speak(PWM_FREQUENCY, 0);
+      digitalWrite(_pin, LOW);
+      speak(0, 0);
       break;
     
     case ALARM:
-      unsigned long sec = millis()/1000; 
-      if (sec % 3 == 0) {
+      unsigned long sec = millis()/1000;
+      if (sec % 2 == 0) {
         speak(1000);
       } else {
-        speak(PWM_FREQUENCY, 0);
+        ledcWriteTone(_channel, 0);
+        ledcWrite(_channel, 0);
       }
+      // delayMicroseconds(_rate);
+      // ledcWriteTone(_channel, 1000);
+      // ledcWrite(_channel, PWM_SPEAKER_DUTYCYCLE);
       break;
   }
 }

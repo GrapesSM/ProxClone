@@ -18,11 +18,7 @@ class KeyReader
     void unlatch();
     bool isAllInserted();
     bool isInserted(int number);
-    bool isSolved();
-    void setSolved(bool value);   
-    void disable();
-    void enable();
-    bool isDisabled();
+    void setState(STATE state);
     STATE getState();
   private:
     int _inputPin1;
@@ -62,33 +58,6 @@ bool KeyReader::isInserted(int number)
   return _keys[number - 1];
 }
 
-void KeyReader::setSolved(bool value = true)
-{
-  _solved = value;
-}
-
-bool KeyReader::isSolved()
-{
-  return _solved;
-}
-
-void KeyReader::disable()
-{
-  _state = OFF;
-  _disabled = true;
-}
-
-void KeyReader::enable()
-{
-  _state = ON;
-  _disabled = false;
-}
-
-bool KeyReader::isDisabled()
-{
-  return _disabled;
-}
-
 bool KeyReader::isAllInserted()
 {
   return _keys[0] && _keys[1] && _keys[2];
@@ -96,21 +65,23 @@ bool KeyReader::isAllInserted()
 
 void KeyReader::update()
 {
-  if (_disabled) {
+  if (_state == OFF)
     return;
-  } 
-
-  _state = READING;
+  
   _keys[0] = digitalRead(_inputPin1);
   _keys[1] = digitalRead(_inputPin2);
   _keys[2] = digitalRead(_inputPin3);
   
   if (isAllInserted()) {
-    _solved = true;
     _state = SOLVED;
   } else {
-    _solved = false;
+    _state = ON;
   }
+}
+
+void KeyReader::setState(STATE state)
+{
+  _state = state;
 }
 
 STATE KeyReader::getState()

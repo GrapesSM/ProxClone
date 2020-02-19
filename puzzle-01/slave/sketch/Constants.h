@@ -23,19 +23,19 @@
 #define ADDR_SEVENSEGMENT_2 0x72
 #define ADDR_SLAVE 1
 
-#define PIN_OUTPUT_1 18
-#define PWM_OUTPUT_1_FREQUENCY 5000
-#define PWM_OUTPUT_1_CHANNEL 3 // 0, 1, 2, or 3
-#define PWM_OUTPUT_1_RESOLUTION 10 // 8, 10, 12, or 15
-
 #define SERIAL_BAUDRATE 38400
 #define LED_COUNT 27
 #define COLOR_SATURATION 128
 
-#define PWM_FREQUENCY 1500
-#define PWM_CHANNEL 0
-#define PWM_RESOLUTION 8
-#define PWM_DUTYCYCLE 200
+#define PIN_OUTPUT_1 18
+#define PWM_OUTPUT_1_FREQUENCY 5000
+#define PWM_OUTPUT_1_CHANNEL 0 // 0, 1, 2, or 3
+#define PWM_OUTPUT_1_RESOLUTION 8 // 8, 10, 12, or 15
+
+#define PWM_SPEAKER_FREQUENCY 1500
+#define PWM_SPEAKER_CHANNEL 1
+#define PWM_SPEAKER_RESOLUTION 8
+#define PWM_SPEAKER_DUTYCYCLE 200
 
 enum STATE {
   OFF = 0,
@@ -99,7 +99,7 @@ enum REGISTER_INDEX {
 
 typedef struct {
   uint8_t address = ADDR_SLAVE;
-  STATE state = OFFLINE;
+  STATE state = OFF;
   bool forced = false;
   int totalPower = 10;
   uint8_t numberOfRegisters = 15;

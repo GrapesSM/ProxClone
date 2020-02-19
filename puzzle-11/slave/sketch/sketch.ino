@@ -6,20 +6,7 @@
 #include "sounds/soundPowerDown.h"
 #include "sounds/soundKeyInsert.h"
 
-struct Puzzle {
-  uint8_t address = ADDR_SLAVE;
-  STATE state = NOT_INITIALIZED;
-  bool forced = false;
-  int totalPower = 10;
-  uint8_t numberOfRegisters = 10;
-  uint16_t registers[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-  unsigned long startTime = 0;
-  unsigned long endTime = 0;
-  unsigned long timer = 0;
-  unsigned long counter = 0;
-  unsigned long checkpoint = 0;
-  unsigned long interval = 200;
-} puzzle;
+Puzzle puzzle;
 
 struct Parts {
   Modbus * slave;
@@ -87,35 +74,31 @@ void setup()
   parts.listOfLengthOfSounds[SOUND_KEY_INSERT] = sizeof(soundKeyInsert)/sizeof(soundKeyInsert[0]);
 
   setupLaserGrid();
-
-  puzzle.timer = millis();
+  lgComponents.state = SETUP;
 }
 
 void loop()
 {
+  // Save current timing
+  puzzle.timer = millis();
+
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
-  // Enable Laser Grid
+  // Map puzzle's values with component's values
+  LaserGrid::update(puzzle, lgComponents);
+
+  // Run instructions to state changes
   LaserGrid::run(lgComponents);
 
-  puzzle.timer = millis();
-  if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
-    puzzle.checkpoint = millis();
-    LaserGrid::show(lgComponents);
-  }
-
-  ///////////////////////////////
-  puzzle.registers[5] = lgComponents.state;
-  puzzle.registers[6] = lgComponents.powerSwitch.getState();
-  puzzle.registers[7] = lgComponents.keyReader.getState();
-  puzzle.registers[8] = lgComponents.waveAdjuster.getState();
+  // Show changes
+  LaserGrid::show(lgComponents);
 }
 
 void setupLaserGrid()
 {
   lgComponents.waveAdjuster.set(PIN_ANALOG_INPUT_1, PIN_ANALOG_INPUT_2, PIN_ANALOG_INPUT_3, &Serial2);
   lgComponents.keyReader.set(PIN_INPUT_1, PIN_INPUT_2, PIN_INPUT_3, PIN_RELAY_1);
-  lgComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
+  lgComponents.powerSwitch.set(parts.strip, PIN_LIGHT_FOR_POWER_SWITCH, PIN_SWITCH_1);
   lgComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
 }

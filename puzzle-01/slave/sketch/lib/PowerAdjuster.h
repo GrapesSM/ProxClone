@@ -69,7 +69,26 @@ void PowerAdjuster::update()
 {
   switch (_state)
   {
+    case OFF:
+      _encoder->clearCount();
+      _encoder->setCount((int)(_supply * 100));
+      _encoder->pauseCount();  
+      break;
+    
+    case RESET:
+      _supply = 0;
+      _demand = 0;
+      _encoder->clearCount();
+      _encoder->setCount((int)(_supply * 100));
+      _encoder->pauseCount();  
+      break;
+    
     case ON:
+    default:
+      // if (Serial.available() > 1) {
+      //   _supply = Serial.parseFloat();
+      //   Serial.println(_supply);
+      // }
       _encoder->resumeCount();
       _supply = _encoder->getCount() / 100.00;
       if (_supply >= _maxSupply) {
@@ -85,23 +104,6 @@ void PowerAdjuster::update()
       } else {
         _state = UNBALANCED;
       }
-      break;
-  
-    case OFF:
-      _encoder->clearCount();
-      _encoder->setCount((int)(_supply * 100));
-      _encoder->pauseCount();  
-      break;
-    
-    case RESET:
-      _supply = 0;
-      _demand = 0;
-      _encoder->clearCount();
-      _encoder->setCount((int)(_supply * 100));
-      _encoder->pauseCount();  
-      break;
-    
-    default:
       break;
   } 
 }
@@ -121,7 +123,7 @@ void PowerAdjuster::display()
   _matrix2->print(_demand);
   _matrix2->writeDisplay();
   
-  ledcWrite(_channel, map(_demand - _supply, -_maxDemand, _maxDemand, 255, 0));
+  // ledcWrite(_channel, map(_demand - _supply, -_maxDemand, _maxDemand, 255, 0));
 }
 
 void PowerAdjuster::setMaxSupply(float maxSupply)

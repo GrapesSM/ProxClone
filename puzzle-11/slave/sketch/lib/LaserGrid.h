@@ -19,56 +19,97 @@ namespace LaserGrid {
     STATE state;
     boolean in;
     boolean flag;
+    struct Timer {
+      unsigned long start = 0;
+      unsigned long end = 0;
+      unsigned long current = 0;
+    } timer;
+    struct ShowTimer {
+      unsigned long current = 0;
+      unsigned long showpoint = 0;
+      unsigned long interval = 200;
+    } showTimer;
   } Components;
+
+  void update(Puzzle & p, Components & c) 
+  {
+    p.registers[REG_POWER_STATE] = c.powerSwitch.isSwitchOn() ? ON : OFF;
+    p.registers[REG_SLAVE_STATE] = c.state;
+    p.registers[REG_SLAVE_POWER_SWITCH_STATE] = c.powerSwitch.getState();
+    p.registers[REG_SLAVE_KEY_READER_STATE] = c.keyReader.getState();
+    p.registers[REG_SLAVE_WAVE_ADJUSTER_STATE] = c.waveAdjuster.getState();
+    p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
+    
+    if (c.state == SETUP) {
+      c.state = INITIALIZING;
+      c.speaker.setState(ON);
+      c.state = INITIALIZED;
+    }
+  }
 
   void run(Components & c) 
   {
+    if (c.state == INITIALIZED) {
+      c.state = UNSOLVED;
+    }
+
     c.powerSwitch.update();
     
     if (c.powerSwitch.getState() == OFF) {
       if (c.state == ON) {
-        c.speaker.addToPlay(SOUND_POWER_UP);
+        // c.speaker.addToPlay(SOUND_POWER_UP);
       }
-      c.state = OFF;
-      c.powerSwitch.setLightOff();
-      c.keyReader.disable();
+
+      c.keyReader.setState(OFF);
+      c.waveAdjuster.setState(OFF);
     }
 
     if (c.powerSwitch.getState() == ON) {
       if (c.state == OFF) {
-        c.speaker.addToPlay(SOUND_POWER_UP);
+        // c.speaker.addToPlay(SOUND_POWER_UP);
       }
-      c.state = ON;
-      c.powerSwitch.setLightOn();
-      c.keyReader.enable();
+      
+      c.keyReader.setState(ON);
     }
 
-    c.keyReader.update();
+    if (c.state == UNSOLVED) {
+      if (c.keyReader.getState() == ON) {
+        c.keyReader.update();
+      }
 
-    if (c.keyReader.getState() == SOLVED) {
-      c.waveAdjuster.enable();
-    } else {
-      c.waveAdjuster.disable();
+      if (c.keyReader.getState() == SOLVED) {
+        // c.speaker.speak(c.waveAdjuster.getInputValue(0));
+        c.waveAdjuster.setState(ON);
+      }
+
+      if (c.waveAdjuster.getState() == ON) {
+        c.waveAdjuster.update();
+      }
+
+      if (
+        c.keyReader.getState() == SOLVED && 
+        c.waveAdjuster.getState() == SOLVED
+      ) {
+        c.state = SOLVED;
+      }
     }
 
-    c.waveAdjuster.update();
-
-    if (c.keyReader.getState() == SOLVED) {
-      c.speaker.speak(c.waveAdjuster.getInputValue(0));
-    }
-
-    if (
-      c.keyReader.getState() == SOLVED && 
-      c.waveAdjuster.getState() == SOLVED
-    ) {
-      c.state = SOLVED;
+    if (c.state == SOLVED) {
+      
     }
   }
 
   void show(Components & c)
   {
-    c.powerSwitch.display();
-    c.speaker.play();
+    c.showTimer.current = millis();
+    if ((c.showTimer.current - c.showTimer.showpoint) > c.showTimer.interval) {
+      c.showTimer.showpoint = millis();
+
+      c.powerSwitch.display();
+      c.speaker.play();
+    }
+    
+    c.waveAdjuster.display();
   }
 }
 

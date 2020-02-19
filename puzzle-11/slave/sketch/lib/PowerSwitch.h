@@ -64,10 +64,12 @@ void PowerSwitch::update()
 {
   if (isSwitchOff()) {
     _state = OFF;
+    setLightOff();
   }
 
   if (isSwitchOn()) {
     _state = ON;
+    setLightOn();
   }
 }
 

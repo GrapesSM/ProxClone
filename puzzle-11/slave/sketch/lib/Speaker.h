@@ -17,10 +17,8 @@ class Speaker
       unsigned int rate, 
       unsigned char** listOfSounds, 
       unsigned int* listOfLengthOfSounds);
-    void init();
-    void enable();
-    void disable();
-    void isDisabled();
+    void setState(STATE state);
+    STATE getState();
     void play();
     void play(int number);
     void speak(int frequency = PWM_FREQUENCY, int dutycycle = PWM_DUTYCYCLE);
@@ -29,7 +27,6 @@ class Speaker
   private:
     int _pin;
     int _enablePin;
-    bool _disabled;
     int _counter;
     unsigned int _rate;
     unsigned char** _listOfSounds;
@@ -43,7 +40,6 @@ class Speaker
 
 Speaker::Speaker() 
 {
-  _disabled = true;
   _counter = 0;
   _numberOfSounds = 0;
 }
@@ -63,26 +59,22 @@ void Speaker::set(
   _numberOfSounds = sizeof(listOfSounds)/sizeof(unsigned char*);
 }
 
-void Speaker::enable()
+void Speaker::setState(STATE state)
 {
-  _state = ON;
-  _disabled = false;
+  _state = state;
 }
 
-void Speaker::disable()
+STATE Speaker::getState()
 {
-  _state = OFF;
-  _disabled = true;
+  return _state;
 }
 
 void Speaker::play(int number)
 {
-  _state = PLAYING;
   for (int i = 0; i < _listOfLengthOfSounds[number]; i++) {
     dacWrite(_pin, _listOfSounds[number][i]);
     delayMicroseconds(_rate);
   }
-  _state = STANDBY;
 }
 
 void Speaker::speak(int frequency, int dutycycle)
@@ -96,7 +88,10 @@ void Speaker::speak(int frequency, int dutycycle)
     _dutycycle = dutycycle;
     ledcWrite(PWM_CHANNEL, dutycycle);
   }
-  delayMicroseconds(_rate);
+
+  if (_frequency && dutycycle) {
+    delayMicroseconds(_rate);
+  }
 }
 
 void Speaker::addToPlay(int number)
@@ -106,12 +101,29 @@ void Speaker::addToPlay(int number)
 
 void Speaker::play()
 {
-  if (_queue.isEmpty()) {
-    return;
+  switch (_state)
+  {
+    case ON:
+      if (_queue.isEmpty()) {
+        speak(0, 0);
+        return;
+      }
+      play(_queue.dequeue());    
+      break;
+    
+    case OFF:
+      speak(PWM_FREQUENCY, 0);
+      break;
+    
+    case ALARM:
+      unsigned long sec = millis()/1000; 
+      if (sec % 3 == 0) {
+        speak(1000);
+      } else {
+        speak(PWM_FREQUENCY, 0);
+      }
+      break;
   }
-  int val = _queue.dequeue();
-  Serial.println(val);
-  play(val);
 }
 
 #endif

@@ -69,7 +69,7 @@ namespace PowerPanel {
 
     if (c.state == STANDBY) {
       c.powerAdjuster.update();
-      int batteryLevel = map(c.powerAdjuster.getSupply(), 0.0, c.powerAdjuster.getMaxDemand(), 0, 100);
+      int batteryLevel = map(c.powerAdjuster.getSupply(), 0.0, c.powerAdjuster.getMaxSupply(), 0, 100);
       c.battery.setValue(batteryLevel);
       c.battery.update();
       c.lightEffect.update();
@@ -97,7 +97,7 @@ namespace PowerPanel {
 
       if (c.powerAdjuster.getState() == BALANCED) {
         c.powerLightIndicator.setState(ON);
-        c.speaker.setState(ON);
+        c.speaker.setState(OFF);
         c.lightEffect.setState(ON);
         c.battery.setState(ON);
         c.timer.start = 0;
