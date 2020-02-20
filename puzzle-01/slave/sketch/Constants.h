@@ -59,7 +59,8 @@ enum STATE {
   FLASH = 18,
   UNBALANCED = 19,
   ALARM = 20,
-  RESET = 21
+  RESET = 21,
+  UNSOLVED = 22
 };
 
 // Number of Lights and Pin Numbers

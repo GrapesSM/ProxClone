@@ -5,23 +5,9 @@
 #include "Adafruit_LEDBackpack.h"
 #include "lib/LifeSupport.h"
 #include "sounds/soundPowerUp.h"
-//#include "sounds/soundPowerDown.h"
-//#include "sounds/soundKeyInsert.h"
+#include "sounds/soundPowerDown.h"
 
-struct Puzzle {
-  uint8_t address = ADDR_SLAVE;
-  STATE state = INITIALIZED;
-  bool forced = false;
-  int totalPower = 10;
-  uint8_t numberOfRegisters = 10;
-  uint16_t registers[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-  unsigned long startTime = 0;
-  unsigned long endTime = 0;
-  unsigned long timer = 0;
-  unsigned long counter = 0;
-  unsigned long checkpoint = 0;
-  unsigned long interval = 200;
-} puzzle;
+Puzzle puzzle;
 
 struct Parts {
   Modbus * slave;
@@ -62,47 +48,50 @@ void setup()
   pinMode(PIN_SWITCH_2, INPUT);
   pinMode(PIN_SWITCH_3, INPUT);
 
+  // Setup power switch
+  pinMode(PIN_INPUT_1, INPUT);
+  pinMode(PIN_INPUT_2, INPUT);
+
   // Setup speaker pins
   pinMode(PIN_SPEAKER, OUTPUT);
-  ledcSetup(PWM_CHANNEL, PWM_FREQUENCY, PWM_RESOLUTION);
-  ledcAttachPin(PIN_SPEAKER, PWM_CHANNEL);
+  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
+  ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
   pinMode(PIN_AMPLIFIER, OUTPUT);
   digitalWrite(PIN_AMPLIFIER, HIGH);
 
   // Setup sound list
   parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
   parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
-  // parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
-  // parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
-  // parts.listOfSounds[SOUND_KEY_INSERT] = soundKeyInsert;
-  // parts.listOfLengthOfSounds[SOUND_KEY_INSERT] = sizeof(soundKeyInsert)/sizeof(soundKeyInsert[0]);
+  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
+  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
 
   setupLifeSupport();
-
-  puzzle.timer = millis();
+  lsComponents.state = SETUP;
 }
 
 void loop() 
 {
+  // Save timings
+  puzzle.timer = millis();
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
-  // Enable Energy Supplemental
+  // Map puzzle's values to component's values
+  LifeSupport::update(puzzle, lsComponents);
+
+  // Process change and assign states
   LifeSupport::run(lsComponents);
 
-  puzzle.timer = millis();
-  if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
-    puzzle.checkpoint = millis();
-    LifeSupport::show(lsComponents);
-  }
+  // Show changes on the panel
+  LifeSupport::show(lsComponents);
 }
 
 void setupLifeSupport()
 {
-  lsComponents.externalVent.set();
-  lsComponents.airSupplyPump.set();
-  lsComponents.airPressureStatus.set();
-  lsComponents.powerSwitch.set();
-  lsComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
-  lsComponents.lightEffect.set();
+  lsComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
+  lsComponents.externalVent.set(parts.strip, lightPinsForExternalVent, PIN_INPUT_1);
+  lsComponents.airSupplyPump.set(parts.strip, lightPinsForAirSupplyPump, PIN_INPUT_2);
+  lsComponents.airPressureStatus.set(parts.strip, lightPinsForAirPressureStatus, &parts.matrix);
+  lsComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
+  lsComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
 }
