@@ -15,17 +15,14 @@ class BatteryMatrix
     void switchToRed(); 
     void switchToYellow();
     void switchToGreen();
-    void disable();
-    void enable();
     void display();
-    bool isDisabled();
-    bool isSolved();
-    void setSolved(bool solved);
+    void update();
+    void setState(STATE state);
+    STATE getState();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
-    bool _disabled;
-    bool _solved;
+    STATE _state;
 };
 
 BatteryMatrix::BatteryMatrix() {}
@@ -34,8 +31,6 @@ void BatteryMatrix::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, in
 {
   _strip = strip;
   _lightPins = lightPins;
-  _disabled = true;
-  _solved = false;
 }
 
 void BatteryMatrix::switchToRed() 
@@ -59,32 +54,23 @@ void BatteryMatrix::switchToGreen()
   _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
 }
 
-void BatteryMatrix::disable() 
+void BatteryMatrix::update() 
 {
-  _disabled = true;
-  for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_BATTERY_MATRIX; i++) {
-    _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+  if (_state == DISABLE) {
+    for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_BATTERY_MATRIX; i++) {
+      _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+    }
   }
 }
 
-void BatteryMatrix::enable() 
+void BatteryMatrix::setState(STATE state)
 {
-  _disabled = false;
+  _state = state;
 }
 
-bool BatteryMatrix::isDisabled()
+STATE BatteryMatrix::getState()
 {
-  return _disabled;
-}
-
-bool BatteryMatrix::isSolved()
-{
-  return _solved;
-}
-
-void BatteryMatrix::setSolved(bool solved = true)
-{
-  _solved = solved;
+  return _state;
 }
 
 void BatteryMatrix::display() 

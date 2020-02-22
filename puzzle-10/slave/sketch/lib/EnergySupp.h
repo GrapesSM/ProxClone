@@ -1,5 +1,5 @@
 /*
-  EnergySupp.h - Library for ______.
+  EnergySupp.h - Library for ________.
 */
 #ifndef EnergySupp_h
 #define EnergySupp_h
@@ -11,21 +11,18 @@ class EnergySupp
 {
   public:
     EnergySupp();
-    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[]);\
+    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[]);
     void switchToRed(); 
     void switchToYellow();
     void switchToGreen();
-    void disable();
-    void enable();
     void display();
-    bool isDisabled();
-    bool isSolved();
-    void setSolved(bool solved);
+    void update();
+    void setState(STATE state);
+    STATE getState();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
-    bool _disabled;
-    bool _solved;
+    STATE _state;
 };
 
 EnergySupp::EnergySupp() {}
@@ -34,7 +31,6 @@ void EnergySupp::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int l
 {
   _strip = strip;
   _lightPins = lightPins;
-  _disabled = true;
 }
 
 void EnergySupp::switchToRed() 
@@ -58,35 +54,26 @@ void EnergySupp::switchToGreen()
   _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
 }
 
-void EnergySupp::disable() 
+void EnergySupp::update() 
 {
-  _disabled = true;
-  for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_ENERGY_SUPP; i++) {
-    _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+  if (_state == DISABLE) {
+    for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_ENERGY_SUPP; i++) {
+      _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+    }
   }
 }
 
-void EnergySupp::enable() 
+void EnergySupp::setState(STATE state)
 {
-  _disabled = false;
+  _state = state;
 }
 
-bool EnergySupp::isDisabled()
+STATE EnergySupp::getState()
 {
-  return _disabled;
+  return _state;
 }
 
-bool EnergySupp::isSolved()
-{
-  return _solved;
-}
-
-void EnergySupp::setSolved(bool solved = true)
-{
-  _solved = solved;
-}
-
-void EnergySupp::display()
+void EnergySupp::display() 
 {
   _strip->Show();
 }

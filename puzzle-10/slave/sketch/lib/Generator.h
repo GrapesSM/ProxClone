@@ -1,5 +1,5 @@
 /*
-  Generator.h - Library for ______.
+  Generator.h - Library for ________.
 */
 #ifndef Generator_h
 #define Generator_h
@@ -11,30 +11,26 @@ class Generator
 {
   public:
     Generator();
-    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
+    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[]);
     void switchToRed(); 
     void switchToYellow();
     void switchToGreen();
-    void disable();
-    void enable();
     void display();
-    bool isDisabled();
-    bool isSolved();
-    void setSolved(bool solved);
+    void update();
+    void setState(STATE state);
+    STATE getState();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
-    bool _disabled;
-    bool _solved;
+    STATE _state;
 };
 
-Generator::Generator(){}
+Generator::Generator() {}
 
 void Generator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[])
 {
   _strip = strip;
   _lightPins = lightPins;
-  _disabled = true;
 }
 
 void Generator::switchToRed() 
@@ -58,38 +54,28 @@ void Generator::switchToGreen()
   _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
 }
 
-void Generator::disable() 
+void Generator::update() 
 {
-  _disabled = true;
-  for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_GENERATOR; i++) {
-    _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+  if (_state == DISABLE) {
+    for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_GENERATOR; i++) {
+      _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+    }
   }
 }
 
-void Generator::enable() 
+void Generator::setState(STATE state)
 {
-  _disabled = false;
+  _state = state;
 }
 
-bool Generator::isDisabled()
+STATE Generator::getState()
 {
-  return _disabled;
-}
-
-bool Generator::isSolved()
-{
-  return _solved;
-}
-
-void Generator::setSolved(bool solved = true)
-{
-  _solved = solved;
+  return _state;
 }
 
 void Generator::display() 
 {
   _strip->Show();
 }
-
 
 #endif
