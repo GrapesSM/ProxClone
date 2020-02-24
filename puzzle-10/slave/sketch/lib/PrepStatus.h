@@ -41,16 +41,38 @@ namespace PrepStatus {
     p.registers[REG_SLAVE_SYNCRO_READER_STATE] = c.syncroReader.getState();
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
     p.registers[REG_SLAVE_LIGHT_EFFECT_STATE] = c.lightEffect.getState();
-    p.registers[REG_SLAVE_TIME] = millis();
     p.registers[REG_SLAVE_SYNCRO_READER_INPUT_KEY] = c.syncroReader.getInputKey();
-    p.registers[REG_SLAVE_SYNCRO_READER_LAST_REFRESH_TIME] = c.syncroReader.getLastRefreshTime();
-    if (p.registers[REG_MASTER_COMMAND] == CMD_START_TIMER) {
-      if (c.syncroReader.getState() == DONE) {
-        c.syncroReader.startTimer();
+    if (p.registers[REG_MASTER_COMMAND] == CMD_START_TIMER &&
+        p.registers[REG_MASTER_CONFIRM] != DONE) {
+      if (c.syncroReader.getState() == DONE || c.syncroReader.getState() == ENABLE) {
+        c.syncroReader.setState(START_TIMER);
         p.registers[REG_MASTER_CONFIRM] = DONE;
       }
     }
-    
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_SYNCRONIZED &&
+        p.registers[REG_MASTER_CONFIRM] != DONE) {
+      c.syncroReader.setState(SYNCRONIZED);
+      p.registers[REG_MASTER_CONFIRM] = DONE;
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_BATTERY_MATRIX_SOLVED &&
+        p.registers[REG_MASTER_CONFIRM] != DONE) {
+      c.batteryMatrix.setState(SOLVED);
+      p.registers[REG_MASTER_CONFIRM] = DONE;
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_ENERGY_SUPP_SOLVED &&
+        p.registers[REG_MASTER_CONFIRM] != DONE) {
+      c.energySupp.setState(SOLVED);
+      p.registers[REG_MASTER_CONFIRM] = DONE;
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_GENERATOR_SOLVED &&
+        p.registers[REG_MASTER_CONFIRM] != DONE) {
+      c.generator.setState(SOLVED);
+      p.registers[REG_MASTER_CONFIRM] = DONE;
+    }
     
     if (c.state == SETUP) {
       c.state = INITIALIZING;
@@ -71,6 +93,7 @@ namespace PrepStatus {
     }
 
     c.powerSwitch.update();
+    c.lightEffect.update();
 
     if (c.powerSwitch.getState() == OFF) {
       c.batteryMatrix.setState(DISABLE);
@@ -82,11 +105,16 @@ namespace PrepStatus {
     } 
     
     if (c.powerSwitch.getState() == ON) {
-      c.batteryMatrix.setState(ENABLE);
-      c.energySupp.setState(ENABLE);
-      c.generator.setState(ENABLE);
-      c.speaker.setState(ENABLE);
-      c.lightEffect.setState(ENABLE);
+      if (c.batteryMatrix.getState() == DISABLE) 
+        c.batteryMatrix.setState(ENABLE);
+      if (c.energySupp.getState() == DISABLE) 
+        c.energySupp.setState(ENABLE);
+      if (c.generator.getState() == DISABLE) 
+        c.generator.setState(ENABLE);
+      if (c.speaker.getState() == DISABLE) 
+        c.speaker.setState(ENABLE);
+      if (c.lightEffect.getState() == DISABLE) 
+        c.lightEffect.setState(ENABLE);
     }
 
     if (c.state == UNSOLVED) {
@@ -103,26 +131,9 @@ namespace PrepStatus {
         c.batteryMatrix.switchToGreen();
         c.energySupp.switchToGreen();
         c.generator.switchToGreen();
-        c.syncroReader.setState(ENABLE);
-      } else {
-        if (c.batteryMatrix.getState() == SOLVED) {
-          c.batteryMatrix.switchToYellow();
-        } else {
-          c.batteryMatrix.switchToRed();
-        }
-
-        if (c.energySupp.getState() == SOLVED) {
-          c.energySupp.switchToYellow();
-        } else {
-          c.energySupp.switchToRed();
-        }
-
-        if (c.generator.getState() == SOLVED) {
-          c.generator.switchToYellow();
-        } else {
-          c.generator.switchToRed();
-        }
-      }
+        if (c.syncroReader.getState() == DISABLE)
+          c.syncroReader.setState(ENABLE);
+      } 
 
       if (
         c.batteryMatrix.getState() == SOLVED &&
@@ -138,16 +149,6 @@ namespace PrepStatus {
     if (c.state == SOLVED) {
       Serial.println("SOLVED");
     }
-
-    if(! c.syncroReader.isSynchronized()){
-      c.syncroReader.update();
-      if(c.syncroReader.getInputKey() == 1){
-        c.syncroReader.setSynchronized();
-      }
-    }
-    else{
-      c.syncroReader.setSynchronized();
-    }
   }
 
   void show(Components & c)
@@ -158,8 +159,8 @@ namespace PrepStatus {
     
       c.powerSwitch.display();
       c.lightEffect.display();
+      c.syncroReader.display();
     }
-    c.syncroReader.display();
   }
 }
 

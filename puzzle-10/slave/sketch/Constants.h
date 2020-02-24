@@ -39,7 +39,7 @@ enum STATE {
   OFFLINE = 5,
   FAILURE = 6,
   SYSTEM_ERROR = 7,
-  ERROR = 8,
+  _ERROR = 8,
   SYNCRONIZED = 9,
   INITIALIZING = 10,
   INITIALIZED = 11,
@@ -56,7 +56,9 @@ enum STATE {
   UNSOLVED = 22,
   DONE = 23,
   COUNTING = 24,
-  OK = 25
+  DISABLE = 26,
+  ENABLE = 27,
+  START_TIMER = 28
 };
 
 // Number of Lights and Pin Numbers
@@ -97,11 +99,16 @@ enum REGISTER_INDEX {
   REG_SLAVE_GENERATOR_STATE = 9,
   REG_SLAVE_SYNCRO_READER_STATE = 10,
   REG_SLAVE_SPEAKER_STATE = 11,
-  REG_SLAVE_LIGHT_EFFECT_STATE = 12
+  REG_SLAVE_LIGHT_EFFECT_STATE = 12,
+  REG_SLAVE_SYNCRO_READER_INPUT_KEY = 13
 };
 
 enum COMMAND {
-  CMD_START_TIMER = 10
+  CMD_START_TIMER = 1,
+  CMD_SET_SYNCRONIZED = 2,
+  CMD_SET_BATTERY_MATRIX_SOLVED = 3,
+  CMD_SET_ENERGY_SUPP_SOLVED = 4,
+  CMD_SET_GENERATOR_SOLVED = 5
 };
 
 typedef struct Puzzle {
@@ -109,8 +116,8 @@ typedef struct Puzzle {
   STATE state = INITIALIZED;
   bool forced = false;
   int totalPower = 10;
-  uint8_t numberOfRegisters = 10;
-  uint16_t registers[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  uint8_t numberOfRegisters = 15;
+  uint16_t registers[15] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   unsigned long startTime = 0;
   unsigned long endTime = 0;
   unsigned long timer = 0;

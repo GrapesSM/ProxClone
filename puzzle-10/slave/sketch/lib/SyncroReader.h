@@ -66,13 +66,6 @@ int SyncroReader::getInputKey()
   return _inputKey;
 }
 
-void SyncroReader::startTimer()
-{
-  _timer.start = millis();
-  _timer.lastRefreshTime = _timer.start;
-  _state = COUNTING;
-}
-
 void SyncroReader::update()
 {
   if (_state == DISABLE) {
@@ -89,11 +82,13 @@ void SyncroReader::update()
     return;
   }
 
+  if (_state == START_TIMER) {
+    _timer.start = millis();
+    _timer.lastRefreshTime = _timer.start;
+    _state = COUNTING;
+  }
+
   if (_state == COUNTING) {
-    for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
-      _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
-    }
-    _count = 0;
     if (millis() - _timer.lastRefreshTime >= _timer.waitTimeMillis / 4) {
       _strip->SetPixelColor(_lightPins[0], RgbColor(127, 127, 127));
       _count = 3;
@@ -104,8 +99,12 @@ void SyncroReader::update()
           _strip->SetPixelColor(_lightPins[2], RgbColor(127, 127, 127));
           _count = 1;
           if (millis() - _timer.lastRefreshTime >= _timer.waitTimeMillis) {
-            _timer.lastRefreshTime = millis();
+            for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
+              _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+            }
             _state = DONE;
+            _count = 0;
+            _timer.lastRefreshTime = millis();
           }
         }
       }

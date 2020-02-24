@@ -60,6 +60,13 @@ void EnergySupp::update()
     for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_ENERGY_SUPP; i++) {
       _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
     }
+    return;
+  }
+
+  if (_state == SOLVED) {
+    switchToYellow();
+  } else {
+    switchToRed();
   }
 }
 

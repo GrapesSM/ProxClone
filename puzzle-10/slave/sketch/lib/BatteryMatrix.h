@@ -60,6 +60,13 @@ void BatteryMatrix::update()
     for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_BATTERY_MATRIX; i++) {
       _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
     }
+    return;
+  }
+
+  if (_state == SOLVED) {
+    switchToYellow();
+  } else {
+    switchToRed();
   }
 }
 
