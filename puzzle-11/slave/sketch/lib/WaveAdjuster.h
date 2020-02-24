@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 #include "helpers.h"
-#define TOLERANCE 5
+#define TOLERANCE 10
 
 class WaveAdjuster
 {
@@ -61,6 +61,10 @@ int WaveAdjuster::getPhase(int number)
 
 void WaveAdjuster::update() 
 {
+  if (_state == DISABLE) {
+    return;
+  }
+
   _inputValues[0] = analogRead(_inputPin1); 
   _inputValues[1] = analogRead(_inputPin2);
   _inputValues[2] = analogRead(_inputPin3);
@@ -74,15 +78,15 @@ bool WaveAdjuster::isSyncronized()
 {
   int diff1 = abs(getPhase(1) - getPhase(2));
   int diff2 = abs(getPhase(2) - getPhase(3));
-  Serial.print(diff1);
-  Serial.print(":");
-  Serial.print(diff2);
-  Serial.println();
   return (diff1 < TOLERANCE) && (diff2 < TOLERANCE);
 }
 
 void WaveAdjuster::display() 
 {
+  if (_state == DISABLE) {
+    return;
+  }
+
   if (millis() - timer > interval) {
     timer = millis();
     i++;
