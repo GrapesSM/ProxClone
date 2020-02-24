@@ -16,12 +16,11 @@ class InformationDisplay
     void set(ESP32Encoder * encoder);
     void update();
     void display();
-    void disable();
     void enable();
-    bool isDisabled();
-    void frameShowSeries(int);
+    void frameShowSeries();
     void setCurrentSeries(int);
     STATE getState();
+    void setState(STATE state);
   private:
     ESP32Encoder *_encoder;
     int _val;
@@ -69,7 +68,7 @@ void InformationDisplay::frameShowSeries(){
       break;
 
     case 1:
-      if(_val/10)%2 == 1){
+      if((_val/10)%2 == 1){
         Serial2.print("p0.pic=1");
         Serial2.write(0xff);
         Serial2.write(0xff);
@@ -83,7 +82,7 @@ void InformationDisplay::frameShowSeries(){
         break;
       }
     case 2:
-      if(_val/10)%3 == 2){
+      if((_val/10)%3 == 2){
         Serial2.print("p0.pic=3");
         Serial2.write(0xff);
         Serial2.write(0xff);
@@ -106,26 +105,17 @@ void InformationDisplay::frameShowSeries(){
 }
 
 void InformationDisplay::update() {
-  if(_disabled) return;
-  _state = READING;
-  frameShowSeries();
-}
-
-void InformationDisplay::disable() {
-  _disabled = true;
-  _state = OFF;
-  _encoder->pauseCount();
+  if(_state == DISABLE) return;
+  if(_state == ENABLE)
+  {
+    frameShowSeries();
+  }
 }
 
 void InformationDisplay::enable() {
   _disabled = false;
   _state = ON;
   _encoder->resumeCount();
-}
-
-bool InformationDisplay::isDisabled()
-{
-  return _disabled;
 }
 
 void InformationDisplay::display() {
@@ -135,6 +125,11 @@ void InformationDisplay::display() {
 STATE InformationDisplay::getState()
 {
   return _state;
+}
+
+void InformationDisplay::setState(STATE state)
+{
+  _state = state;
 }
 
 #endif

@@ -13,20 +13,20 @@ class LightEffect
     LightEffect();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
     void update();
-    void enable();
     void disable();
-    bool isDisabled();
+    void setState(STATE state);
+    STATE getState();
     void display();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
     int _current;
     bool _disabled;
+    STATE _state;
 };
 
 LightEffect::LightEffect(){
   _current = 0;
-  _disabled = true;
 }
 
 void LightEffect::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[])
@@ -35,30 +35,45 @@ void LightEffect::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int l
   _lightPins = lightPins;
 }
 
+void LightEffect::setState(STATE state)
+{
+  _state = state;
+}
+
+STATE LightEffect::getState()
+{
+  return _state;
+}
+
 void LightEffect::update()
 {
-  int next = _current + 1;
-  if (next == NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT) {
-    next = 0;
+  int next;
+  switch (_state)
+  {
+    case ON:
+      next = _current + 1;
+      if (next == NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT) {
+        next = 0;
+      }
+      _strip->SetPixelColor(_lightPins[_current], RgbColor(0, 0, 0));
+      _strip->SetPixelColor(_lightPins[next], RgbColor(HtmlColor((uint32_t)random(0, 16777216))));
+      break;
+    case OFF:
+      for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT; i++) {
+        _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+      }
+      break;
+    case FLASH:
+      next = _current + 1;
+      if (next == NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT) {
+        next = 0;
+      }
+      _strip->SetPixelColor(_lightPins[_current], RgbColor(0, 0, 0));
+      _strip->SetPixelColor(_lightPins[next], RgbColor(255, 0, 0));
+      break;
+    default:
+      break;
   }
-  _strip->SetPixelColor(_lightPins[_current], RgbColor(0, 0, 0));
-  _strip->SetPixelColor(_lightPins[next], RgbColor(HtmlColor((uint32_t)random(0, 16777216))));
-}
-
-void LightEffect::enable()
-{
-  _disabled = false;
-  // TO-DO:
-}
-
-void LightEffect::disable()
-{
-  _disabled = true;
-}
-
-bool LightEffect::isDisabled()
-{
-  return _disabled;
 }
 
 void LightEffect::display()

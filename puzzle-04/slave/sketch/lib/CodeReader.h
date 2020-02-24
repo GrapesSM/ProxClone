@@ -35,9 +35,8 @@ class CodeReader
     char readInput();
     String getTransmittedKey();
     MODE readMode();
-    bool isSolved();
-    void setSolved(bool);
     STATE getState();
+    void setState(STATE state);
   private:
     SevenSegment *_matrix;
     Adafruit_MCP23017 *_mcp1;
@@ -49,7 +48,6 @@ class CodeReader
     int _transmitPin;
     bool _disabled;
     int _counter;
-    bool _solved;
     bool _entered;
     String _key;
     bool _transmitted;
@@ -58,10 +56,8 @@ class CodeReader
 };
 
 CodeReader::CodeReader() {
-  _disabled = true;
   _entered = false;
   _counter = 0;
-  _solved = false;
   _transmitted = false;
   _key = "";
   _transmittedKey = "";
@@ -87,37 +83,9 @@ void CodeReader::set(
   _transmitPin = transmitPin;
 }
 
-bool CodeReader::isSolved() {
-  return _solved;
-}
-
-void CodeReader::setSolved(bool solved = true) {
-  _state = SOLVED;
-  _solved = solved;
-}
-
 
 String CodeReader::getTransmittedKey() {
   return _transmittedKey;
-}
-
-void CodeReader::disable()
-{
-  _state = OFF;
-  _disabled = true;
-  // TO-DO:
-}
-
-void CodeReader::enable()
-{
-  _state = ON;
-  _disabled = false;
-  // TO-DO:
-}
-
-bool CodeReader::isDisabled()
-{
-  return _disabled;
 }
 
 char CodeReader::readInput()
@@ -173,48 +141,56 @@ MODE CodeReader::readMode()
 
 void CodeReader::update()
 {
-  if (_disabled) return;
-  _state = READING;
-  char input = readInput();
-  MODE mode = readMode();
-  switch(mode) {
-    case INPUT_MODE: 
-      // Update number -----------------
-      if (_entered == false && input != 'n' && _counter < _matrix->getNumberOfDigits()) {
-        _counter++;
-        _entered = true;
-      }
-
-      if (_entered == true && input != 'n' && _counter <= _matrix->getNumberOfDigits() && _counter > _key.length()) {
-        _key += String(input);
-      }
-
-      if (input == 'n') {
-        _entered = false;
-      }
-      // ------------------------------
-      break;
-    case CLEAR_MODE:
-      _key = "";
-      _entered = false;
-      _counter = 0;
-      _transmittedKey = "";
-      break;
+  if (_state == DISABLE){
+      Serial.println("DISABLE");
+      return;
   } 
+    Serial.println("ENABLE");
 
-  if (digitalRead(_transmitPin) == HIGH && _transmitted == false) {
-    _transmitted = true;
-    _transmittedKey = _key;
-  }
+    char input = readInput();
+    MODE mode = readMode();
+    switch(mode) {
+      case INPUT_MODE: 
+        // Update number -----------------
+        if (_entered == false && input != 'n' && _counter < _matrix->getNumberOfDigits()) {
+          _counter++;
+          _entered = true;
+        }
 
+        if (_entered == true && input != 'n' && _counter <= _matrix->getNumberOfDigits() && _counter > _key.length()) {
+          _key += String(input);
+        }
+
+        if (input == 'n') {
+          _entered = false;
+        }
+        // ------------------------------
+        break;
+      case CLEAR_MODE:
+        _key = "";
+        _entered = false;
+        _counter = 0;
+        _transmittedKey = "";
+        break;
+    } 
+
+    if (digitalRead(_transmitPin) == HIGH && _transmitted == false) {
+      _transmitted = true;
+      _transmittedKey = _key;
+    }
+    if (digitalRead(_transmitPin) == LOW && _transmitted == true) {
+      _transmitted = false;
+    }
   
-  if (digitalRead(_transmitPin) == LOW && _transmitted == true) {
-    _transmitted = false;
-  }
 }
 
 void CodeReader::display()
 {
+  if(_state == DISABLE){
+    _matrix->clear();
+    _matrix->writeDisplay();
+    return;
+  }
   _matrix->clear();
   if (_key.length() > 0) _matrix->printString(_key);
   _matrix->writeDisplay();
@@ -222,6 +198,10 @@ void CodeReader::display()
 STATE CodeReader::getState()
 {
   return _state;
+}
+void CodeReader::setState(STATE state)
+{
+  _state = state;
 }
 
 #endif
