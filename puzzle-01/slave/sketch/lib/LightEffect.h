@@ -70,6 +70,12 @@ void LightEffect::update()
       _strip->SetPixelColor(_lightPins[_current], RgbColor(0, 0, 0));
       _strip->SetPixelColor(_lightPins[next], RgbColor(255, 0, 0));
       break;
+    
+    case FAILURE:
+      for(int i = 0; i <NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT; i++ ){
+        _strip->SetPixelColor(_lightPins[i], RgbColor(127, 0, 0));
+      }
+      break;
     default:
       break;
   }

@@ -67,7 +67,7 @@ namespace PowerPanel {
       c.state = STANDBY;
     }
 
-    if (c.state == STANDBY) {
+    if (c.state == STANDBY || c.state == FAILURE) {
       c.powerAdjuster.update();
       int batteryLevel = map(c.powerAdjuster.getSupply(), 0.0, c.powerAdjuster.getMaxSupply(), 0, 100);
       c.battery.setValue(batteryLevel);
@@ -82,7 +82,7 @@ namespace PowerPanel {
         if ((c.timer.current - c.timer.start) > FAILURE_PERIOD_3) {
           c.speaker.setState(OFF);
           c.powerLightIndicator.setState(OFF);
-          c.lightEffect.setState(OFF);
+          c.lightEffect.setState(FAILURE);
           c.powerAdjuster.setState(RESET);
           c.battery.setState(OFF);
           c.state = FAILURE;

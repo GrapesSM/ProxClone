@@ -60,6 +60,7 @@ void Battery::update()
           break;
         case 1:
           color = RgbColor(255, 0, 0);
+          break;
         default:
           break;
       }

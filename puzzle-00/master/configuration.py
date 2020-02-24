@@ -8,7 +8,7 @@ server = {
 
 modbus = {
     # 'port': '/dev/ttyUSB0',
-    'port': 'COM6',
+    'port': 'COM5',
     'baudrate': 38400,
     'bytesize': 8,
     'parity': 'N',

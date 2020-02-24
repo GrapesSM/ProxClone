@@ -123,7 +123,7 @@ void PowerAdjuster::display()
   _matrix2->print(_demand);
   _matrix2->writeDisplay();
   
-  // ledcWrite(_channel, map(_demand - _supply, -_maxDemand, _maxDemand, 255, 0));
+   ledcWrite(_channel, map(_demand - _supply, -_maxDemand, _maxDemand, 255, 0));
 }
 
 void PowerAdjuster::setMaxSupply(float maxSupply)
