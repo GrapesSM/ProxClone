@@ -25,6 +25,8 @@ class CombinationReader
     void enable();
     bool isDisabled();
     bool isSolved();
+    void setState(STATE);
+    STATE getState();
   private:
     ESP32Encoder *_encoder;
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
@@ -44,6 +46,7 @@ class CombinationReader
     const unsigned long _waitTimeMillis = 100; // ms
 	  unsigned long lastRefreshTime;
     int overtravel;
+    STATE _state;
 };
 
 CombinationReader::CombinationReader() {
@@ -165,19 +168,29 @@ void CombinationReader::checkNumber() {
 }
 
 void CombinationReader::update() {
-  _val = _encoder->getCount();
-  if (_val >= _max) {
-    _val = _max;
-    _encoder->setCount(_max);
-  } else if (_val <= _min) {
-    _val = _min;
-    _encoder->setCount(_min);
+  if(_state == DISABLE) return;
+  if(_state == ENABLE){
+    _val = _encoder->getCount();
+    if (_val >= _max) {
+      _val = _max;
+      _encoder->setCount(_max);
+    } else if (_val <= _min) {
+      _val = _min;
+      _encoder->setCount(_min);
+    }
+    if(millis() - lastRefreshTime >= _waitTimeMillis){
+        lastRefreshTime = millis();
+        _submittedVal = _val;
+    }
+    Serial.println(_submittedVal);
+    if(isSolved()){
+      _state = SOLVED;
+    }else
+    {
+      checkNumber();
+    }
+    
   }
-  if(millis() - lastRefreshTime >= _waitTimeMillis){
-      lastRefreshTime = millis();
-      _submittedVal = _val;
-  }
-  Serial.println(_submittedVal);
 }
 
 void CombinationReader::reset() {
@@ -219,6 +232,14 @@ void CombinationReader::display() {
 
 bool CombinationReader::isSolved() {
   return _solved;
+}
+
+STATE CombinationReader::getState(){
+  return _state;
+}
+
+void CombinationReader::setState(STATE state){
+   _state = state;
 }
 
 #endif

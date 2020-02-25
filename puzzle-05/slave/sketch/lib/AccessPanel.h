@@ -17,15 +17,18 @@ class AccessPanel
     void open();
     void reset();
     void display();
+    void update();
     // void enable();
     // void disable();
     // bool isEnabled();
-    STATE _state;
+    void setState(STATE state);
+    STATE getState();
   private:
     int _keyPin;
     int _solenoidPin;
     bool _closed;
     bool _keyInserted;
+    STATE _state;
 };
 
 AccessPanel::AccessPanel() {}
@@ -44,6 +47,22 @@ bool AccessPanel::keyInserted()
     _keyInserted = digitalRead(_keyPin);
     //Serial.println(_keyInserted);
     return _keyInserted;
+}
+
+void AccessPanel::update()
+{
+  if(_state == DISABLE) return;
+  if(_state == ENABLE)
+  {
+    if(keyInserted()){
+      _state = SOLVED;
+      if(isClosed()){
+        open();
+      }
+    }else{
+      reset();
+    }
+  }
 }
 
 bool AccessPanel::isClosed()
@@ -69,6 +88,16 @@ void AccessPanel::reset()
 void AccessPanel::display()
 {
   // TO-DO:
+}
+
+void AccessPanel::setState(STATE state)
+{
+  _state = state;
+}
+
+STATE AccessPanel::getState()
+{
+  return _state;
 }
 
 #endif
