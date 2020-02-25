@@ -6,20 +6,7 @@
 //#include "sounds/soundPowerDown.h"
 
 
-struct Puzzle {
-  uint8_t address = ADDR_SLAVE;
-  STATE state = INITIALIZED;
-  bool forced = false;
-  int totalPower = 10;
-  uint8_t numberOfRegisters = 10;
-  uint16_t registers[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  unsigned long startTime = 0;
-  unsigned long endTime = 0;
-  unsigned long timer = 0;
-  unsigned long counter = 0;
-  unsigned long checkpoint = 0;
-  unsigned long interval = 200;
-} puzzle;
+Puzzle puzzle;
 
 struct Parts {
   Modbus * slave;
@@ -65,8 +52,8 @@ void setup()
 
   // Setup speaker pins
   pinMode(PIN_SPEAKER, OUTPUT);
-  ledcSetup(PWM_CHANNEL, PWM_FREQUENCY, PWM_RESOLUTION);
-  ledcAttachPin(PIN_SPEAKER, PWM_CHANNEL);
+  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
+  ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
   pinMode(PIN_AMPLIFIER, OUTPUT);
   digitalWrite(PIN_AMPLIFIER, HIGH);
 
@@ -77,21 +64,23 @@ void setup()
 
   
   setupBlastDoorKeypad();
-  puzzle.timer = millis();
+  bdComponents.state = SETUP;
 }
 
 void loop() 
 {
+  puzzle.timer = millis();
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+  
+  // Map puzzle's values to component's values
+  BlastDoorKeypad::update(puzzle, bdComponents);
 
-  // Enable Datamatic
+  // State changes
   BlastDoorKeypad::run(bdComponents);
   
-  puzzle.timer = millis();
-  if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
-    puzzle.checkpoint = millis();
-  }
+  // Show changes
+  BlastDoorKeypad::show(bdComponents);
 }
 
 void setupBlastDoorKeypad()
