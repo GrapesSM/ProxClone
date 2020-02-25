@@ -69,7 +69,7 @@ void PowerAdjuster::update()
 {
   switch (_state)
   {
-    case OFF:
+    case DISABLE:
       _encoder->clearCount();
       _encoder->setCount((int)(_supply * 100));
       _encoder->pauseCount();  
@@ -83,7 +83,7 @@ void PowerAdjuster::update()
       _encoder->pauseCount();  
       break;
     
-    case ON:
+    case ENABLE:
     default:
       // if (Serial.available() > 1) {
       //   _supply = Serial.parseFloat();

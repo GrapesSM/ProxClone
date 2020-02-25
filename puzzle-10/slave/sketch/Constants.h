@@ -25,26 +25,40 @@
 #define LED_COUNT 31
 #define COLOR_SATURATION 128
 
-#define PWM_FREQUENCY 1500
-#define PWM_CHANNEL 0
-#define PWM_RESOLUTION 8
-#define PWM_DUTYCYCLE 200
+#define PWM_SPEAKER_FREQUENCY 1500
+#define PWM_SPEAKER_CHANNEL 0
+#define PWM_SPEAKER_RESOLUTION 8
+#define PWM_SPEAKER_DUTYCYCLE 200
 
 enum STATE {
-    ACTIVE = 1,
-    STANDBY = 2,
-    SOLVED = 3,
-    OFFLINE = 4,
-    FAILURE = 5,
-    SYSTEM_ERROR = 6,
-    ERROR = 7,
-    SYNCRONIZED = 8,
-    ON = 9,
-    OFF = 10,
-    INITIALIZED = 11,
-    NOT_INITIALIZED = 12,
-    READING = 15,
-    PLAYING = 16
+  OFF = 0,
+  ON = 1,
+  ACTIVE = 2,
+  STANDBY = 3,
+  SOLVED = 4,
+  OFFLINE = 5,
+  FAILURE = 6,
+  SYSTEM_ERROR = 7,
+  ERROR = 8,
+  SYNCRONIZED = 9,
+  INITIALIZING = 10,
+  INITIALIZED = 11,
+  START = 12,
+  END = 13,
+  READING = 14,
+  PLAYING = 15,
+  BALANCED = 16,
+  SETUP = 17,
+  FLASH = 18,
+  UNBALANCED = 19,
+  ALARM = 20,
+  RESET = 21,
+  UNSOLVED = 22,
+  DONE = 23,
+  COUNTING = 24,
+  DISABLE = 26,
+  ENABLE = 27,
+  START_TIMER = 28
 };
 
 // Number of Lights and Pin Numbers
@@ -70,4 +84,42 @@ enum {  // enumeration from 0, 1, 2 ...
   SOUND_POWER_UP,
   SOUND_POWER_DOWN,
   SOUND_KEY_INSERT
+};
+
+enum REGISTER_INDEX {
+  REG_DATA_STATE = 0,
+  REG_POWER_STATE = 1,
+  REG_MASTER_FORCE = 2,
+  REG_MASTER_COMMAND = 3,
+  REG_MASTER_CONFIRM = 4,
+  REG_SLAVE_STATE = 5,
+  REG_SLAVE_POWER_SWITCH_STATE = 6,
+  REG_SLAVE_BATTERY_MATRIX_STATE = 7,
+  REG_SLAVE_ENERGY_SUPP_STATE = 8,
+  REG_SLAVE_GENERATOR_STATE = 9,
+  REG_SLAVE_SYNCRO_READER_STATE = 10,
+  REG_SLAVE_SPEAKER_STATE = 11,
+  REG_SLAVE_LIGHT_EFFECT_STATE = 12,
+  REG_SLAVE_SYNCRO_READER_INPUT_KEY = 13
+};
+
+enum COMMAND {
+  CMD_START_TIMER = 1,
+  CMD_SET_SYNCRONIZED = 2,
+  CMD_SET_BATTERY_MATRIX_SOLVED = 3,
+  CMD_SET_ENERGY_SUPP_SOLVED = 4,
+  CMD_SET_GENERATOR_SOLVED = 5
+};
+
+typedef struct Puzzle {
+  uint8_t address = ADDR_SLAVE;
+  STATE state = INITIALIZED;
+  bool forced = false;
+  int totalPower = 10;
+  uint8_t numberOfRegisters = 15;
+  uint16_t registers[15] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  unsigned long startTime = 0;
+  unsigned long endTime = 0;
+  unsigned long timer = 0;
+  unsigned long counter = 0;
 };

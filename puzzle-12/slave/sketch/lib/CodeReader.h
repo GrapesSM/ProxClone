@@ -6,101 +6,83 @@
 
 class CodeReader
 {
-    public:
-        CodeReader();
-        void set(
-            KEYPAD *keypad,
-            int pin
-        );
-        void disable();
-        void enable();
-        void update();
-        bool isDisabled();
-        String getInputKey();
-        bool isSolved();
-        void setSolved(bool);
-        bool isTransmitted();
-        void setTransmitted(bool);
-    private:       
-        bool _solved;
-        bool _disabled;
-        String _input;
-        bool _transmitted;
-        int _pin;
-        KEYPAD *_keypad;
+  public:
+    CodeReader();
+    void set(
+      KEYPAD *keypad,
+      int pin
+    );
+    void update();
+    String getInputKey();
+    STATE getState();
+    void setState(STATE);
+    bool isButton(int);
+  private:
+    String _input;
+    int _pin;
+    KEYPAD *_keypad;
+    STATE _state;
 };
 
 CodeReader::CodeReader(){
-    _disabled = true;
-    _input = "";
-    _solved = false;
-    _transmitted = false;
+  _input = "";
 }
 
 void CodeReader::set(KEYPAD *keypad, int pin){
-    _keypad = keypad;
-    _pin = pin;
+  _keypad = keypad;
+  _pin = pin;
 }
 
-bool CodeReader::isSolved() {
-  return _solved;
+STATE CodeReader::getState() 
+{
+  return _state;
 }
-void CodeReader::setSolved(bool solved = true) {
-  _solved = solved;
+void CodeReader::setState(STATE state) {
+  _state = state;
 }
-
-bool CodeReader::isTransmitted() {
-  return _transmitted;
-}
-
-void CodeReader::setTransmitted(bool transmitted = true) {
-  _transmitted = transmitted;
-  if(transmitted == false){
-    _input = "";
-  }
-}
-
 
 String CodeReader::getInputKey() {
   return _input;
 }
 
-void CodeReader::disable()
+bool CodeReader::isButton(int position)
 {
-  _disabled = true;
+  if (digitalRead(_pin) == position) {
+    delay(1);
+    if (digitalRead(_pin) == position) {
+      return true;
+    }
+  }
+  return false;
 }
 
-void CodeReader::enable()
-{
-  _disabled = false;
-}
-
-bool CodeReader::isDisabled()
-{
-  return _disabled;
-}
 void CodeReader::update()
 {
-  _keypad->updateFIFO();  // necessary for keypad to pull button from stack to readable register
-  char button = _keypad->getButton();
+  if (_state == DISABLE) {
+    return;
+  }
 
-  if (button == -1)
+  _keypad->updateFIFO();  // necessary for keypad to pull button from stack to readable register
+  char key = _keypad->getButton();
+
+  if (key == -1)
   {
-    Serial.println("No keypad detected");
+    // No keypad detected
     return;
   }
   
-  if (button != 0)
+  if (key != 0)
   {
-    _input += button;
-    if(button == '*'){
-      setTransmitted();
-    }
-    if(_input.length() >= 10){
-      _input = "";
+    _state = KEY_ENTERED;
+    if(_input.length() <= 10){
+      _input += key;
     }
   }
   //Do something else. Don't call your Keypad a ton otherwise you'll tie up the I2C bus
-  delay(25); //25 is good, more is better  
+  delay(25); //25 is good, more is better
+
+  if (isButton(HIGH)) {
+    _state = TRANSMITTED;
+  } 
 }
 #endif

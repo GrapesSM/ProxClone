@@ -4,7 +4,7 @@
 #include <Adafruit_GFX.h>
 #include "Adafruit_LEDBackpack.h"
 #include <ESP32Encoder.h>
-#include "lib/PowerPanel.h"
+#include "lib/PowerControl.h"
 #include "sounds/soundPowerUp.h"
 // #include "sounds/soundPowerDown.h"
 
@@ -23,7 +23,7 @@ struct Parts {
 Modbus slave(puzzle.address, 1, PIN_485_EN);
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, PIN_NEOPIXEL);
 
-PowerPanel::Components ppComponents;
+PowerControl::Components pcComponents;
 
 void setupPowerPanel();
 
@@ -84,8 +84,8 @@ void setup()
   // parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
   // parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
 
-  setupPowerPanel();
-  ppComponents.state = SETUP;
+  setupPowerControl();
+  pcComponents.state = SETUP;
   puzzle.startTime = millis();
 }
 
@@ -97,19 +97,19 @@ void loop()
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   
   // Map puzzle's values with component's values
-  PowerPanel::update(puzzle, ppComponents);
+  PowerControl::update(puzzle, pcComponents);
 
   // Enable Power Panel
-  PowerPanel::run(ppComponents);
+  PowerControl::run(pcComponents);
 
-  PowerPanel::show(ppComponents);
+  PowerControl::show(pcComponents);
 }
 
-void setupPowerPanel()
+void setupPowerControl()
 {
-  ppComponents.powerAdjuster.set(&parts.encoder, &parts.matrix1, &parts.matrix2, PWM_OUTPUT_1_CHANNEL);
-  ppComponents.powerLightIndicator.set(parts.strip, lightPinForPowerLightIndicator);
-  ppComponents.battery.set(parts.strip, lightPinsForBarIndicator);
-  ppComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
-  ppComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
+  pcComponents.powerAdjuster.set(&parts.encoder, &parts.matrix1, &parts.matrix2, PWM_OUTPUT_1_CHANNEL);
+  pcComponents.powerLightIndicator.set(parts.strip, lightPinForPowerLightIndicator);
+  pcComponents.battery.set(parts.strip, lightPinsForBarIndicator);
+  pcComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
+  pcComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
 }

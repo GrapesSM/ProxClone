@@ -65,8 +65,12 @@ bool KeyReader::isAllInserted()
 
 void KeyReader::update()
 {
-  if (_state == OFF)
+  if (_state == DISABLE) {
+    _keys[0] = LOW;
+    _keys[1] = LOW;
+    _keys[2] = LOW;  
     return;
+  }
   
   _keys[0] = digitalRead(_inputPin1);
   _keys[1] = digitalRead(_inputPin2);
@@ -74,8 +78,6 @@ void KeyReader::update()
   
   if (isAllInserted()) {
     _state = SOLVED;
-  } else {
-    _state = ON;
   }
 }
 
