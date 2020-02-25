@@ -11,7 +11,7 @@
 #include "LightEffect.h"
 #include "Speaker.h"
 
-namespace PowerPanel {
+namespace PowerControl {
   typedef struct {
     PowerAdjuster powerAdjuster;
     PowerLightIndicator powerLightIndicator;
@@ -41,6 +41,8 @@ namespace PowerPanel {
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
     p.registers[REG_SLAVE_LIGHT_EFFECT_STATE] = c.lightEffect.getState();
     
+    c.battery.setRate(1.00);
+    c.battery.setInterval(1000);
     c.battery.setMaxValue(13.00);
     c.powerAdjuster.setMaxSupply(13.00);
     c.powerAdjuster.setMaxDemand(16.00);
@@ -50,11 +52,11 @@ namespace PowerPanel {
     
     if (c.state == SETUP) {
       c.state = INITIALIZING;
-      c.powerLightIndicator.setState(ON);
-      c.battery.setState(ON);
-      c.powerAdjuster.setState(ON);
-      c.speaker.setState(ON);
-      c.lightEffect.setState(ON);
+      c.powerLightIndicator.setState(DISABLE);
+      c.battery.setState(DISABLE);
+      c.powerAdjuster.setState(DISABLE);
+      c.speaker.setState(DISABLE);
+      c.lightEffect.setState(DISABLE);
       c.state = INITIALIZED;
     }
   }
@@ -64,13 +66,17 @@ namespace PowerPanel {
     c.timer.current = millis();
 
     if (c.state == INITIALIZED) {
+      c.powerLightIndicator.setState(ENABLE);
+      c.battery.setState(ENABLE);
+      c.powerAdjuster.setState(ENABLE);
+      c.speaker.setState(ENABLE);
+      c.lightEffect.setState(ENABLE);
       c.state = STANDBY;
     }
 
     if (c.state == STANDBY) {
       c.powerAdjuster.update();
-      int batteryLevel = map(c.powerAdjuster.getSupply(), 0.0, c.powerAdjuster.getMaxSupply(), 0, 100);
-      c.battery.setValue(batteryLevel);
+      c.battery.setDrawRate(c.powerAdjuster.getSupply());
       c.battery.update();
       c.lightEffect.update();
 
@@ -80,11 +86,11 @@ namespace PowerPanel {
         }
 
         if ((c.timer.current - c.timer.start) > FAILURE_PERIOD_3) {
-          c.speaker.setState(OFF);
-          c.powerLightIndicator.setState(OFF);
-          c.lightEffect.setState(OFF);
-          c.powerAdjuster.setState(RESET);
-          c.battery.setState(OFF);
+          c.speaker.setState(DISABLE);
+          c.powerLightIndicator.setState(DISABLE);
+          c.lightEffect.setState(DISABLE);
+          c.powerAdjuster.setState(DISABLE);
+          c.battery.setState(DISABLE);
           c.state = FAILURE;
         } else if ((c.timer.current - c.timer.start) > FAILURE_PERIOD_2) {
           c.speaker.setState(ALARM);
@@ -96,10 +102,10 @@ namespace PowerPanel {
       }
 
       if (c.powerAdjuster.getState() == BALANCED) {
-        c.powerLightIndicator.setState(ON);
-        c.speaker.setState(OFF);
-        c.lightEffect.setState(ON);
-        c.battery.setState(ON);
+        c.powerLightIndicator.setState(ENABLE);
+        c.speaker.setState(ENABLE);
+        c.lightEffect.setState(ENABLE);
+        c.battery.setState(ENABLE);
         c.timer.start = 0;
       }
     }
@@ -112,11 +118,11 @@ namespace PowerPanel {
       c.powerAdjuster.display();
       c.powerLightIndicator.display();
       c.lightEffect.display();
-      // c.battery.display();
+      c.battery.display();
       c.showTimer.showpoint = millis();
     }
 
-    c.speaker.play();
+    // c.speaker.play();
   }
 }
 

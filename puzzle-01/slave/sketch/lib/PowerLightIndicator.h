@@ -51,11 +51,11 @@ void PowerLightIndicator::display()
 {
   switch (_state)
   {
-    case ON:
+    case ENABLE:
       _strip->SetPixelColor(_lightPin, RgbColor(127, 127, 127));    
       break;
     
-    case OFF:
+    case DISABLE:
       _strip->SetPixelColor(_lightPin, RgbColor(0, 0, 0));
       break;
       

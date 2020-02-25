@@ -46,10 +46,18 @@ STATE LightEffect::getState()
 
 void LightEffect::update()
 {
+}
+
+void LightEffect::display()
+{
+  _current++;
+  if (_current == NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT) {
+    _current = 0;
+  }
   int next;
   switch (_state)
   {
-    case ON:
+    case ENABLE:
       next = _current + 1;
       if (next == NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT) {
         next = 0;
@@ -57,7 +65,7 @@ void LightEffect::update()
       _strip->SetPixelColor(_lightPins[_current], RgbColor(0, 0, 0));
       _strip->SetPixelColor(_lightPins[next], RgbColor(HtmlColor((uint32_t)random(0, 16777216))));
       break;
-    case OFF:
+    case DISABLE:
       for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT; i++) {
         _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
       }
@@ -72,14 +80,6 @@ void LightEffect::update()
       break;
     default:
       break;
-  }
-}
-
-void LightEffect::display()
-{
-  _current++;
-  if (_current == NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT) {
-    _current = 0;
   }
 }
 

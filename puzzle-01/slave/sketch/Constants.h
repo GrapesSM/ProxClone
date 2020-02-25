@@ -60,7 +60,15 @@ enum STATE {
   UNBALANCED = 19,
   ALARM = 20,
   RESET = 21,
-  UNSOLVED = 22
+  UNSOLVED = 22,
+  DONE = 23,
+  COUNTING = 24,
+  DISABLE = 26,
+  ENABLE = 27,
+  START_TIMER = 28,
+  CHARGING = 29,
+  FULL = 30,
+  EMPTY = 31
 };
 
 // Number of Lights and Pin Numbers
