@@ -16,12 +16,9 @@ class PowerSwitch
     void setLightOff();
     void display();
     void update();
-    bool isLightOn();
-    bool isLightOff();
+    STATE getState();
     bool isSwitchOn();
     bool isSwitchOff();
-    void listen();
-    STATE getState();
 
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
@@ -68,10 +65,12 @@ void PowerSwitch::update()
 {
   if (isSwitchOff()) {
     _state = OFF;
+    setLightOff();
   }
 
   if (isSwitchOn()) {
     _state = ON;
+    setLightOn();
   }
 }
 
