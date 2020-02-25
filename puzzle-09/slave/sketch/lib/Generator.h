@@ -21,6 +21,7 @@ class Generator
     int getInputKey();
     bool isSolved();
     void setSolved(bool solved);
+    void setState(STATE state);
     STATE getState();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
@@ -53,40 +54,48 @@ void Generator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lig
 
 void Generator::update()
 {
-  if (_disabled) return;
-  _state = READING;
-  readSwitches();
-  getInputKey();
-  
-  if (! _reset) {
-    for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
-      if (_input[i] == HIGH && _order[_labels[i]] == 0) {
-        _order[_labels[i]] = ++_count;
-        _strip->SetPixelColor(_lightPins[i], RgbColor(127, 127, 127));
-      }
+  if (_state == DISABLE) return;
+  if (_state == ENABLE)
+  {
+    readSwitches();
+    getInputKey();
+    
+    if (! _reset) {
+      for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
+        if (_input[i] == HIGH && _order[_labels[i]] == 0) {
+          _order[_labels[i]] = ++_count;
+          _strip->SetPixelColor(_lightPins[i], RgbColor(127, 127, 127));
+        }
 
-      if (_input[i] == LOW && _order[_labels[i]] != 0) {
-        _reset = true;
-      }     
+        if (_input[i] == LOW && _order[_labels[i]] != 0) {
+          _reset = true;
+        }     
+      }
+    } 
+
+    if (_reset) {
+      for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
+        if (_input[i] == HIGH) {
+          _strip->SetPixelColor(_lightPins[i], RgbColor(127, 0, 0));
+        } else {
+          _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+        }
+      }
     }
-  } 
 
-  if (_reset) {
-    for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
-      if (_input[i] == HIGH) {
-        _strip->SetPixelColor(_lightPins[i], RgbColor(127, 0, 0));
-      } else {
-        _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+    if (isAllSwitchesOff()) {
+      _reset = false;
+      for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
+        _order[_labels[i]] = 0;
       }
+      _count = 0;
     }
   }
-
-  if (isAllSwitchesOff()) {
-    _reset = false;
-    for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
-      _order[_labels[i]] = 0;
+  if (_state == SOLVED)
+  {
+    for (int i = 0; i < NUMBER_OF_SWITCHES_1; i++) {
+      _strip->SetPixelColor(_lightPins[i], RgbColor(0, 127, 0));
     }
-    _count = 0;
   }
 }
 
@@ -160,6 +169,11 @@ bool Generator::isDisabled()
 STATE Generator::getState()
 {
   return _state;
+}
+
+void Generator::setState(STATE state)
+{
+  _state = state;
 }
 
 
