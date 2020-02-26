@@ -88,25 +88,25 @@
             </li>
             <li class="nav-item">
               <a class="nav-link " href="../dashboard/puzzle-1.html">
-                <span data-feather="file"></span>
+                <span data-feather="layers"></span>
                 Puzzle 1
               </a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="../dashboard/puzzle-2.html">
-                <span data-feather="shopping-cart"></span>
+                <span data-feather="layers"></span>
                 Puzzle 2
               </a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="../dashboard/puzzle-3.html">
-                <span data-feather="users"></span>
+                <span data-feather="layers"></span>
                 Puzzle 3
               </a>
             </li>
             <li class="nav-item">
               <a class="nav-link " href="../dashboard/puzzle-4.html">
-                <span data-feather="bar-chart-2"></span>
+                <span data-feather="layers"></span>
                 Puzzle 4
               </a>
             </li>
@@ -156,6 +156,12 @@
               <a class="nav-link" href="../dashboard/puzzle-12.html">
                 <span data-feather="layers"></span>
                 Puzzle 12
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../dashboard/puzzle-13.html">
+                <span data-feather="layers"></span>
+                Puzzle 13
               </a>
             </li>
           </ul>
@@ -220,26 +226,36 @@
                     <circle cx="240" cy="240" r="25"  fill="darkred" stroke = "black"/>
 
                     <!-- Syncro Key Status -->
-                    <text x="100" y= "330" style="fill: none; stroke: #000000;  font-size: 30px;">Syncro Key:</text>
+                    <!-- <text x="100" y= "330" style="fill: none; stroke: #000000;  font-size: 30px;">Syncro Key:</text>
                     <foreignObject x="260" y="310" width="200" height="150">
                         <input name="minPower" type="text" value="No Data"/>
-                      </foreignObject> 
+                      </foreignObject>  -->
+
+                    <!-- Syncro Key -->
+                    <text x="880" y= "105" style="fill: none; stroke: #000000;  font-size: 20px;">SYNCHRO KEY</text>
+                    <text x="740" y= "140" style="fill: none; stroke: #000000;  font-size: 20px;">1----2----3</text>
+                    <circle cx="750" cy="100" r="15"  fill="white" stroke = "black"/>
+                    <circle cx="790" cy="100" r="15"  fill="white" stroke = "black"/>
+                    <circle cx="830" cy="100" r="15"  fill="white" stroke = "black"/>
+                    <foreignObject x="870" y="130" width="200" height="150">
+                      <input name="txtSyncro" type="text" value="No Data"/>
+                    </foreignObject>
+
                     <!-- Connection Status -->
                     <text x="750" y= "300" style="fill: none; stroke: #000000;  font-size: 30px;">Connection:</text>
                     <foreignObject x="940" y="280" width="200" height="150">
-                      <input name="txtConnection" type="text" value="No Connection"/>
+                      <input name="txtConnection" style="width:150px;" type="text" value="No Connection"/>
                     </foreignObject> 
 
 
                     <!-- Puzzle Status -->
                     <text x="750" y= "360" style="fill: none; stroke: #000000;  font-size: 30px;">Puzzle Status:</text>
                     <foreignObject x="940" y="340" width="200" height="150">
-                      <input name="txtStatus" type="text" value="No Data "/>
+                      <input name="txtStatus" style="width:150px;" type="text" value="No Data "/>
                     </foreignObject>    
                  </svg>
             </form>            
-        </div>
-      </main>
+    </main>
     </div>
   </div>
   <script src="js/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
