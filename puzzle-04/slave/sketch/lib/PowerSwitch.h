@@ -63,15 +63,25 @@ void PowerSwitch::display()
 
 void PowerSwitch::update() 
 {
-  if (isSwitchOff()) {
-    _state = OFF;
-    setLightOff();
-  }
+  switch (_state)
+  {
+    case DISABLE:
+      setLightOff();
+      break;
+    
+    default:
+      if (isSwitchOff()) {
+        _state = OFF;
+        setLightOff();
+      }
 
-  if (isSwitchOn()) {
-    _state = ON;
-    setLightOn();
+      if (isSwitchOn()) {
+        _state = ON;
+        setLightOn();
+      }
+      break;
   }
+  
 }
 
 STATE PowerSwitch::getState()

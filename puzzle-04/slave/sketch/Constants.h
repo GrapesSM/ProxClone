@@ -71,7 +71,7 @@ extern int buttonPins1[] = {7, 6, 5, 4, 3};
 #define NUMBER_OF_BUTTONS_2 5
 extern int buttonPins2[] = {7, 6, 5, 4, 3};
 
-extern char buttonLabels[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+extern char buttonLabels[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
 
 extern String keyForCodeReader1 = "65432";
 extern String keyForCodeReader2 = "23456";
@@ -87,20 +87,25 @@ enum {  // enumeration from 0, 1, 2 ...
 };
 
 enum REGISTER_INDEX {
-  REG_DATA_STATE = 0,
-  REG_POWER_STATE = 1,
+  REG_MASTER_MILLIS = 0,
+  REG_MASTER_COMMAND = 1,
   REG_MASTER_FORCE = 2,
-  REG_MASTER_COMMAND = 3,
-  REG_MASTER_CONFIRM = 4,
+  REG_SLAVE_MILLIS = 3,
+  REG_SLAVE_CONFIRM = 4,
   REG_SLAVE_STATE = 5,
   REG_SLAVE_POWER_SWITCH_STATE = 6,
   REG_SLAVE_CODE_READER_STATE = 7,
   REG_SLAVE_INFORMATION_DISPLAY_STATE = 8,
   REG_SLAVE_LIGHT_EFFECT_STATE = 9,
-  REG_SLAVE_SPEAKER_STATE = 10,
+  REG_SLAVE_SPEAKER_STATE = 10
 };
 
 enum COMMAND {
+  CMD_NONE = 0,
+  CMD_ENABLE = 1,
+  CMD_DISABLE = 2,
+  CMD_RESET = 3,
+  CMD_PAUSE = 4
 };
 
 typedef struct {

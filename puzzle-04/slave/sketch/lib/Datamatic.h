@@ -28,20 +28,33 @@ namespace Datamatic {
 
   void update(Puzzle & p, Components & c)
   {
-    p.registers[0] = 1;
-    p.registers[REG_POWER_STATE] = c.powerSwitch.isSwitchOn() ? ON : OFF;
+    p.registers[REG_SLAVE_MILLIS] = millis();
     p.registers[REG_SLAVE_STATE] = c.state;
+    p.registers[REG_SLAVE_POWER_SWITCH_STATE] = c.powerSwitch.getState();
     p.registers[REG_SLAVE_CODE_READER_STATE] = c.codeReader.getState();
     p.registers[REG_SLAVE_INFORMATION_DISPLAY_STATE] = c.informationDisplay.getState();
     p.registers[REG_SLAVE_LIGHT_EFFECT_STATE] = c.lightEffect.getState();
-    //p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
+    p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
 
-    if(c.state == SETUP){
+    if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE && 
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = ENABLE;
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_DISABLE && 
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = DISABLE;
+    }
+
+    if(c.state == SETUP) {
       c.state = INITIALIZING;
+      c.powerSwitch.setState(DISABLE);
       c.codeReader.setState(DISABLE);
       c.informationDisplay.setState(DISABLE);
       c.lightEffect.setState(DISABLE);
-      //c.speaker.setState(DISABLE);
+      c.speaker.setState(DISABLE);
       c.state = INITIALIZED;
     }
   }
@@ -49,42 +62,41 @@ namespace Datamatic {
   void run(Components &c)
   {
     if(c.state == INITIALIZED){
-      c.state = STANDBY;
-      Serial.println("INITIALIZED");
+      
     }
+    
     c.powerSwitch.update();
+    c.codeReader.update();
+    c.informationDisplay.update();
     c.lightEffect.update();
+    c.speaker.update();
 
-    if (c.powerSwitch.getState() == OFF) {
-      c.codeReader.setState(DISABLE);
-      c.informationDisplay.setState(DISABLE);
-      c.lightEffect.setState(DISABLE);
-     // c.speaker.setState(DISABLE);
-    } 
-
-    if (c.powerSwitch.getState() == ON)
-    {
-      if (c.codeReader.getState() == DISABLE) 
-        c.codeReader.setState(ENABLE);
-      if (c.informationDisplay.getState() == DISABLE) 
-        c.informationDisplay.setState(ENABLE);
-      //if (c.speaker.getState() == DISABLE) 
-        //c.speaker.setState(ENABLE);
-      if (c.lightEffect.getState() == DISABLE) 
-        c.lightEffect.setState(ENABLE);
-    }
-
-    if(c.state == STANDBY)
-    {
-      c.codeReader.update();
-      c.informationDisplay.update();
-      c.lightEffect.update();
-    }
-
-    if (c.state == STANDBY) {
-      if (c.codeReader.getTransmittedKey() == keyForCodeReader1){
-        c.informationDisplay.setCurrentSeries(1);
+    if (c.state == ENABLE) {
+      if (c.powerSwitch.getState() == DISABLE) {
+        c.powerSwitch.setState(ENABLE);
       }
+
+      if (c.powerSwitch.getState() == OFF) {
+        c.codeReader.setState(DISABLE);
+        c.informationDisplay.setState(DISABLE);
+        c.lightEffect.setState(DISABLE);
+        c.speaker.setState(DISABLE);
+      }
+
+      if (c.powerSwitch.getState() == ON) {
+        if (c.codeReader.getState() == DISABLE) 
+          c.codeReader.setState(ENABLE);
+        if (c.informationDisplay.getState() == DISABLE) 
+          c.informationDisplay.setState(ENABLE);
+        if (c.speaker.getState() == DISABLE) 
+          c.speaker.setState(ENABLE);
+        if (c.lightEffect.getState() == DISABLE) 
+          c.lightEffect.setState(ENABLE);
+      }
+
+      if (c.codeReader.getTransmittedKey() == keyForCodeReader1) {
+        c.informationDisplay.setCurrentSeries(1);
+      } 
       else if (c.codeReader.getTransmittedKey() == keyForCodeReader2) {
         c.informationDisplay.setCurrentSeries(2);
       } 
@@ -92,6 +104,22 @@ namespace Datamatic {
       {
         c.informationDisplay.setCurrentSeries(0);
       }
+    }
+
+    if (c.state == DISABLE) {
+      c.powerSwitch.setState(DISABLE);
+      c.codeReader.setState(DISABLE);
+      c.informationDisplay.setState(DISABLE);
+      c.lightEffect.setState(DISABLE);
+      c.speaker.setState(DISABLE);
+    }
+
+    if (c.state == PAUSE) {
+      
+    }
+
+    if (c.state == RESET) {
+
     }
   }
 
