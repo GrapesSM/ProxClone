@@ -28,7 +28,6 @@ from lib.life_support_controller import LifeSupportController
 from lib.safeomatic_controller import SafeomaticController
 from lib.status_board_controller import StatusBoardController
 from lib.keypad_controller import KeypadController
-
 from proxima import ProximaCommand
 
 def createControllers():
@@ -37,31 +36,31 @@ def createControllers():
         sid = cfg.puzzles[key_name]['slave_id']
         if key_name == "power_panel":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[sid] = PowerPanelController(model, cfg.puzzles[key_name])
+            controllers[key_name] = PowerPanelController(key_name, model, cfg.puzzles[key_name])
         if key_name == "datamatic":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[sid] =  DatamaticController(model, cfg.puzzles[key_name])
+            controllers[key_name] =  DatamaticController(key_name, model, cfg.puzzles[key_name])
         if key_name == "docked_ship":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[sid] = DockedShipController(model, cfg.puzzles[key_name])
+            controllers[key_name] = DockedShipController(key_name, model, cfg.puzzles[key_name])
         if key_name == "prep_status":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[sid] = PrepStatusController(model, cfg.puzzles[key_name])
+            controllers[key_name] = PrepStatusController(key_name,model, cfg.puzzles[key_name])
         if key_name == "lasergrid":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[sid] = LaserGridController(model, cfg.puzzles[key_name])
+            controllers[key_name] = LaserGridController(key_name, model, cfg.puzzles[key_name])
         if key_name == "life_support":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[sid] = LifeSupportController(model, cfg.puzzles[key_name])
+            controllers[key_name] = LifeSupportController(key_name, model, cfg.puzzles[key_name])
         if key_name == "safeomatic":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[sid] = SafeomaticController(model, cfg.puzzles[key_name])
+            controllers[key_name] = SafeomaticController(key_name, model, cfg.puzzles[key_name])
         if key_name == "status_board":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[sid] = StatusBoardController(model, cfg.puzzles[key_name])
+            controllers[key_name] = StatusBoardController(key_name, model, cfg.puzzles[key_name])
         if key_name == "keypad":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[sid] = KeypadController(model, cfg.puzzles[key_name])
+            controllers[key_name] = KeypadController(key_name, model, cfg.puzzles[key_name])
     return controllers
 
 def main():

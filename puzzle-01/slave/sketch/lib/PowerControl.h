@@ -86,19 +86,11 @@ namespace PowerControl {
         }
 
         if ((c.timer.current - c.timer.start) > FAILURE_PERIOD_3) {
-<<<<<<< HEAD:puzzle-01/slave/sketch/lib/PowerPanel.h
           c.speaker.setState(OFF);
           c.powerLightIndicator.setState(OFF);
           c.lightEffect.setState(FAILURE);
           c.powerAdjuster.setState(RESET);
           c.battery.setState(OFF);
-=======
-          c.speaker.setState(DISABLE);
-          c.powerLightIndicator.setState(DISABLE);
-          c.lightEffect.setState(DISABLE);
-          c.powerAdjuster.setState(DISABLE);
-          c.battery.setState(DISABLE);
->>>>>>> 1bf87af3009e14a452764c5306f189d79e5511b6:puzzle-01/slave/sketch/lib/PowerControl.h
           c.state = FAILURE;
         } else if ((c.timer.current - c.timer.start) > FAILURE_PERIOD_2) {
           c.speaker.setState(ALARM);

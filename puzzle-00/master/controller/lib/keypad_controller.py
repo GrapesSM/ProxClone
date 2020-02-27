@@ -2,5 +2,5 @@
 from .base_controller import BaseController
 
 class KeypadController(BaseController):
-    def __init__(self, model, puzzle):
-        super().__init__(model, puzzle)
+    def __init__(self, key_name,model, puzzle):
+        super().__init__(key_name,model, puzzle)

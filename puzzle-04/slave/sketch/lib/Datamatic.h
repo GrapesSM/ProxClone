@@ -28,6 +28,7 @@ namespace Datamatic {
 
   void update(Puzzle & p, Components & c)
   {
+    p.registers[0] = 1;
     p.registers[REG_POWER_STATE] = c.powerSwitch.isSwitchOn() ? ON : OFF;
     p.registers[REG_SLAVE_STATE] = c.state;
     p.registers[REG_SLAVE_CODE_READER_STATE] = c.codeReader.getState();

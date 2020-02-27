@@ -8,7 +8,7 @@ server = {
 
 modbus = {
     # 'port': '/dev/ttyUSB0',
-    'port': 'COM5',
+    'port': 'COM15',
     'baudrate': 38400,
     'bytesize': 8,
     'parity': 'N',
@@ -27,11 +27,11 @@ db = {
 puzzles = {
     'power_panel': {
         'slave_id': 1,
-        'registers' : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        'registers' : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         'status_code': ''},
     'datamatic': {
         'slave_id': 4,
-        'registers' : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],    
+        'registers' : [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],    
         'status_code': ''},
     'docked_ship': {
         'slave_id': 9,
