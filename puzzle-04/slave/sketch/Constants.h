@@ -59,7 +59,9 @@ enum STATE {
   UNSOLVED = 22,
   DONE = 23,
   DISABLE = 24,
-  ENABLE = 25
+  ENABLE = 25,
+  PAUSE = 26,
+  RESET = 27
 };
 
 // Number of Lights and Pin Numbers
@@ -75,7 +77,6 @@ extern char buttonLabels[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
 
 extern String keyForCodeReader1 = "65432";
 extern String keyForCodeReader2 = "23456";
-
 
 #define NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT 18
 extern int lightPinsForLightEffect[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};

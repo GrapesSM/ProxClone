@@ -19,7 +19,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from database.db import Puzzle
 import configuration as cfg
 
-from lib.power_panel_controller import PowerPanelController
+from lib.power_control_controller import PowerControlController
 from lib.datamatic_controller import DatamaticController
 from lib.docked_ship_controller import DockedShipController
 from lib.prep_status_controller import PrepStatusController
@@ -34,9 +34,9 @@ def createControllers():
     controllers = {}
     for key_name in cfg.puzzles.keys():
         sid = cfg.puzzles[key_name]['slave_id']
-        if key_name == "power_panel":
+        if key_name == "power_control":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[key_name] = PowerPanelController(key_name, model, cfg.puzzles[key_name])
+            controllers[key_name] = PowerControlController(key_name, model, cfg.puzzles[key_name])
         if key_name == "datamatic":
             model = Puzzle.get_or_none(key_name=key_name)
             controllers[key_name] =  DatamaticController(key_name, model, cfg.puzzles[key_name])
