@@ -34,7 +34,7 @@
 #define PWM_DUTYCYCLE 200
 
 enum STATE {
-  OFF = 0,
+OFF = 0,
   ON = 1,
   ACTIVE = 2,
   STANDBY = 3,
@@ -58,10 +58,16 @@ enum STATE {
   RESET = 21,
   UNSOLVED = 22,
   DONE = 23,
-  COUNTING = 24,
-  DISABLE = 26,
-  ENABLE = 27,
-  START_TIMER = 28
+  DISABLE = 24,
+  ENABLE = 25,
+  PAUSE = 26,
+  COUNTING = 27,
+  START_TIMER = 28,
+  CHARGING = 29,
+  FULL = 30,
+  EMPTY = 31,
+  OPEN = 32,
+  CLOSED = 33
 };
 
 #define PIN_LIGHT_FOR_POWER_SWITCH 0

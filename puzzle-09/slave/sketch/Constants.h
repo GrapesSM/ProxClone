@@ -59,7 +59,15 @@ enum STATE {
   UNSOLVED = 22,
   DONE = 23,
   DISABLE = 24,
-  ENABLE = 25
+  ENABLE = 25,
+  PAUSE = 26,
+  COUNTING = 27,
+  START_TIMER = 28,
+  CHARGING = 29,
+  FULL = 30,
+  EMPTY = 31,
+  OPEN = 32,
+  CLOSED = 33
 };
 
 enum REGISTER_INDEX {

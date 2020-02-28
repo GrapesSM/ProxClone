@@ -16,7 +16,6 @@ class InformationDisplay
     void set(ESP32Encoder * encoder);
     void update();
     void display();
-    void enable();
     void frameShowSeries();
     void setCurrentSeries(int);
     STATE getState();
@@ -26,7 +25,6 @@ class InformationDisplay
     int _val;
     int _min;
     int _max;
-    int _disabled = true;
     int _currentSeries;
     STATE _state;
 };
@@ -49,17 +47,29 @@ void InformationDisplay::set(ESP32Encoder *encoder) {
 void InformationDisplay::setCurrentSeries(int current){
   _currentSeries = current;
 }
-void InformationDisplay::frameShowSeries(){
-  _val = _encoder->getCount();
-  if (_val < _min) {
-    _val = _max;
-    _encoder->setCount(_val);
+
+void InformationDisplay::update() {
+  if(_state == DISABLE) {
+    _encoder->pauseCount();
+    return;
   }
-  if(_val > _max){
-    _val = _min; 
-    _encoder->setCount(_val);
+  
+  if(_state == ENABLE) {
+    _encoder->resumeCount();
+    _val = _encoder->getCount();
+    if (_val < _min) {
+      _val = _max;
+      _encoder->setCount(_val);
+    }
+    if(_val > _max){
+      _val = _min; 
+      _encoder->setCount(_val);
+    }
   }
-  switch(_currentSeries){
+}
+
+void InformationDisplay::display() {
+  switch (_currentSeries) {
     case 0:
       Serial2.print("p0.pic=0");
       Serial2.write(0xff);
@@ -68,13 +78,13 @@ void InformationDisplay::frameShowSeries(){
       break;
 
     case 1:
-      if((_val/10)%2 == 1){
+      if ((_val/10)%2 == 1) {
         Serial2.print("p0.pic=1");
         Serial2.write(0xff);
         Serial2.write(0xff);
         Serial2.write(0xff);
         break;
-      }else{
+      } else {
         Serial2.print("p0.pic=2");
         Serial2.write(0xff);
         Serial2.write(0xff);
@@ -82,19 +92,19 @@ void InformationDisplay::frameShowSeries(){
         break;
       }
     case 2:
-      if((_val/10)%3 == 2){
+      if ((_val/10)%3 == 2) {
         Serial2.print("p0.pic=3");
         Serial2.write(0xff);
         Serial2.write(0xff);
         Serial2.write(0xff);
         break;
-      }else if((_val/10)%3 == 1){
+      } else if ((_val/10)%3 == 1) {
         Serial2.print("p0.pic=4");
         Serial2.write(0xff);
         Serial2.write(0xff);
         Serial2.write(0xff);
         break;
-      }else{
+      } else {
         Serial2.print("p0.pic=5");
         Serial2.write(0xff);
         Serial2.write(0xff);
@@ -102,24 +112,6 @@ void InformationDisplay::frameShowSeries(){
         break;        
       }
   }
-}
-
-void InformationDisplay::update() {
-  if(_state == DISABLE) return;
-  if(_state == ENABLE)
-  {
-    frameShowSeries();
-  }
-}
-
-void InformationDisplay::enable() {
-  _disabled = false;
-  _state = ON;
-  _encoder->resumeCount();
-}
-
-void InformationDisplay::display() {
-  // Serial.println(_val);
 }
 
 STATE InformationDisplay::getState()

@@ -133,72 +133,83 @@ char CodeReader::readInput()
 MODE CodeReader::readMode()
 {
   if (digitalRead(_modePin) == HIGH) {
-    return INPUT_MODE;
-  } else {
     return CLEAR_MODE;
+  } else {
+    return INPUT_MODE;
   }
 }
 
 void CodeReader::update()
 {
-  if (_state == DISABLE){
-      Serial.println("DISABLE");
-      return;
-  } 
-    Serial.println("ENABLE");
+  switch (_state)
+  {
+    case DISABLE:
+      // Serial.println("DISABLE");
+      break;
 
-    char input = readInput();
-    MODE mode = readMode();
-    switch(mode) {
-      case INPUT_MODE: 
-        // Update number -----------------
-        if (_entered == false && input != 'n' && _counter < _matrix->getNumberOfDigits()) {
-          _counter++;
-          _entered = true;
-        }
+    case ENABLE:  
+    default:
+      char input = readInput();
+      MODE mode = readMode();
+      switch(mode) {
+        case INPUT_MODE: 
+          // Update number -----------------
+          if (_entered == false && input != 'n' && _counter < _matrix->getNumberOfDigits()) {
+            _counter++;
+            _entered = true;
+          }
 
-        if (_entered == true && input != 'n' && _counter <= _matrix->getNumberOfDigits() && _counter > _key.length()) {
-          _key += String(input);
-        }
+          if (_entered == true && input != 'n' && _counter <= _matrix->getNumberOfDigits() && _counter > _key.length()) {
+            _key += String(input);
+          }
 
-        if (input == 'n') {
+          if (input == 'n') {
+            _entered = false;
+          }
+          // ------------------------------
+          break;
+        case CLEAR_MODE:
+          _key = "";
           _entered = false;
-        }
-        // ------------------------------
-        break;
-      case CLEAR_MODE:
-        _key = "";
-        _entered = false;
-        _counter = 0;
-        _transmittedKey = "";
-        break;
-    } 
+          _counter = 0;
+          _transmittedKey = "";
+          break;
+      } 
 
-    if (digitalRead(_transmitPin) == HIGH && _transmitted == false) {
-      _transmitted = true;
-      _transmittedKey = _key;
-    }
-    if (digitalRead(_transmitPin) == LOW && _transmitted == true) {
-      _transmitted = false;
-    }
-  
+      if (digitalRead(_transmitPin) == HIGH && _transmitted == false) {
+        _transmitted = true;
+        _transmittedKey = _key;
+      }
+      if (digitalRead(_transmitPin) == LOW && _transmitted == true) {
+        _transmitted = false;
+      }
+      break;
+  }
 }
 
 void CodeReader::display()
 {
-  if(_state == DISABLE){
-    _matrix->clear();
-    _matrix->writeDisplay();
-    return;
+  switch (_state)
+  {
+    case DISABLE:
+      _matrix->clear();
+      _matrix->writeDisplay();
+      break;
+
+    case ENABLE:
+    default:
+      _matrix->clear();
+      if (_key.length() > 0) _matrix->printString(_key);
+      _matrix->writeDisplay();
+      break;
   }
-  _matrix->clear();
-  if (_key.length() > 0) _matrix->printString(_key);
-  _matrix->writeDisplay();
 }
+
 STATE CodeReader::getState()
 {
   return _state;
 }
+
 void CodeReader::setState(STATE state)
 {
   _state = state;
