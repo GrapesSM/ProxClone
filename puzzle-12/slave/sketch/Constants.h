@@ -58,15 +58,18 @@ enum STATE {
   RESET = 21,
   UNSOLVED = 22,
   DONE = 23,
-  COUNTING = 24,
-  DISABLE = 26,
-  ENABLE = 27,
+  DISABLE = 24,
+  ENABLE = 25,
+  PAUSE = 26,
+  COUNTING = 27,
   START_TIMER = 28,
   CHARGING = 29,
   FULL = 30,
   EMPTY = 31,
-  TRANSMITTED = 32,
-  KEY_ENTERED = 33
+  OPEN = 32,
+  CLOSED = 33,
+  TRANSMITTED = 34,
+  KEY_ENTERED = 35
 };
 
 extern String keyForCodeReader = "198362*";

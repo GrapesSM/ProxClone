@@ -16,6 +16,7 @@ class PowerSwitch
     void setLightOff();
     void display();
     void update();
+    void setState(STATE state);
     STATE getState();
     bool isSwitchOn();
     bool isSwitchOff();
@@ -81,7 +82,11 @@ void PowerSwitch::update()
       }
       break;
   }
-  
+}
+
+void PowerSwitch::setState(STATE state)
+{
+  _state = state;
 }
 
 STATE PowerSwitch::getState()

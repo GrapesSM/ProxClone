@@ -52,11 +52,31 @@ enum STATE {
   RESET = 21,
   UNSOLVED = 22,
   DONE = 23,
-  DOOR_OPEN = 24,
-  DISABLE = 26,
-  ENABLE = 27,
+  DISABLE = 24,
+  ENABLE = 25,
+  PAUSE = 26,
+  COUNTING = 27,
+  START_TIMER = 28,
+  CHARGING = 29,
+  FULL = 30,
+  EMPTY = 31,
+  OPEN = 32,
+  CLOSED = 33
 };
 
 // Number of Lights and Pin Numbers
 extern int lightPinForPowerSwitch = 4;
 extern int safeLightPin = 3;
+
+typedef struct {
+  uint8_t address = ADDR_SLAVE;
+  STATE state = INITIALIZED;
+  bool forced = false;
+  int totalPower = 10;
+  uint8_t numberOfRegisters = 10;
+  uint16_t registers[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  unsigned long startTime = 0;
+  unsigned long endTime = 0;
+  unsigned long timer = 0;
+  unsigned long counter = 0;
+} Puzzle;

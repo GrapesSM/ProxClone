@@ -28,10 +28,10 @@
 #define LED_COUNT 19
 #define COLOR_SATURATION 128
 
-#define PWM_FREQUENCY 1500
-#define PWM_CHANNEL 0
-#define PWM_RESOLUTION 8
-#define PWM_DUTYCYCLE 200
+#define PWM_SPEAKER_FREQUENCY 1500
+#define PWM_SPEAKER_CHANNEL 0
+#define PWM_SPEAKER_RESOLUTION 8
+#define PWM_SPEAKER_DUTYCYCLE 200
 
 enum STATE {
   OFF = 0,
@@ -61,7 +61,17 @@ enum STATE {
   DISABLE = 24,
   ENABLE = 25,
   PAUSE = 26,
+<<<<<<< HEAD
   RESET = 27
+=======
+  COUNTING = 27,
+  START_TIMER = 28,
+  CHARGING = 29,
+  FULL = 30,
+  EMPTY = 31,
+  OPEN = 32,
+  CLOSED = 33
+>>>>>>> 1a4f4c093d48c20e4e8b252b7b7e942485a077cb
 };
 
 // Number of Lights and Pin Numbers

@@ -69,9 +69,9 @@ namespace Datamatic {
     c.codeReader.update();
     c.informationDisplay.update();
     c.lightEffect.update();
-    c.speaker.update();
 
     if (c.state == ENABLE) {
+      Serial.println("ENABLE");
       if (c.powerSwitch.getState() == DISABLE) {
         c.powerSwitch.setState(ENABLE);
       }
@@ -100,8 +100,7 @@ namespace Datamatic {
       else if (c.codeReader.getTransmittedKey() == keyForCodeReader2) {
         c.informationDisplay.setCurrentSeries(2);
       } 
-      else
-      {
+      else {
         c.informationDisplay.setCurrentSeries(0);
       }
     }

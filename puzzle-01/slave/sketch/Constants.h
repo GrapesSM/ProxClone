@@ -62,13 +62,16 @@ enum STATE {
   RESET = 21,
   UNSOLVED = 22,
   DONE = 23,
-  COUNTING = 24,
-  DISABLE = 26,
-  ENABLE = 27,
+  DISABLE = 24,
+  ENABLE = 25,
+  PAUSE = 26,
+  COUNTING = 27,
   START_TIMER = 28,
   CHARGING = 29,
   FULL = 30,
-  EMPTY = 31
+  EMPTY = 31,
+  OPEN = 32,
+  CLOSED = 33
 };
 
 // Number of Lights and Pin Numbers
@@ -89,10 +92,14 @@ enum {  // enumeration from 0, 1, 2 ...
 };
 
 enum REGISTER_INDEX {
-  REG_DATA_STATE = 0,
-  REG_POWER_STATE = 1,
+  REG_MASTER_MILLIS = 0,
+  REG_MASTER_COMMAND = 1,
   REG_MASTER_FORCE = 2,
+<<<<<<< HEAD
   REG_MASTER_COMMAND = 3,
+=======
+  REG_SLAVE_MILLIS = 3,
+>>>>>>> 1a4f4c093d48c20e4e8b252b7b7e942485a077cb
   REG_SLAVE_CONFIRM = 4,
   REG_SLAVE_STATE = 5,
   REG_SLAVE_POWER_ADJUSTER_STATE = 6,
