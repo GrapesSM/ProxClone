@@ -55,13 +55,14 @@ namespace Datamatic {
       c.informationDisplay.setState(DISABLE);
       c.lightEffect.setState(DISABLE);
       c.speaker.setState(DISABLE);
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = INITIALIZED;
     }
   }
 
   void run(Components &c)
   {
-    if(c.state == INITIALIZED){
+    if(c.state == INITIALIZED) {
       
     }
     
@@ -71,7 +72,6 @@ namespace Datamatic {
     c.lightEffect.update();
 
     if (c.state == ENABLE) {
-      Serial.println("ENABLE");
       if (c.powerSwitch.getState() == DISABLE) {
         c.powerSwitch.setState(ENABLE);
       }

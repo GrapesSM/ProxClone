@@ -8,7 +8,7 @@ server = {
 
 modbus = {
     # 'port': '/dev/ttyUSB0',
-    'port': 'COM15',
+    'port': 'COM7',
     'baudrate': 38400,
     'bytesize': 8,
     'parity': 'N',
@@ -25,7 +25,7 @@ db = {
         'password': 'proxima123'} }
 
 puzzles = {
-    'power_panel': {
+    'power_control': {
         'slave_id': 1,
         'registers' : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         'status_code': ''},

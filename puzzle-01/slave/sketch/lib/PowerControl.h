@@ -33,7 +33,7 @@ namespace PowerControl {
 
   void update(Puzzle & p, Components & c) 
   {
-    p.registers[REG_POWER_STATE] = ON;
+    p.registers[REG_SLAVE_MILLIS] = millis();
     p.registers[REG_SLAVE_STATE] = c.state;
     p.registers[REG_SLAVE_POWER_ADJUSTER_STATE] = c.powerAdjuster.getState();
     p.registers[REG_SLAVE_BATTERY_STATE] = c.battery.getState();
