@@ -1,6 +1,52 @@
 #!/usr/bin/etc python3
 from .base_controller import BaseController
+from .constants import STATE, COMMAND, DS_REGISTER_INDEX
+from .helpers import time_now
+from enum import Enum
+
 
 class DockedShipController(BaseController):
     def __init__(self, key_name, model, puzzle):
         super().__init__(key_name, model, puzzle)
+        self._command_ES = COMMAND.CMD_NONE
+        self._commandStatus_ES = COMMAND.STATUS_NONE
+        self._command_SP = COMMAND.CMD_NONE
+        self._commandStatus_SP = COMMAND.CMD_NONE
+
+
+    def update(self, registers):
+        # controller register vs slave register
+
+        if self.getCommand_ES() == registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND]:
+            if registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] == STATE.DONE:
+                registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = COMMAND.CMD_NONE
+                self._command_ES = COMMAND.CMD_NONE
+                self._commandStatus_ES = COMMAND.STATUS_CONFIRMED
+
+        if self.getCommand_ES() == COMMAND.CMD_ENABLE and self.getCommandStatus_ES() == COMMAND.STATUS_CREATED:
+            registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = COMMAND.CMD_ENABLE
+            registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand_SP() == registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND]:
+            if registers[DS_REGISTER_INDEX.REG_SLAVE_SP_CONFIRM] == STATE.DONE:
+                registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND] = COMMAND.CMD_NONE
+                self._command_SP = COMMAND.CMD_NONE
+                self._commandStatus_SP = COMMAND.STATUS_CONFIRMED
+
+        if self.getCommand_SP() == COMMAND.CMD_ENABLE and self.getCommandStatus_SP() == COMMAND.STATUS_CREATED:
+            registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND] = COMMAND.CMD_ENABLE
+            registers[DS_REGISTER_INDEX.REG_SLAVE_SP_CONFIRM] = STATE.ACTIVE
+        
+        self.setRegisters(registers)
+
+    def getCommand_ES(self):
+        return self._command_ES
+
+    def getCommandStatus_ES(self):
+        return self._commandStatus_ES
+
+    def getCommand_SP(self):
+        return self._command_SP
+
+    def getCommandStatus_SP(self):
+        return self._commandStatus_SP

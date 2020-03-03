@@ -33,8 +33,9 @@ namespace PrepStatus {
 
   void update(Puzzle & p, Components & c) 
   {
-    p.registers[REG_POWER_STATE] = c.powerSwitch.isSwitchOn() ? ON : OFF;
+    p.registers[REG_SLAVE_MILLIS] = millis();
     p.registers[REG_SLAVE_STATE] = c.state;
+    p.registers[REG_SLAVE_POWER_SWITCH_STATE] = c.powerSwitch.getState();
     p.registers[REG_SLAVE_BATTERY_MATRIX_STATE] = c.batteryMatrix.getState();
     p.registers[REG_SLAVE_ENERGY_SUPP_STATE] = c.energySupp.getState();
     p.registers[REG_SLAVE_GENERATOR_STATE] = c.generator.getState();
@@ -42,6 +43,19 @@ namespace PrepStatus {
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
     p.registers[REG_SLAVE_LIGHT_EFFECT_STATE] = c.lightEffect.getState();
     p.registers[REG_SLAVE_SYNCRO_READER_INPUT_KEY] = c.syncroReader.getInputKey();
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE && 
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = ENABLE;
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_DISABLE && 
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = DISABLE;
+    }
+
     if (p.registers[REG_MASTER_COMMAND] == CMD_START_TIMER &&
         p.registers[REG_MASTER_CONFIRM] != DONE) {
       if (c.syncroReader.getState() == DONE || c.syncroReader.getState() == ENABLE) {
@@ -89,7 +103,7 @@ namespace PrepStatus {
   void run(Components & c) 
   {
     if (c.state == INITIALIZED) {
-      c.state = UNSOLVED;
+
     }
 
     c.powerSwitch.update();

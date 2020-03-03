@@ -67,8 +67,7 @@ enum STATE {
   FULL = 30,
   EMPTY = 31,
   OPEN = 32,
-  CLOSED = 33,
-  NODATA = 34
+  CLOSED = 33
 };
 
 // Number of Lights and Pin Numbers
