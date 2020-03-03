@@ -1,5 +1,5 @@
 /*
-  PowerSwitch.h - Library for ________.
+  PowerSwitch.h - Library for playing sounds and voices.
 */
 #ifndef PowerSwitch_h
 #define PowerSwitch_h
@@ -16,9 +16,11 @@ class PowerSwitch
     void setLightOff();
     void display();
     void update();
+    void setState(STATE state);
     STATE getState();
     bool isSwitchOn();
     bool isSwitchOff();
+
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
     int _lightPin;
@@ -62,15 +64,30 @@ void PowerSwitch::display()
 
 void PowerSwitch::update() 
 {
-  if (isSwitchOff()) {
-    _state = OFF;
-    setLightOff();
-  }
+  switch (_state)
+  {
+    case DISABLE:
+      setLightOff();
+      break;
+    
+    case ENABLE:
+    default:
+      if (isSwitchOff()) {
+        _state = OFF;
+        setLightOff();
+      }
 
-  if (isSwitchOn()) {
-    _state = ON;
-    setLightOn();
+      if (isSwitchOn()) {
+        _state = ON;
+        setLightOn();
+      }
+      break;
   }
+}
+
+void PowerSwitch::setState(STATE state)
+{
+  _state = state;
 }
 
 STATE PowerSwitch::getState()
