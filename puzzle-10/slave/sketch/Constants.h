@@ -93,11 +93,11 @@ enum {  // enumeration from 0, 1, 2 ...
 };
 
 enum REGISTER_INDEX {
-  REG_DATA_STATE = 0,
-  REG_POWER_STATE = 1,
+  REG_MASTER_MILLIS = 0,
+  REG_MASTER_COMMAND = 1,
   REG_MASTER_FORCE = 2,
-  REG_MASTER_COMMAND = 3,
-  REG_MASTER_CONFIRM = 4,
+  REG_SLAVE_MILLIS = 3,
+  REG_SLAVE_CONFIRM = 4,
   REG_SLAVE_STATE = 5,
   REG_SLAVE_POWER_SWITCH_STATE = 6,
   REG_SLAVE_BATTERY_MATRIX_STATE = 7,
@@ -110,11 +110,16 @@ enum REGISTER_INDEX {
 };
 
 enum COMMAND {
-  CMD_START_TIMER = 1,
-  CMD_SET_SYNCRONIZED = 2,
-  CMD_SET_BATTERY_MATRIX_SOLVED = 3,
-  CMD_SET_ENERGY_SUPP_SOLVED = 4,
-  CMD_SET_GENERATOR_SOLVED = 5
+  CMD_NONE = 0,
+  CMD_ENABLE = 1,
+  CMD_DISABLE = 2,
+  CMD_RESET = 3,
+  CMD_PAUSE = 4,
+  CMD_START_TIMER = 5,
+  CMD_SET_SYNCRONIZED = 6,
+  CMD_SET_BATTERY_MATRIX_SOLVED =7,
+  CMD_SET_ENERGY_SUPP_SOLVED = 8,
+  CMD_SET_GENERATOR_SOLVED = 9
 };
 
 typedef struct Puzzle {
@@ -122,8 +127,8 @@ typedef struct Puzzle {
   STATE state = INITIALIZED;
   bool forced = false;
   int totalPower = 10;
-  uint8_t numberOfRegisters = 15;
-  uint16_t registers[15] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  uint8_t numberOfRegisters = 13;
+  uint16_t registers[13] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   unsigned long startTime = 0;
   unsigned long endTime = 0;
   unsigned long timer = 0;

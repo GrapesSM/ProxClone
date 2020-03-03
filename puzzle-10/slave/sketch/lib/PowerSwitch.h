@@ -17,6 +17,7 @@ class PowerSwitch
     void display();
     void update();
     STATE getState();
+    void setState(STATE state);
     bool isSwitchOn();
     bool isSwitchOff();
   private:
@@ -76,6 +77,10 @@ void PowerSwitch::update()
 STATE PowerSwitch::getState()
 {
   return _state;
+}
+void PowerSwitch::setState(STATE state)
+{
+  _state = state;
 }
 
 #endif

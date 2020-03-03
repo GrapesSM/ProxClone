@@ -27,5 +27,5 @@ class PowerControlController(BaseController):
     def setDemand(self, demand):
         self._demand = demand
 
-    def getDemad(self):
+    def getDemand(self):
         return self._demand

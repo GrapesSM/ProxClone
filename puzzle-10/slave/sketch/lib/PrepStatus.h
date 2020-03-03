@@ -57,35 +57,35 @@ namespace PrepStatus {
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_START_TIMER &&
-        p.registers[REG_MASTER_CONFIRM] != DONE) {
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
       if (c.syncroReader.getState() == DONE || c.syncroReader.getState() == ENABLE) {
         c.syncroReader.setState(START_TIMER);
-        p.registers[REG_MASTER_CONFIRM] = DONE;
+        p.registers[REG_SLAVE_CONFIRM] = DONE;
       }
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_SYNCRONIZED &&
-        p.registers[REG_MASTER_CONFIRM] != DONE) {
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
       c.syncroReader.setState(SYNCRONIZED);
-      p.registers[REG_MASTER_CONFIRM] = DONE;
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_BATTERY_MATRIX_SOLVED &&
-        p.registers[REG_MASTER_CONFIRM] != DONE) {
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
       c.batteryMatrix.setState(SOLVED);
-      p.registers[REG_MASTER_CONFIRM] = DONE;
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_ENERGY_SUPP_SOLVED &&
-        p.registers[REG_MASTER_CONFIRM] != DONE) {
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
       c.energySupp.setState(SOLVED);
-      p.registers[REG_MASTER_CONFIRM] = DONE;
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_GENERATOR_SOLVED &&
-        p.registers[REG_MASTER_CONFIRM] != DONE) {
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
       c.generator.setState(SOLVED);
-      p.registers[REG_MASTER_CONFIRM] = DONE;
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
     
     if (c.state == SETUP) {
@@ -96,6 +96,7 @@ namespace PrepStatus {
       c.syncroReader.setState(DISABLE);
       c.speaker.setState(DISABLE);
       c.lightEffect.setState(DISABLE);
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = INITIALIZED;
     }
   }
@@ -105,19 +106,29 @@ namespace PrepStatus {
     if (c.state == INITIALIZED) {
 
     }
-
+    c.batteryMatrix.update();
+    c.energySupp.update();
+    c.generator.update();
+    c.syncroReader.update();
     c.powerSwitch.update();
     c.lightEffect.update();
 
-    if (c.powerSwitch.getState() == OFF) {
-      c.batteryMatrix.setState(DISABLE);
-      c.energySupp.setState(DISABLE);
-      c.generator.setState(DISABLE);
-      c.syncroReader.setState(DISABLE);
-      c.speaker.setState(DISABLE);
-      c.lightEffect.setState(DISABLE);
-    } 
     
+
+    if (c.state == ENABLE) {
+      if (c.powerSwitch.getState() == DISABLE) {
+        c.powerSwitch.setState(ENABLE);
+      }
+
+      if (c.powerSwitch.getState() == OFF) {
+        c.batteryMatrix.setState(DISABLE);
+        c.energySupp.setState(DISABLE);
+        c.generator.setState(DISABLE);
+        c.syncroReader.setState(DISABLE);
+        c.speaker.setState(DISABLE);
+        c.lightEffect.setState(DISABLE);
+      } 
+
     if (c.powerSwitch.getState() == ON) {
       if (c.batteryMatrix.getState() == DISABLE) 
         c.batteryMatrix.setState(ENABLE);
@@ -130,18 +141,12 @@ namespace PrepStatus {
       if (c.lightEffect.getState() == DISABLE) 
         c.lightEffect.setState(ENABLE);
     }
-
-    if (c.state == UNSOLVED) {
-      c.batteryMatrix.update();
-      c.energySupp.update();
-      c.generator.update();
-      c.syncroReader.update();
-
-      if (
+    if(
         c.batteryMatrix.getState() == SOLVED &&
         c.energySupp.getState() == SOLVED &&
         c.generator.getState() == SOLVED
-      ) {
+      )
+      {
         c.batteryMatrix.switchToGreen();
         c.energySupp.switchToGreen();
         c.generator.switchToGreen();
