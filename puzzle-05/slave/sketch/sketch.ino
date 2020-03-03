@@ -59,7 +59,7 @@ void setup()
 
   setupSafeomatic();
 
-  puzzle.timer = millis();
+  smComponents.state = SETUP;
 }
 
 void loop()

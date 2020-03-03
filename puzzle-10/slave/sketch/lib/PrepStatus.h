@@ -90,6 +90,7 @@ namespace PrepStatus {
     
     if (c.state == SETUP) {
       c.state = INITIALIZING;
+      c.powerSwitch.setState(DISABLE);
       c.batteryMatrix.setState(DISABLE);
       c.energySupp.setState(DISABLE);
       c.generator.setState(DISABLE);
@@ -106,14 +107,13 @@ namespace PrepStatus {
     if (c.state == INITIALIZED) {
 
     }
+    
     c.batteryMatrix.update();
     c.energySupp.update();
     c.generator.update();
     c.syncroReader.update();
     c.powerSwitch.update();
-    c.lightEffect.update();
-
-    
+    c.lightEffect.update();    
 
     if (c.state == ENABLE) {
       if (c.powerSwitch.getState() == DISABLE) {
@@ -167,6 +167,16 @@ namespace PrepStatus {
 
     if (c.state == SOLVED) {
       Serial.println("SOLVED");
+    }
+
+    if (c.state == DISABLE) {
+      c.powerSwitch.setState(DISABLE);
+      c.batteryMatrix.setState(DISABLE);
+      c.energySupp.setState(DISABLE);
+      c.generator.setState(DISABLE);
+      c.syncroReader.setState(DISABLE);
+      c.speaker.setState(DISABLE);
+      c.lightEffect.setState(DISABLE);
     }
   }
 

@@ -122,8 +122,8 @@ typedef struct {
   STATE state = OFF;
   bool forced = false;
   int totalPower = 10;
-  uint8_t numberOfRegisters = 15;
-  uint16_t registers[15] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  uint8_t numberOfRegisters = 20;
+  uint16_t registers[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   unsigned long startTime = 0;
   unsigned long endTime = 0;
   unsigned long timer = 0;

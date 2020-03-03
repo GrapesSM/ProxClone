@@ -103,15 +103,14 @@ void Speaker::play()
 {
   switch (_state)
   {
-    case ON:
+    case ENABLE:
       if (_queue.isEmpty()) {
-        speak(0, 0);
         return;
       }
       play(_queue.dequeue());    
       break;
     
-    case OFF:
+    case DISABLE:
       speak(PWM_SPEAKER_FREQUENCY, 0);
       break;
     

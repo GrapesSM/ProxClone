@@ -80,8 +80,10 @@ void Door::display()
 void Door::setState(STATE state){
   _state = state;
 }
-STATE Door::getState(){
-  return _state
+
+STATE Door::getState()
+{
+  return _state;
 }
 
 #endif
