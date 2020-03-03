@@ -92,8 +92,8 @@ void setup()
 
   // Setup speaker pins
   pinMode(PIN_SPEAKER, OUTPUT);
-  ledcSetup(PWM_CHANNEL, PWM_FREQUENCY, PWM_RESOLUTION);
-  ledcAttachPin(PIN_SPEAKER, PWM_CHANNEL);
+  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEKAER_RESOLUTION);
+  ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
   pinMode(PIN_AMPLIFIER, OUTPUT);
   digitalWrite(PIN_AMPLIFIER, HIGH);
 
@@ -113,19 +113,16 @@ void setup()
 
 void loop()
 {
-  // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-  // Enable Energy Supplemental
+  
+  EnergySupplemental::update(puzzle, esComponents);
+  ShipPrepAux::update(puzzle, spComponents);
+  
   EnergySupplemental::run(esComponents);
   ShipPrepAux::run(spComponents);
 
-  puzzle.timer = millis();
-  if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
-    puzzle.checkpoint = millis();
-    EnergySupplemental::show(esComponents);
-    ShipPrepAux::show(spComponents);
-  }
-  puzzle.registers[5] = spComponents.powerSwitch.getState();
+  EnergySupplemental::show(esComponents);
+  ShipPrepAux::show(spComponents);
 }
 
 void setupEnergySupplemental()

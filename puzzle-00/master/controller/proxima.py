@@ -76,8 +76,6 @@ class ProximaCommand(object):
             
             if registers:
                 print(controller.getKeyName() ,"Slave Registers (received):  ", registers)
-                if  registers[REGISTER_INDEX.REG_SLAVE_CONFIRM] == 0:
-                    registers[REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.DONE
                 controller.update(registers)
                 print(controller.getKeyName() ,"Slave Registers (modified):  ", controller.registers)
             

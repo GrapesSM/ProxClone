@@ -70,6 +70,7 @@ void PowerSwitch::update()
       setLightOff();
       break;
     
+    case ENABLE:
     default:
       if (isSwitchOff()) {
         _state = OFF;

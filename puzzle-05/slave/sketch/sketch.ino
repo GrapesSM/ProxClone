@@ -50,6 +50,13 @@ void setup()
   pinMode(PIN_RELAY_2, OUTPUT);
   digitalWrite(PIN_RELAY_2, LOW);
 
+  // Setup speaker pins
+  pinMode(PIN_SPEAKER, OUTPUT);
+  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
+  ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
+  pinMode(PIN_AMPLIFIER, OUTPUT);
+  digitalWrite(PIN_AMPLIFIER, HIGH);
+
   setupSafeomatic();
 
   puzzle.timer = millis();
@@ -60,14 +67,12 @@ void loop()
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
+  Safeomatic::update(puzzle, smComponents);
+
   // Enable Datamatic
   Safeomatic::run(smComponents);
 
-  puzzle.timer = millis();
-  if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
-    puzzle.checkpoint = millis();
-    Safeomatic::show(smComponents);
-  }
+  Safeomatic::show(smComponents);
 }
 
 void setupSafeomatic()

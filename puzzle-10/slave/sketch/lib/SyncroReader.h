@@ -12,8 +12,6 @@ class SyncroReader
   public:
     SyncroReader();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], int pin);
-    void disable();
-    void enable();
     void update();
     void display();
     int getInputKey();

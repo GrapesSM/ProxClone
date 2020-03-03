@@ -26,17 +26,44 @@ namespace ShipPrepAux {
 
   void update(Puzzle & p, Components & c)
   {
-    p.registers[REG_SHIP_PREP_AUX_POWER_STATE] = c.powerSwitch.isSwitchOn() ? ON : OFF;
-    p.registers[REG_SHIP_PREP_AUX_STATE] = c.state;
-    p.registers[REG_SLAVE_BATTERY_MATRIX_STATE] = c.batteryMatrix.getState();
-    p.registers[REG_SLAVE_GENERATOR_STATE] = c.generator.getState();
-    p.registers[REG_SLAVE_SHIP_PREP_AUX_SPEAKER_STATE] = c.speaker.getState();
+    p.registers[REG_SLAVE_SP_MILLIS] = millis();
+    p.registers[REG_SLAVE_SP_STATE] = c.state;
+    p.registers[REG_SLAVE_SP_POWER_SWITCH_STATE] = c.powerSwitch.getState();
+    p.registers[REG_SLAVE_SP_BATTERY_MATRIX_STATE] = c.batteryMatrix.getState();
+    p.registers[REG_SLAVE_SP_GENERATOR_STATE] = c.generator.getState();
+    p.registers[REG_SLAVE_SP_SPEAKER_STATE] = c.speaker.getState();
 
-    if(c.state == SETUP){
+    if (p.registers[REG_MASTER_SP_COMMAND] == CMD_ENABLE &&
+        p.registers[REG_SLAVE_SP_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_SP_CONFIRM] = DONE;
+      c.state = ENABLE;
+    }
+
+    if (p.registers[REG_MASTER_SP_COMMAND] == CMD_DISABLE &&
+        p.registers[REG_SLAVE_SP_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_SP_CONFIRM] = DONE;
+      c.state = DISABLE;
+    }
+
+    if (p.registers[REG_MASTER_SP_COMMAND] == CMD_RESET &&
+        p.registers[REG_SLAVE_SP_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_SP_CONFIRM] = DONE;
+      c.state = RESET;
+    }
+
+    if (p.registers[REG_MASTER_SP_COMMAND] == CMD_PAUSE &&
+        p.registers[REG_SLAVE_SP_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_SP_CONFIRM] = DONE;
+      c.state = PAUSE;
+    }
+
+    if (c.state == SETUP) {
       c.state = INITIALIZING;
+      c.powerSwitch.setState(DISABLE);
       c.batteryMatrix.setState(DISABLE);
       c.generator.setState(DISABLE);
       c.speaker.setState(DISABLE);
+      p.registers[REG_SLAVE_SP_CONFIRM] = DONE;
       c.state = INITIALIZED;
     }
   }
@@ -44,47 +71,66 @@ namespace ShipPrepAux {
   void run(Components &c) 
   {
     if(c.state == INITIALIZED){
-      c.state = STANDBY;
-      Serial.println("INITIALIZED");
+      
     }
-    c.powerSwitch.update();
 
-    if (c.powerSwitch.getState() == OFF) {
+    c.powerSwitch.update();
+    c.batteryMatrix.update();
+    c.generator.update();
+
+    if (c.state == ENABLE) {
+      if (c.powerSwitch.getState() == DISABLE) {
+        c.powerSwitch.setState(ENABLE);
+      }
+
+      if (c.powerSwitch.getState() == OFF) {
+        c.batteryMatrix.setState(DISABLE);
+        c.generator.setState(DISABLE);
+        c.speaker.setState(DISABLE);
+      } 
+
+      if (c.powerSwitch.getState() == ON) {
+        if (c.batteryMatrix.getState() == DISABLE) 
+          c.batteryMatrix.setState(ENABLE);
+        if (c.generator.getState() == DISABLE) 
+          c.generator.setState(ENABLE);
+        if (c.speaker.getState() == DISABLE) 
+          c.speaker.setState(ENABLE);
+      }
+
+      if (c.batteryMatrix.getInputKey() == keyForBatteryMatrix) {
+        c.batteryMatrix.setState(SOLVED);
+      }
+
+      if (c.generator.getInputKey() == keyForGenerator) {
+        c.generator.setState(SOLVED);
+      }      
+    }
+
+    if (c.state == DISABLE) {
+      c.powerSwitch.setState(DISABLE);
       c.batteryMatrix.setState(DISABLE);
       c.generator.setState(DISABLE);
       c.speaker.setState(DISABLE);
-    } 
-
-    if (c.powerSwitch.getState() == ON)
-    {
-      if (c.batteryMatrix.getState() == DISABLE) 
-        c.batteryMatrix.setState(ENABLE);
-      if (c.generator.getState() == DISABLE) 
-        c.generator.setState(ENABLE);
-      if (c.speaker.getState() == DISABLE) 
-        c.speaker.setState(ENABLE);
     }
 
-    if(c.state == STANDBY)
-    {
-      c.batteryMatrix.update();
-      c.generator.update();
-      c.speaker.update();
+    if (c.state == RESET) {
 
-      if(c.batteryMatrix.getInputKey() == keyForBatteryMatrix)
-      {
-        c.batteryMatrix.setState(SOLVED);
-      }
-      if(c.generator.getInputKey() == keyForGenerator)
-      {
-        c.generator.setState(SOLVED);
-      }
+    }
+
+    if (c.state == PAUSE) {
+
     }
   }
 
   void show(Components &c)
   {
-    c.powerSwitch.display();
+    c.showTimer.current = millis();
+    if (c.showTimer.current - c.showTimer.showpoint > c.showTimer.interval) {
+      c.showTimer.showpoint = millis();
+      c.powerSwitch.display();
+    }
+    c.speaker.play();
   }
 }
 

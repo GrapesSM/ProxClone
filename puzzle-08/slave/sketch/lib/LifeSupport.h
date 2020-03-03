@@ -30,21 +30,36 @@ namespace LifeSupport {
 
   void update(Puzzle & p, Components & c) 
   {
-    p.registers[REG_POWER_STATE] = c.powerSwitch.isSwitchOn() ? ON : OFF;
+    p.registers[REG_SLAVE_MILLIS] = millis();
     p.registers[REG_SLAVE_STATE] = c.state;
+    p.registers[REG_SLAVE_POWER_SWITCH_STATE] = c.powerSwitch.getState();
     p.registers[REG_SLAVE_EXTERNAL_VENT_STATE] = c.externalVent.getState();
     p.registers[REG_SLAVE_AIR_PRESSURE_STATUS_STATE] = c.airPressureStatus.getState();
     p.registers[REG_SLAVE_AIR_SUPPLY_PUMP_STATE] = c.airSupplyPump.getState();
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
     p.registers[REG_SLAVE_LIGHT_EFFECT_STATE] = c.lightEffect.getState();
     
+    if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE &&
+        p.registers[REG_SLAVE_CONFIRM] == DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = ENABLE;
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_DISABLE &&
+        p.registers[REG_SLAVE_CONFIRM] == DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = DISABLE;
+    }
+
     if (c.state == SETUP) {
       c.state = INITIALIZING;
+      c.powerSwitch.setState(DISABLE);
       c.externalVent.setState(DISABLE);
       c.airPressureStatus.setState(DISABLE);
       c.airSupplyPump.setState(DISABLE);
       c.speaker.setState(DISABLE);
       c.lightEffect.setState(DISABLE);
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = INITIALIZED;
     }
   }
@@ -56,28 +71,27 @@ namespace LifeSupport {
     }
 
     c.powerSwitch.update();
+    c.externalVent.update();
+    c.airSupplyPump.update();
+    c.airPressureStatus.update();
     
-    if (c.powerSwitch.getState() == OFF) {
-      c.externalVent.setState(DISABLE);
-      c.airPressureStatus.setState(DISABLE);
-      c.airSupplyPump.setState(DISABLE);
-      c.speaker.setState(DISABLE);
-      c.lightEffect.setState(DISABLE);
-    } 
+    if (c.state == ENABLE) {
+      if (c.powerSwitch.getState() == OFF) {
+        c.externalVent.setState(DISABLE);
+        c.airPressureStatus.setState(DISABLE);
+        c.airSupplyPump.setState(DISABLE);
+        c.speaker.setState(DISABLE);
+        c.lightEffect.setState(DISABLE);
+      }
 
-    if (c.powerSwitch.getState() == ON) {
-      c.externalVent.setState(ENABLE);
-      c.airPressureStatus.setState(ENABLE);
-      c.airSupplyPump.setState(ENABLE);
-      c.speaker.setState(ENABLE);
-      c.lightEffect.setState(ENABLE);
-    } 
-   
-    if (c.state == UNSOLVED) {
-      c.externalVent.update();
-      c.airSupplyPump.update();
-      c.airPressureStatus.update();
-
+      if (c.powerSwitch.getState() == ON) {
+        c.externalVent.setState(ENABLE);
+        c.airPressureStatus.setState(ENABLE);
+        c.airSupplyPump.setState(ENABLE);
+        c.speaker.setState(ENABLE);
+        c.lightEffect.setState(ENABLE);
+      } 
+    
       if (c.externalVent.getState() == ON) {
         c.airPressureStatus.decreaseBy(1);
       }
@@ -95,8 +109,25 @@ namespace LifeSupport {
     }
 
     if (c.state == SOLVED) {
+
+    }
+
+    if (c.state == SOLVED) {
       Serial.println("SOLVED");
     }
+
+    if (c.state == DISABLE) {
+      
+    }
+
+    if (c.state == RESET) {
+
+    }
+
+    if (c.state == PAUSE) {
+
+    }
+    
   }
 
   void show(Components & c)

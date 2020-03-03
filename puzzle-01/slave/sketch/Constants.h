@@ -109,6 +109,14 @@ enum REGISTER_INDEX {
   REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER = 14
 };
 
+enum COMMAND {
+  CMD_NONE = 0,
+  CMD_ENABLE = 1,
+  CMD_DISABLE = 2,
+  CMD_RESET = 3,
+  CMD_PAUSE = 4
+};
+
 typedef struct {
   uint8_t address = ADDR_SLAVE;
   STATE state = OFF;

@@ -48,7 +48,18 @@ namespace PowerControl {
     c.powerAdjuster.setMaxDemand(16.00);
     p.registers[REG_SLAVE_SUPPLY] = c.powerAdjuster.getSupply();
     c.powerAdjuster.setDemand(p.registers[REG_SLAVE_DEMAND]);
-    // c.lightEffect.setPatternNumber(p.registers[REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER]);    
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE &&
+        p.registers[REG_SLAVE_CONFIRM] == DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = ENABLE;
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_DISABLE &&
+        p.registers[REG_SLAVE_CONFIRM] == DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = DISABLE;
+    }
     
     if (c.state == SETUP) {
       c.state = INITIALIZING;
@@ -57,6 +68,7 @@ namespace PowerControl {
       c.powerAdjuster.setState(DISABLE);
       c.speaker.setState(DISABLE);
       c.lightEffect.setState(DISABLE);
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = INITIALIZED;
     }
   }
@@ -66,19 +78,15 @@ namespace PowerControl {
     c.timer.current = millis();
 
     if (c.state == INITIALIZED) {
-      c.powerLightIndicator.setState(ENABLE);
-      c.battery.setState(ENABLE);
-      c.powerAdjuster.setState(ENABLE);
-      c.speaker.setState(ENABLE);
-      c.lightEffect.setState(ENABLE);
-      c.state = STANDBY;
+      
     }
 
-    if (c.state == STANDBY || c.state == FAILURE) {
-      c.powerAdjuster.update();
+    c.powerAdjuster.update();
+    c.battery.update();
+    c.lightEffect.update();
+
+    if (c.state == ENABLE) {
       c.battery.setDrawRate(c.powerAdjuster.getSupply());
-      c.battery.update();
-      c.lightEffect.update();
 
       if (c.powerAdjuster.getState() == UNBALANCED) {
         if (c.timer.start == 0) {
@@ -108,6 +116,26 @@ namespace PowerControl {
         c.battery.setState(ENABLE);
         c.timer.start = 0;
       }
+    }
+
+    if (c.state == FAILURE) {
+
+    }
+
+    if (c.state == DISABLE) {
+      c.powerLightIndicator.setState(DISABLE);
+      c.battery.setState(DISABLE);
+      c.powerAdjuster.setState(DISABLE);
+      c.speaker.setState(DISABLE);
+      c.lightEffect.setState(DISABLE);
+    }
+
+    if (c.state == RESET) {
+
+    }
+
+    if (c.state == PAUSE) {
+
     }
   }
 

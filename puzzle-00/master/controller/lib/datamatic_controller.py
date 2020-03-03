@@ -12,6 +12,8 @@ class DatamaticController(BaseController):
         
     def update(self, registers):
         # controller register vs slave register
+        if  registers[DM_REGISTER_INDEX.REG_SLAVE_CONFIRM] == 0:
+            registers[DM_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.DONE
 
         if self.getCommand() == registers[DM_REGISTER_INDEX.REG_MASTER_COMMAND]:
             if registers[DM_REGISTER_INDEX.REG_SLAVE_CONFIRM] == STATE.DONE:
