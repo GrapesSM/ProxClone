@@ -61,7 +61,7 @@ class ProximaCommand(object):
     def update(self, delay):   
         for key_name in self._controllers.keys():
 
-            if key_name not in ('datamatic', 'power_control',):
+            if key_name not in ( 'power_control',):
                 continue
             
             controller = self._controllers[key_name]
