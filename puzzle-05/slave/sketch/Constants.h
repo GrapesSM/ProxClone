@@ -104,7 +104,7 @@ enum COMMAND {
 
 typedef struct {
   uint8_t address = ADDR_SLAVE;
-  STATE state = INITIALIZED;
+  STATE state;
   bool forced = false;
   int totalPower = 10;
   uint8_t numberOfRegisters = 20;

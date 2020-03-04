@@ -17,45 +17,45 @@ class ProximaCommand(object):
     def run(self):
         self.update(delay=1)
         #Enabling the Puzzles if they are initialized
-        # if self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.INITIALIZED:
-        #     self._controllers['power_control'].setCommand(COMMAND.CMD_ENABLE)
+        if self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.INITIALIZED:
+            self._controllers['power_control'].setCommand(COMMAND.CMD_ENABLE)
 
-        # if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_STATE] == STATE.INITIALIZED:
-        #     self._controllers['docked_ship'].setCommand_ES(COMMAND.CMD_ENABLE)
+        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_STATE] == STATE.INITIALIZED:
+            self._controllers['docked_ship'].setCommand_ES(COMMAND.CMD_ENABLE)
 
-        # if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_STATE] == STATE.INITIALIZED:
-        #     self._controllers['docked_ship'].setCommand_SP(COMMAND.CMD_ENABLE)
+        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_STATE] == STATE.INITIALIZED:
+            self._controllers['docked_ship'].setCommand_SP(COMMAND.CMD_ENABLE)
         
-        # if self._controllers['datamatic'].registers[DM_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.INITIALIZED:
-        #     self._controllers['datamatic'].setCommand(COMMAND.CMD_ENABLE)
+        if self._controllers['datamatic'].registers[DM_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.INITIALIZED:
+            self._controllers['datamatic'].setCommand(COMMAND.CMD_ENABLE)
 
-        # if self._controllers['lasergrid'].registers[LG_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.INITIALIZED:
-        #     self._controllers['lasergrid'].setCommand(COMMAND.CMD_ENABLE)
+        if self._controllers['lasergrid'].registers[LG_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.INITIALIZED:
+            self._controllers['lasergrid'].setCommand(COMMAND.CMD_ENABLE)
 
-        # if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.INITIALIZED:
-        #     self._controllers['prep_status'].setCommand(COMMAND.CMD_ENABLE)
+        if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.INITIALIZED:
+            self._controllers['prep_status'].setCommand(COMMAND.CMD_ENABLE)
 
         #Check the power state of the puzzles and calculate the demand
-        # demand = 0
-        # if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_POWER_SWITCH_STATE] == STATE.ON:
-        #     demand += 4
-        # if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_POWER_SWITCH_STATE] == STATE.ON:
-        #     demand += 3
-        # if self._controllers['datamatic'].registers[DM_REGISTER_INDEX.REG_SLAVE_POWER_SWITCH_STATE] == STATE.ON:
-        #     demand += 1
-        # if self._controllers['lasergrid'].registers[DM_REGISTER_INDEX.REG_SLAVE_POWER_SWITCH_STATE] == STATE.ON:
-        #     demand += 1
-        # if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_POWER_SWITCH_STATE] == STATE.ON:
-        #     demand += 1
+        demand = 0
+        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_POWER_SWITCH_STATE] == STATE.ON:
+            demand += 4
+        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_POWER_SWITCH_STATE] == STATE.ON:
+            demand += 3
+        if self._controllers['datamatic'].registers[DM_REGISTER_INDEX.REG_SLAVE_POWER_SWITCH_STATE] == STATE.ON:
+            demand += 1
+        if self._controllers['lasergrid'].registers[DM_REGISTER_INDEX.REG_SLAVE_POWER_SWITCH_STATE] == STATE.ON:
+            demand += 1
+        if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_POWER_SWITCH_STATE] == STATE.ON:
+            demand += 1
         
         #Check the demand value and set to power control if changed
-        # if demand != self._controllers['power_control'].getDemand():
-        #     self._controllers['power_control'].setDemand(demand)
-        #     self._controllers['power_control'].setCommand(COMMAND.CMD_SET_DEMAND)
+        if demand != self._controllers['power_control'].getDemand():
+            self._controllers['power_control'].setDemand(demand)
+            self._controllers['power_control'].setCommand(COMMAND.CMD_SET_DEMAND)
 
         #Check the BatteryMatirx, Generator and PowerAdjusment state Solvation State and set to PrepStatus
-        # if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_BATTERY_MATRIX_STATE] == STATE.SOLVED:
-        #     self._controllers['prep_status'].setCommand(COMMAND.CMD_SET_BATERRY_MATRIX_SOLVED)
+        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_BATTERY_MATRIX_STATE] == STATE.SOLVED:
+            self._controllers['prep_status'].setCommand(COMMAND.CMD_SET_BATERRY_MATRIX_SOLVED)
         
     
     def update(self, delay):   
@@ -64,7 +64,7 @@ class ProximaCommand(object):
             if key_name not in ( 
                 # 'power_control', 
                 # 'datamatic', 
-                'docked_ship', 
+                #'docked_ship', 
                 # 'lasergrid',
                 # 'prep_status',
                 # 'safeomatic',
