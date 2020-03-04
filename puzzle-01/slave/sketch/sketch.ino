@@ -111,5 +111,5 @@ void setupPowerControl()
   pcComponents.powerLightIndicator.set(parts.strip, lightPinForPowerLightIndicator);
   pcComponents.battery.set(parts.strip, lightPinsForBarIndicator);
   pcComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
-  pcComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
+  pcComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
 }

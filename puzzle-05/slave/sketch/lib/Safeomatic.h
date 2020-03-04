@@ -101,7 +101,7 @@ namespace Safeomatic {
 
       if (c.combinationReader.getState() == SOLVED) {
         if (c.door.getState() == DISABLE) {
-          c.door.setState() == ENABLE;
+          c.door.setState(ENABLE);
         }
       }
     }
@@ -127,7 +127,7 @@ namespace Safeomatic {
   void show(Components & c)
   {
     c.showTimer.current = millis();
-    if (c.showTimer.timer - c.showTimer.showpoint > c.showTimer.interval) {
+    if (c.showTimer.current - c.showTimer.showpoint > c.showTimer.interval) {
       c.showTimer.showpoint = millis();
       c.powerSwitch.display();
       c.accessPanel.display();

@@ -42,6 +42,7 @@ namespace LaserGrid {
     
     if (c.state == SETUP) {
       c.state = INITIALIZING;
+      c.powerSwitch.setState(DISABLE);
       c.keyReader.setState(DISABLE);
       c.waveAdjuster.setState(DISABLE);
       c.speaker.setState(DISABLE);

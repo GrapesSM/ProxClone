@@ -52,7 +52,7 @@ void setup()
   
   setupStatusBoard();
 
-  puzzle.timer = millis();
+  sbComponents.state = SETUP;
 }
 
 void loop() 

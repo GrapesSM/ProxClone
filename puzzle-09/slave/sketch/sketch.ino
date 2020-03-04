@@ -11,6 +11,7 @@
 // #include "sounds/soundPowerDown.h"
 // #include "sounds/soundKeyInsert.h"
 
+<<<<<<< HEAD
 struct Puzzle {
   uint8_t address = ADDR_SLAVE;
   STATE state = INITIALIZED;
@@ -25,6 +26,9 @@ struct Puzzle {
   unsigned long checkpoint = 0;
   unsigned long interval = 200;
 } puzzle;
+=======
+Puzzle puzzle;
+>>>>>>> f9a0dbe9cd0c95d1571ebb1b058c69438ff104ee
 
 struct Parts {
   Modbus * slave;
@@ -92,7 +96,7 @@ void setup()
 
   // Setup speaker pins
   pinMode(PIN_SPEAKER, OUTPUT);
-  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEKAER_RESOLUTION);
+  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
   ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
   pinMode(PIN_AMPLIFIER, OUTPUT);
   digitalWrite(PIN_AMPLIFIER, HIGH);
@@ -108,7 +112,8 @@ void setup()
   setupEnergySupplemental();
   setupShipPrepAux();
 
-  puzzle.timer = millis();
+  esComponents.state = SETUP;
+  spComponents.state = SETUP;
 }
 
 void loop()

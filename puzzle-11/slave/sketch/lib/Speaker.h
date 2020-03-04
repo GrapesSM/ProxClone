@@ -21,7 +21,7 @@ class Speaker
     STATE getState();
     void play();
     void play(int number);
-    void speak(int frequency = PWM_FREQUENCY, int dutycycle = PWM_DUTYCYCLE);
+    void speak(int frequency = PWM_SPEAKER_FREQUENCY, int dutycycle = PWM_SPEAKER_DUTYCYCLE);
     void addToPlay(int number);
 
   private:
@@ -81,12 +81,12 @@ void Speaker::speak(int frequency, int dutycycle)
 {
   if (_frequency != frequency) {
     _frequency = frequency;
-    ledcWriteTone(PWM_CHANNEL, frequency);
+    ledcWriteTone(PWM_SPEAKER_CHANNEL, frequency);
   }
 
   if (_dutycycle != dutycycle) {
     _dutycycle = dutycycle;
-    ledcWrite(PWM_CHANNEL, dutycycle);
+    ledcWrite(PWM_SPEAKER_CHANNEL, dutycycle);
   }
 
   if (_frequency && dutycycle) {
@@ -103,16 +103,15 @@ void Speaker::play()
 {
   switch (_state)
   {
-    case ON:
+    case ENABLE:
       if (_queue.isEmpty()) {
-        speak(0, 0);
         return;
       }
       play(_queue.dequeue());    
       break;
     
-    case OFF:
-      speak(PWM_FREQUENCY, 0);
+    case DISABLE:
+      speak(PWM_SPEAKER_FREQUENCY, 0);
       break;
     
     case ALARM:
@@ -120,7 +119,7 @@ void Speaker::play()
       if (sec % 3 == 0) {
         speak(1000);
       } else {
-        speak(PWM_FREQUENCY, 0);
+        speak(PWM_SPEAKER_FREQUENCY, 0);
       }
       break;
   }
