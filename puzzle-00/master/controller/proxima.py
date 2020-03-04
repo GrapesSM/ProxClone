@@ -13,6 +13,7 @@ class ProximaCommand(object):
         self._master = master
         self._step = 0
 
+
     def run(self):
         self.update(delay=1)
         time.sleep(0.1)
@@ -61,7 +62,7 @@ class ProximaCommand(object):
     def update(self, delay):   
         for key_name in self._controllers.keys():
 
-            if key_name not in ( 'power_control',):
+            if key_name not in ( 'power_control','datamatic','docked_ship', 'lasergrid'):
                 continue
             
             controller = self._controllers[key_name]
@@ -70,7 +71,6 @@ class ProximaCommand(object):
             for _ in range(2):
                 time.sleep(2)
                 try: 
-                    print(controller.getSlaveID())
                     registers = list(self._master.execute(controller.getSlaveID(), cst.READ_HOLDING_REGISTERS, 0, controller.getNumberOfRegisters()))
                 except Exception as excpt:
                     LOGGER.debug("SystemDataCollector error: %s", str(excpt))                    

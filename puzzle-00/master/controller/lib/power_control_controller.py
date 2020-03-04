@@ -11,6 +11,9 @@ class PowerControlController(BaseController):
 
     def update(self, registers):
         # controller register vs slave register
+        if  registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] == 0:
+            registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.DONE
+
         if self.getCommand() == registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND]:
             if registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] == STATE.DONE:
                 registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_NONE
@@ -21,6 +24,10 @@ class PowerControlController(BaseController):
             registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_SET_DEMAND
             registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
             registers[PC_REGISTER_INDEX.REG_SLAVE_DEMAND] = self._demand
+
+        if self.getCommand() == COMMAND.CMD_ENABLE and self.getCommandStatus() == COMMAND.STATUS_CREATED:
+            registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_ENABLE
+            registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
 
         self.setRegisters(registers)
 

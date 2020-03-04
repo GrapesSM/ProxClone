@@ -50,13 +50,13 @@ namespace PowerControl {
     c.powerAdjuster.setDemand(p.registers[REG_SLAVE_DEMAND]);
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE &&
-        p.registers[REG_SLAVE_CONFIRM] == DONE) {
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = ENABLE;
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_DISABLE &&
-        p.registers[REG_SLAVE_CONFIRM] == DONE) {
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = DISABLE;
     }
@@ -86,6 +86,11 @@ namespace PowerControl {
     c.lightEffect.update();
 
     if (c.state == ENABLE) {
+      c.powerAdjuster.setState(ENABLE);
+      c.powerLightIndicator.setState(ENABLE);
+      c.battery.setState(ENABLE);
+      c.lightEffect.setState(ENABLE);
+
       c.battery.setDrawRate(c.powerAdjuster.getSupply());
 
       if (c.powerAdjuster.getState() == UNBALANCED) {
