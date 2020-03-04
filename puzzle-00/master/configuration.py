@@ -15,7 +15,7 @@ modbus = {
     'stopbits': 1,
     'xonxoff': 0,
     'timeout': 5.0,
-    'verbose': True }
+    'verbose': False }
 
 db = {
     'sqlite': {

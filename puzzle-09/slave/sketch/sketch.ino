@@ -11,24 +11,7 @@
 // #include "sounds/soundPowerDown.h"
 // #include "sounds/soundKeyInsert.h"
 
-<<<<<<< HEAD
-struct Puzzle {
-  uint8_t address = ADDR_SLAVE;
-  STATE state = INITIALIZED;
-  bool forced = false;
-  int totalPower = 10;
-  uint8_t numberOfRegisters = 20;
-  uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0};
-  unsigned long startTime = 0;
-  unsigned long endTime = 0;
-  unsigned long timer = 0;
-  unsigned long counter = 0;
-  unsigned long checkpoint = 0;
-  unsigned long interval = 200;
-} puzzle;
-=======
 Puzzle puzzle;
->>>>>>> f9a0dbe9cd0c95d1571ebb1b058c69438ff104ee
 
 struct Parts {
   Modbus * slave;
@@ -119,15 +102,21 @@ void setup()
 void loop()
 {
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-  
-  EnergySupplemental::update(puzzle, esComponents);
-  ShipPrepAux::update(puzzle, spComponents);
-  
-  EnergySupplemental::run(esComponents);
-  ShipPrepAux::run(spComponents);
 
-  EnergySupplemental::show(esComponents);
-  ShipPrepAux::show(spComponents);
+//  for (int i = 0; i < puzzle.numberOfRegisters; i++) {
+//    Serial.print(puzzle.registers[i]);
+//    if (i < puzzle.numberOfRegisters - 1) Serial.print(",");
+//    else Serial.println();
+//  }
+  
+//  EnergySupplemental::update(puzzle, esComponents);
+//  ShipPrepAux::update(puzzle, spComponents);
+//  
+//  EnergySupplemental::run(esComponents);
+//  ShipPrepAux::run(spComponents);
+//
+//  EnergySupplemental::show(esComponents);
+//  ShipPrepAux::show(spComponents);
 }
 
 void setupEnergySupplemental()

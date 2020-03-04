@@ -22,7 +22,7 @@ class DockedShipController(BaseController):
                 registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = COMMAND.CMD_NONE
                 self._command_ES = COMMAND.CMD_NONE
                 self._commandStatus_ES = COMMAND.STATUS_CONFIRMED
-
+        
         if self.getCommand_ES() == COMMAND.CMD_ENABLE and self.getCommandStatus_ES() == COMMAND.STATUS_CREATED:
             registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = COMMAND.CMD_ENABLE
             registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = STATE.ACTIVE
@@ -39,6 +39,11 @@ class DockedShipController(BaseController):
         
         self.setRegisters(registers)
 
+    def getCommand(self):
+        if (self._command_ES == COMMAND.CMD_NONE and self._command_SP == COMMAND.CMD_NONE):
+            return COMMAND.CMD_NONE
+        return self._command_ES if self._command_ES != COMMAND.CMD_NONE else self._command_SP
+
     def getCommand_ES(self):
         return self._command_ES
 
@@ -50,3 +55,12 @@ class DockedShipController(BaseController):
 
     def getCommandStatus_SP(self):
         return self._commandStatus_SP
+    
+    def setCommand_ES(self, command):
+        self._command_ES = command
+        self._commandStatus_ES = COMMAND.STATUS_CREATED
+    
+    def setCommand_SP(self, command):
+        self._command_SP = command
+        self._commandStatus_SP = COMMAND.STATUS_CREATED
+        

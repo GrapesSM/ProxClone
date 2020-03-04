@@ -60,7 +60,6 @@ namespace EnergySupplemental {
     if (c.state == INITIALIZED) {
       
     }
-    
     c.powerSwitch.update();
     c.powerAdjuster.update();
     c.syncroReader.update();

@@ -123,11 +123,7 @@ typedef struct {
   bool forced = false;
   int totalPower = 10;
   uint8_t numberOfRegisters = 20;
-<<<<<<< HEAD
-  uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0};
-=======
   uint16_t registers[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
->>>>>>> f9a0dbe9cd0c95d1571ebb1b058c69438ff104ee
   unsigned long startTime = 0;
   unsigned long endTime = 0;
   unsigned long timer = 0;
