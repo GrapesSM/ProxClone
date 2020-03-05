@@ -1,6 +1,6 @@
 #!/usr/bin/etc python3
 from .constants import STATE
-from .constants import STATE, COMMAND, REGISTER_INDEX
+from .constants import STATE, COMMAND, REGISTER_INDEX, STATUS
 
 class BaseController:
     def __init__(self, key_name, model, puzzle):
@@ -8,7 +8,7 @@ class BaseController:
         self._puzzle=puzzle
         self._key_name = key_name
         self._command = COMMAND.CMD_NONE
-        self._commandStatus = COMMAND.STATUS_NONE
+        self._commandStatus = STATUS.ST_NONE
         self._forced = False
     
     @property
@@ -35,7 +35,7 @@ class BaseController:
 
     def setCommand(self, command):
         self._command = command
-        self._commandStatus = COMMAND.STATUS_CREATED
+        self._commandStatus = STATUS.ST_CREATED
 
     def setRegisters(self, registers):
         self._puzzle['registers'] = registers

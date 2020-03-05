@@ -1,6 +1,6 @@
 #!/usr/bin/etc python3
 from .base_controller import BaseController
-from .constants import STATE, COMMAND, SC_REGISTER_INDEX
+from .constants import STATE, COMMAND, SC_REGISTER_INDEX, STATUS
 from .helpers import time_now
 
 class SafeomaticController(BaseController):
@@ -16,9 +16,9 @@ class SafeomaticController(BaseController):
             if registers[SC_REGISTER_INDEX.REG_SLAVE_CONFIRM] == STATE.DONE:
                 registers[SC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_NONE
                 self._command = COMMAND.CMD_NONE
-                self._commandStatus = COMMAND.STATUS_CONFIRMED
+                self._commandStatus = STATUS.ST_CONFIRMED
 
-        if self.getCommand() == COMMAND.CMD_ENABLE and self.getCommandStatus() == COMMAND.STATUS_CREATED:
+        if self.getCommand() == COMMAND.CMD_ENABLE and self.getCommandStatus() == STATUS.ST_CREATED:
             registers[SC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_ENABLE
             registers[SC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
 
