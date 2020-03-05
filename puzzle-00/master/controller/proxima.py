@@ -15,7 +15,7 @@ class ProximaCommand(object):
 
 
     def run(self):
-        self.update(delay=1)
+        self.update(delay=0)
         #Enabling the Puzzles if they are initialized
         if self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.INITIALIZED:
             self._controllers['power_control'].setCommand(COMMAND.CMD_ENABLE)
@@ -54,19 +54,24 @@ class ProximaCommand(object):
             self._controllers['power_control'].setCommand(COMMAND.CMD_SET_DEMAND)
 
         #Check the BatteryMatirx, Generator and PowerAdjusment state Solvation State and set to PrepStatus
-        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_BATTERY_MATRIX_STATE] == STATE.SOLVED:
-            self._controllers['prep_status'].setCommand(COMMAND.CMD_SET_BATERRY_MATRIX_SOLVED)
+        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_BATTERY_MATRIX_STATE] == STATE.SOLVED and self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_BATTERY_MATRIX_STATE] != STATE.SOLVED:
+            self._controllers['prep_status'].setCommand(COMMAND.CMD_SET_BATTERY_MATRIX_SOLVED)
+
+        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_GENERATOR_STATE] == STATE.SOLVED and self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_ENERGY_SUPP_STATE] != STATE.SOLVED:
+            self._controllers['prep_status'].setCommand(COMMAND.CMD_SET_GENERATOR_SOLVED)
+
+        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_POWER_ADJUSTER_STATE] == STATE.SOLVED and self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_GENERATOR_STATE]  != STATE.SOLVED:
+            self._controllers['prep_status'].setCommand(COMMAND.CMD_SET_ENERGY_SUPP_SOLVED)
         
-    
     def update(self, delay):   
         for key_name in self._controllers.keys():
 
             if key_name not in ( 
-                # 'power_control', 
-                # 'datamatic', 
-                #'docked_ship', 
-                # 'lasergrid',
-                # 'prep_status',
+                 'power_control', 
+                 'datamatic', 
+                 'docked_ship', 
+                 'lasergrid',
+                 'prep_status',
                 # 'safeomatic',
                 ):
                 continue
@@ -74,10 +79,11 @@ class ProximaCommand(object):
             controller = self._controllers[key_name]
 
             registers = None
-            for _ in range(1):
+            for _ in range(2):
                 try: 
                     registers = list(self._master.execute(controller.getSlaveID(), cst.READ_HOLDING_REGISTERS, 0, controller.getNumberOfRegisters()))
                 except Exception as excpt:
+                    print(controller.getKeyName(), end=" ")
                     LOGGER.debug("SystemDataCollector1 error: %s", str(excpt))                    
             
             if registers:
@@ -91,10 +97,11 @@ class ProximaCommand(object):
                 try: 
                     self._master.execute(controller.getSlaveID(), cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=controller.registers)
                 except Exception as excpt:
+                    print(controller.getKeyName(), end=" ")
                     LOGGER.debug("SystemDataCollector error: %s", str(excpt))
             
             time.sleep(delay)
-
+            
     
 def cmp(a, b):
     print("a > b", a > b)
