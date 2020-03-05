@@ -67,7 +67,9 @@ OFF = 0,
   FULL = 30,
   EMPTY = 31,
   OPEN = 32,
-  CLOSED = 33
+  CLOSED = 33,
+  DETECTED = 37,
+  OUT_OF_RANGE = 38
 };
 
 #define PIN_LIGHT_FOR_POWER_SWITCH 0
@@ -93,9 +95,17 @@ enum REGISTER_INDEX {
   REG_SLAVE_SPEAKER_STATE = 9
 };
 
+enum COMMAND {
+  CMD_NONE = 0,
+  CMD_ENABLE = 1,
+  CMD_DISABLE = 2,
+  CMD_RESET = 3,
+  CMD_PAUSE = 4
+};
+
 typedef struct Puzzle {
   uint8_t address = ADDR_SLAVE;
-  STATE state = OFF;
+  STATE state;
   bool forced = false;
   int totalPower = 10;
   uint8_t numberOfRegisters = 20;

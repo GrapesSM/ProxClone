@@ -29,6 +29,9 @@ namespace PrepStatus {
       unsigned long showpoint = 0;
       unsigned long interval = 200;
     } showTimer;
+    boolean batteryMatrixFlag = false;
+    boolean energySuppFlag = false;
+    boolean generatorFlag = false;
   } Components;
 
   void update(Puzzle & p, Components & c) 
@@ -36,9 +39,9 @@ namespace PrepStatus {
     p.registers[REG_SLAVE_MILLIS] = millis();
     p.registers[REG_SLAVE_STATE] = c.state;
     p.registers[REG_SLAVE_POWER_SWITCH_STATE] = c.powerSwitch.getState();
-    p.registers[REG_SLAVE_BATTERY_MATRIX_STATE] = c.batteryMatrix.getState();
-    p.registers[REG_SLAVE_ENERGY_SUPP_STATE] = c.energySupp.getState();
-    p.registers[REG_SLAVE_GENERATOR_STATE] = c.generator.getState();
+    p.registers[REG_SLAVE_BATTERY_MATRIX_STATE] = c.batteryMatrixFlag == false ? c.batteryMatrix.getState() : p.registers[REG_SLAVE_BATTERY_MATRIX_STATE];
+    p.registers[REG_SLAVE_ENERGY_SUPP_STATE] = c.energySuppFlag == false ? c.energySupp.getState() : p.registers[REG_SLAVE_ENERGY_SUPP_STATE];
+    p.registers[REG_SLAVE_GENERATOR_STATE] = c.generatorFlag == false ? c.generator.getState() : p.registers[REG_SLAVE_GENERATOR_STATE];
     p.registers[REG_SLAVE_SYNCRO_READER_STATE] = c.syncroReader.getState();
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
     p.registers[REG_SLAVE_LIGHT_EFFECT_STATE] = c.lightEffect.getState();
@@ -72,18 +75,21 @@ namespace PrepStatus {
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_BATTERY_MATRIX_SOLVED &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      c.batteryMatrixFlag = true;
       c.batteryMatrix.setState(SOLVED);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_ENERGY_SUPP_SOLVED &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      c.energySuppFlag = true;
       c.energySupp.setState(SOLVED);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_GENERATOR_SOLVED &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      c.generatorFlag = true;
       c.generator.setState(SOLVED);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }

@@ -103,20 +103,14 @@ void loop()
 {
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
-//  for (int i = 0; i < puzzle.numberOfRegisters; i++) {
-//    Serial.print(puzzle.registers[i]);
-//    if (i < puzzle.numberOfRegisters - 1) Serial.print(",");
-//    else Serial.println();
-//  }
+  EnergySupplemental::update(puzzle, esComponents);
+  ShipPrepAux::update(puzzle, spComponents);
   
-//  EnergySupplemental::update(puzzle, esComponents);
-//  ShipPrepAux::update(puzzle, spComponents);
-//  
-//  EnergySupplemental::run(esComponents);
-//  ShipPrepAux::run(spComponents);
-//
-//  EnergySupplemental::show(esComponents);
-//  ShipPrepAux::show(spComponents);
+  EnergySupplemental::run(esComponents);
+  ShipPrepAux::run(spComponents);
+
+  EnergySupplemental::show(esComponents);
+  ShipPrepAux::show(spComponents);
 }
 
 void setupEnergySupplemental()

@@ -40,6 +40,18 @@ namespace LaserGrid {
     p.registers[REG_SLAVE_WAVE_ADJUSTER_STATE] = c.waveAdjuster.getState();
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
     
+    if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE && 
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = ENABLE;
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_DISABLE && 
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = DISABLE;
+    }
+
     if (c.state == SETUP) {
       c.state = INITIALIZING;
       c.powerSwitch.setState(DISABLE);
