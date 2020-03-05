@@ -60,6 +60,11 @@ namespace EnergySupplemental {
     if (c.state == INITIALIZED) {
       
     }
+    if (Serial.available() > 1) {
+      keyForPowerAdjuster = Serial.parseInt();
+      Serial.println(keyForPowerAdjuster);
+    }
+
     c.powerSwitch.update();
     c.powerAdjuster.update();
     c.syncroReader.update();

@@ -69,8 +69,8 @@ void PowerAdjuster::update()
       break;
     
     case ENABLE:
-      _encoder->resumeCount();
     default:
+      _encoder->resumeCount();
       _val = _encoder->getCount();
       if (_val >= _max) {
         _val = _max;
@@ -79,9 +79,9 @@ void PowerAdjuster::update()
         _val = _min;
         _encoder->setCount(_min);
       }
-      if(millis() - lastRefreshTime >= _waitTimeMillis){
-          lastRefreshTime = millis();
-          _submittedVal = _val;
+      if (millis() - lastRefreshTime >= _waitTimeMillis){
+        lastRefreshTime = millis();
+        _submittedVal = _val;
       }
       break;
   }
@@ -98,6 +98,7 @@ STATE PowerAdjuster::getState()
 {
   return _state;
 }
+
 void PowerAdjuster::setState(STATE state)
 {
   _state = state;

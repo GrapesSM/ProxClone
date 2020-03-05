@@ -68,8 +68,11 @@ enum STATE {
   EMPTY = 31,
   OPEN = 32,
   CLOSED = 33,
-  TRANSMITTED = 34,
-  KEY_ENTERED = 35
+  NODATA = 34,
+  TRANSMITTED = 35,
+  KEY_ENTERED = 36,
+  DETECTED = 37,
+  OUT_OF_RANGE = 38
 };
 
 extern String keyForCodeReader = "198362*";
@@ -81,30 +84,32 @@ enum {  // enumeration from 0, 1, 2 ...
 };
 
 enum REGISTER_INDEX {
-  REG_DATA_STATE = 0,
-  REG_POWER_STATE = 1,
+  REG_MASTER_MILLIS = 0,
+  REG_MASTER_COMMAND = 1,
   REG_MASTER_FORCE = 2,
-  REG_MASTER_COMMAND = 3,
-  REG_MASTER_CONFIRM = 4,
+  REG_SLAVE_MILLIS = 3,
+  REG_SLAVE_CONFIRM = 4,
   REG_SLAVE_STATE = 5,
   REG_SLAVE_CODE_READER_STATE = 6,
-  REG_SLAVE_SPEAKER_STATE = 7
+  REG_SLAVE_SPEAKER_STATE = 7,
+  REG_SLAVE_KEY = 8
 };
 
 enum COMMAND {
-  CMD_ENABLE_CODE_READER = 1,
-  CMD_DISABLE_CODE_READER = 2,
-  CMD_ENABLE_SPEAKER = 3,
-  CMD_DISABLE_SPEAKER = 4
+  CMD_NONE = 0,
+  CMD_ENABLE = 1,
+  CMD_DISABLE = 2,
+  CMD_RESET = 3,
+  CMD_PAUSE = 4
 };
 
 typedef struct {
   uint8_t address = ADDR_SLAVE;
-  STATE state = INITIALIZED;
+  STATE state;
   bool forced = false;
   int totalPower = 10;
-  uint8_t numberOfRegisters = 10;
-  uint16_t registers[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  uint8_t numberOfRegisters = 20;
+  uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   unsigned long startTime = 0;
   unsigned long endTime = 0;
   unsigned long timer = 0;

@@ -67,7 +67,12 @@ enum STATE {
   FULL = 30,
   EMPTY = 31,
   OPEN = 32,
-  CLOSED = 33
+  CLOSED = 33,
+  NODATA = 34,
+  TRANSMITTED = 35,
+  KEY_ENTERED = 36,
+  DETECTED = 37,
+  OUT_OF_RANGE = 38
 };
 
 // Number of Lights and Pin Numbers
@@ -117,7 +122,7 @@ enum COMMAND {
 
 typedef struct {
   uint8_t address = ADDR_SLAVE;
-  STATE state = INITIALIZED;
+  STATE state;
   bool forced = false;
   int totalPower = 10;
   uint8_t numberOfRegisters = 20;

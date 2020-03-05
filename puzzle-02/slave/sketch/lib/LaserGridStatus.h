@@ -11,63 +11,85 @@ class LaserGridStatus
 {
   public:
     LaserGridStatus();
-    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin);
-    void listen();
-    void setRedLightOn();
-    void setRedLightOff();
-    void setGreenLightOn();
-    void setGreenLightOff();
-    bool isSolved();
+    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
+    void update();
+    void setRedLight(STATE state);
+    void setGreenLight(STATE state);
+    void setState(STATE state);
+    STATE getState();
     void display();
-    STATE _state;
   private:
-    NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
-    int _lightPin;
-    bool _solved;
+    NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
+    int *_lightPins;
+    STATE _state;
 };
 
-LaserGridStatus::LaserGridStatus() {}
+LaserGridStatus::LaserGridStatus(){}
 
-void LaserGridStatus::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin) 
+void LaserGridStatus::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[])
 {
   _strip = strip;
-  _lightPin = lightPin;
-  _state = OFF;
+  _lightPins = lightPins;
 }
 
-void LaserGridStatus::listen()
+void LaserGridStatus::setState(STATE state)
 {
-  // TO-DO:
+  _state = state;
 }
 
-void LaserGridStatus::setRedLightOn()
+STATE LaserGridStatus::getState()
 {
-  // TO-DO:
+  return _state;
 }
 
-void LaserGridStatus::setRedLightOff()
+void LaserGridStatus::update()
 {
-  // TO-DO:
+  switch (_state)
+  {
+    case DISABLE:
+      _strip->SetPixelColor(_lightPins[0], RgbColor(0,0,0));
+      _strip->SetPixelColor(_lightPins[1], RgbColor(0,0,0));
+      break;
+  
+    case ENABLE:
+    default:
+      break;
+  }
 }
 
-void LaserGridStatus::setRedLightOn()
+void LaserGridStatus::setRedLight(STATE state)
 {
-  // TO-DO:
+  switch (state)
+  {
+    case ON:
+      _strip->SetPixelColor(_lightPins[0], RgbColor(255,255,255));
+      break;
+  
+    case OFF:
+    default:
+      _strip->SetPixelColor(_lightPins[0], RgbColor(0,0,0));
+      break;
+  }
 }
 
-void LaserGridStatus::setRedLightOff()
+void LaserGridStatus::setGreenLight(STATE state)
 {
-  // TO-DO:
-}
-
-bool LaserGridStatus::isSolved()
-{
-  // TO-DO:
+  switch (state)
+  {
+    case ON:
+      _strip->SetPixelColor(_lightPins[1], RgbColor(255,255,255));
+      break;
+  
+    case OFF:
+    default:
+      _strip->SetPixelColor(_lightPins[1], RgbColor(0,0,0));
+      break;
+  }
 }
 
 void LaserGridStatus::display()
 {
-  // TO-DO:
+  _strip->Show();
 }
 
 #endif

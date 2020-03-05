@@ -68,6 +68,12 @@ void loop()
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
+  for (int i = 0; i < puzzle.numberOfRegisters; i++) {
+    Serial.print(puzzle.registers[i]);
+    if (i < puzzle.numberOfRegisters - 1) Serial.print(",");
+    else Serial.println();
+  }
+
   PrepStatus::update(puzzle, psComponents);
 
   // Enable Energy Supplemental

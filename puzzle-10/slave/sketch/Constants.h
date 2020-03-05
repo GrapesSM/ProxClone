@@ -64,7 +64,12 @@ enum STATE {
   FULL = 30,
   EMPTY = 31,
   OPEN = 32,
-  CLOSED = 33
+  CLOSED = 33,
+  NODATA = 34,
+  TRANSMITTED = 35,
+  KEY_ENTERED = 36,
+  DETECTED = 37,
+  OUT_OF_RANGE = 38
 };
 
 // Number of Lights and Pin Numbers
@@ -115,16 +120,17 @@ enum COMMAND {
   CMD_DISABLE = 2,
   CMD_RESET = 3,
   CMD_PAUSE = 4,
-  CMD_START_TIMER = 5,
-  CMD_SET_SYNCRONIZED = 6,
-  CMD_SET_BATTERY_MATRIX_SOLVED =7,
-  CMD_SET_ENERGY_SUPP_SOLVED = 8,
-  CMD_SET_GENERATOR_SOLVED = 9
+  CMD_SET_DEMAND = 5,
+  CMD_SET_BATTERY_MATRIX_SOLVED = 10,
+  CMD_SET_ENERGY_SUPP_SOLVED = 11,
+  CMD_SET_GENERATOR_SOLVED = 12,
+  CMD_START_TIMER = 13,
+  CMD_SET_SYNCRONIZED = 14
 };
 
 typedef struct Puzzle {
   uint8_t address = ADDR_SLAVE;
-  STATE state = INITIALIZED;
+  STATE state;
   bool forced = false;
   int totalPower = 10;
   uint8_t numberOfRegisters = 20;

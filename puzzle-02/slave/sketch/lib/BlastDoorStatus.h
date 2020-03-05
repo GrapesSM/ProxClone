@@ -1,75 +1,95 @@
 /*
-  BlastDoorStatus.h - Library to control supply and demand of powers to others puzzles.
+  BlastDoorStatus.h - Library for ______.
 */
 #ifndef BlastDoorStatus_h
 #define BlastDoorStatus_h
 
 #include <Arduino.h>
+#include <NeoPixelBus.h>
 
 class BlastDoorStatus
 {
   public:
     BlastDoorStatus();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
-    void listen();
-    void setRedLightOn();
-    void setRedLightOff();
-    void setGreenLightOn();
-    void setGreenLightOff();
-    bool isSolved();
+    void update();
+    void setRedLight(STATE state);
+    void setGreenLight(STATE state);
+    void setState(STATE state);
+    STATE getState();
     void display();
   private:
-    NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
+    NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
-    bool _solved;
+    STATE _state;
 };
 
-BlastDoorStatus::BlastDoorStatus() {
-  _val = 0;
-  _min = 0;
-  _max = 100;
-}
+BlastDoorStatus::BlastDoorStatus(){}
 
-void BlastDoorStatus::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]) 
+void BlastDoorStatus::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[])
 {
   _strip = strip;
   _lightPins = lightPins;
-  _solved = false;
 }
 
-void BlastDoorStatus::listen() 
+void BlastDoorStatus::setState(STATE state)
 {
-  // TO-DO:
+  _state = state;
 }
 
-void BlastDoorStatus::setRedLightOn() 
+STATE BlastDoorStatus::getState()
 {
-  // TO-DO:
+  return _state;
 }
 
-void BlastDoorStatus::setRedLightOff() 
+void BlastDoorStatus::update()
 {
-  // TO-DO:
+  switch (_state)
+  {
+    case DISABLE:
+      _strip->SetPixelColor(_lightPins[0], RgbColor(0,0,0));
+      _strip->SetPixelColor(_lightPins[1], RgbColor(0,0,0));
+      break;
+  
+    case ENABLE:
+    default:
+      break;
+  }
 }
 
-void BlastDoorStatus::setGreenLightOn()
+void BlastDoorStatus::setRedLight(STATE state)
 {
-  // TO-DO:
+  switch (state)
+  {
+    case ON:
+      _strip->SetPixelColor(_lightPins[0], RgbColor(255,255,255));
+      break;
+  
+    case OFF:
+    default:
+      _strip->SetPixelColor(_lightPins[0], RgbColor(0,0,0));
+      break;
+  }
 }
 
-void BlastDoorStatus::setGreenLightOff()
+void BlastDoorStatus::setGreenLight(STATE state)
 {
-  // TO-DO:
+  switch (state)
+  {
+    case ON:
+      _strip->SetPixelColor(_lightPins[1], RgbColor(255,255,255));
+      break;
+  
+    case OFF:
+    default:
+      _strip->SetPixelColor(_lightPins[1], RgbColor(0,0,0));
+      break;
+  }
 }
 
-bool BlastDoorStatus::isSolved()
+void BlastDoorStatus::display()
 {
-  return _solved;
-}
-
-void BlastDoorStatus::display() 
-{  
-  // TO-DO:
+  _strip->Show();
 }
 
 #endif

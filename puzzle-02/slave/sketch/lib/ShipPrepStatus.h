@@ -12,17 +12,16 @@ class ShipPrepStatus
   public:
     ShipPrepStatus();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
-    void listen();
-    void setRedLightOn();
-    void setRedLightOff();
-    void setGreenLightOn();
-    void setGreenLightOff();
-    bool isSolved();
+    void update();
+    void setRedLight(STATE state);
+    void setGreenLight(STATE state);
+    void setState(STATE state);
+    STATE getState();
     void display();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
-    bool _solved;
+    STATE _state;
 };
 
 ShipPrepStatus::ShipPrepStatus(){}
@@ -31,42 +30,66 @@ void ShipPrepStatus::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, in
 {
   _strip = strip;
   _lightPins = lightPins;
-  _solved = false;
 }
 
-void ShipPrepStatus::listen()
+void ShipPrepStatus::setState(STATE state)
 {
-  // TO-DO:
+  _state = state;
 }
 
-void ShipPrepStatus::setRedLightOn()
+STATE ShipPrepStatus::getState()
 {
-  // TO-DO:
+  return _state;
 }
 
-void ShipPrepStatus::setRedLightOff()
+void ShipPrepStatus::update()
 {
-  // TO-DO:
+  switch (_state)
+  {
+    case DISABLE:
+      _strip->SetPixelColor(_lightPins[0], RgbColor(0,0,0));
+      _strip->SetPixelColor(_lightPins[1], RgbColor(0,0,0));
+      break;
+  
+    case ENABLE:
+    default:
+      break;
+  }
 }
 
-void ShipPrepStatus::setGreenLightOn()
+void ShipPrepStatus::setRedLight(STATE state)
 {
-  // TO-DO:
+  switch (state)
+  {
+    case ON:
+      _strip->SetPixelColor(_lightPins[0], RgbColor(255,255,255));
+      break;
+  
+    case OFF:
+    default:
+      _strip->SetPixelColor(_lightPins[0], RgbColor(0,0,0));
+      break;
+  }
 }
 
-void ShipPrepStatus::setGreenLightOff()
+void ShipPrepStatus::setGreenLight(STATE state)
 {
-  // TO-DO:
-}
-
-bool ShipPrepStatus::isSolved()
-{
-  return _solved;
+  switch (state)
+  {
+    case ON:
+      _strip->SetPixelColor(_lightPins[1], RgbColor(255,255,255));
+      break;
+  
+    case OFF:
+    default:
+      _strip->SetPixelColor(_lightPins[1], RgbColor(0,0,0));
+      break;
+  }
 }
 
 void ShipPrepStatus::display()
 {
-  // TO-DO:
+  _strip->Show();
 }
 
 #endif
