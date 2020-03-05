@@ -12,6 +12,8 @@ class DockedShipController(BaseController):
         self._commandStatus_ES = STATUS.ST_NONE
         self._command_SP = COMMAND.CMD_NONE
         self._commandStatus_SP = COMMAND.CMD_NONE
+        self._commandQueue_ES = []
+        self._commandQueue_SP = []
 
 
     def update(self, registers):
@@ -63,4 +65,22 @@ class DockedShipController(BaseController):
     def setCommand_SP(self, command):
         self._command_SP = command
         self._commandStatus_SP = STATUS.ST_CREATED
-        
+
+    def addCommand_ES(self, command):
+        if command not in self._commandQueue_ES:
+            self._commandQueue_ES.append(command)
+
+    def addCommand_SP(self, command):
+        if command not in self._commandQueue_SP:
+            self._commandQueue_SP.append(command)
+
+    def refreshCommand(self):
+        if self._command_ES == COMMAND.CMD_NONE:
+            if len(self._commandQueue_ES) != 0:
+                self._command_ES = self._commandQueue_ES.pop(0)
+                self._commandStatus_ES = STATUS.ST_CREATED
+
+        if self._command_SP == COMMAND.CMD_NONE:
+            if len(self._commandQueue_SP) != 0:
+                self._command_SP = self._commandQueue_SP.pop(0)
+                self._commandStatus_SP = STATUS.ST_CREATED

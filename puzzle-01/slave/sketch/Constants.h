@@ -114,7 +114,8 @@ enum COMMAND {
   CMD_ENABLE = 1,
   CMD_DISABLE = 2,
   CMD_RESET = 3,
-  CMD_PAUSE = 4
+  CMD_PAUSE = 4,
+  CMD_SET_DEMAND = 5
 };
 
 typedef struct {

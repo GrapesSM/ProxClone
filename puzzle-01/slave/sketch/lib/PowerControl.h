@@ -60,6 +60,11 @@ namespace PowerControl {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = DISABLE;
     }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_DEMAND &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;     
+    }
     
     if (c.state == SETUP) {
       c.state = INITIALIZING;

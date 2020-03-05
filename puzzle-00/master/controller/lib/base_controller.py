@@ -1,6 +1,8 @@
 #!/usr/bin/etc python3
 from .constants import STATE
 from .constants import STATE, COMMAND, REGISTER_INDEX, STATUS
+from queue import *
+
 
 class BaseController:
     def __init__(self, key_name, model, puzzle):
@@ -8,6 +10,7 @@ class BaseController:
         self._puzzle=puzzle
         self._key_name = key_name
         self._command = COMMAND.CMD_NONE
+        self._commandQueue = []
         self._commandStatus = STATUS.ST_NONE
         self._forced = False
     
@@ -29,6 +32,17 @@ class BaseController:
 
     def getCommand(self):
         return self._command
+
+    def addCommand(self, command):
+        if command not in self._commandQueue:
+            self._commandQueue.append(command)
+
+    def refreshCommand(self):
+        if self._command == COMMAND.CMD_NONE:
+            if len(self._commandQueue) != 0:
+                self._command = self._commandQueue.pop(0)
+                self._commandStatus = STATUS.ST_CREATED
+
 
     def getCommandStatus(self):
         return self._commandStatus
