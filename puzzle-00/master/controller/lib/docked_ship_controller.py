@@ -18,6 +18,11 @@ class DockedShipController(BaseController):
 
     def update(self, registers):
         # controller register vs slave register
+        if  registers[DS_REGISTER_INDEX.REG_SLAVE_SP_CONFIRM] == 0:
+            registers[DS_REGISTER_INDEX.REG_SLAVE_SP_CONFIRM] = STATE.DONE
+
+        if  registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] == 0:
+            registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = STATE.DONE
 
         if self.getCommand_ES() == registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND]:
             if registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] == STATE.DONE:
@@ -27,6 +32,10 @@ class DockedShipController(BaseController):
         
         if self.getCommand_ES() == COMMAND.CMD_ENABLE and self.getCommandStatus_ES() == STATUS.ST_CREATED:
             registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = COMMAND.CMD_ENABLE
+            registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand_ES() == COMMAND.CMD_RESET and self.getCommandStatus_ES() == STATUS.ST_CREATED:
+            registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = COMMAND.CMD_RESET
             registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = STATE.ACTIVE
 
         if self.getCommand_SP() == registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND]:
@@ -39,6 +48,15 @@ class DockedShipController(BaseController):
             registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND] = COMMAND.CMD_ENABLE
             registers[DS_REGISTER_INDEX.REG_SLAVE_SP_CONFIRM] = STATE.ACTIVE
         
+
+        if self.getCommand_SP() == COMMAND.CMD_RESET and self.getCommandStatus_SP() == STATUS.ST_CREATED:
+            registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND] = COMMAND.CMD_RESET
+            registers[DS_REGISTER_INDEX.REG_SLAVE_SP_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand_SP() == COMMAND.CMD_DISABLE and self.getCommandStatus_SP() == STATUS.ST_CREATED:
+            registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND] = COMMAND.CMD_DISABLE
+            registers[DS_REGISTER_INDEX.REG_SLAVE_SP_CONFIRM] = STATE.ACTIVE
+
         self.setRegisters(registers)
 
     def getCommand(self):

@@ -56,15 +56,15 @@ class ProximaCommand(object):
                 self._controllers['power_control'].setDemand(demand)
                 self._controllers['power_control'].addCommand(COMMAND.CMD_SET_DEMAND)
 
-            #Check the BatteryMatirx, Generator and PowerAdjusment state Solvation State and set to PrepStatus
+            #Check the BatteryMatirx, Generator and PowerAdjusment Solving State and set to PrepStatus
             if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_BATTERY_MATRIX_STATE] == STATE.SOLVED and self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_BATTERY_MATRIX_STATE] != STATE.SOLVED:
-                self._controllers['prep_status'].addCommand(COMMAND.CMD_SET_BATTERY_MATRIX_SOLVED)
+                self._controllers['prep_status'].addCommand(COMMAND.CMD_SET_PS_BATTERY_MATRIX_SOLVED)
 
             if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_GENERATOR_STATE] == STATE.SOLVED and self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_ENERGY_SUPP_STATE] != STATE.SOLVED:
-                self._controllers['prep_status'].addCommand(COMMAND.CMD_SET_GENERATOR_SOLVED)
+                self._controllers['prep_status'].addCommand(COMMAND.CMD_SET_PS_GENERATOR_SOLVED)
 
             if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_POWER_ADJUSTER_STATE] == STATE.SOLVED and self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_GENERATOR_STATE]  != STATE.SOLVED:
-                self._controllers['prep_status'].addCommand(COMMAND.CMD_SET_ENERGY_SUPP_SOLVED)
+                self._controllers['prep_status'].addCommand(COMMAND.CMD_SET_PS_ENERGY_SUPP_SOLVED)
 
             #Check Docked Ship and Prep Status state and enable syncroKey if solved
             if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_STATE] == STATE.SOLVED and self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_STATE]  == STATE.SOLVED and self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE]  == STATE.SOLVED:
@@ -76,11 +76,32 @@ class ProximaCommand(object):
             #Check if the failure state in power control then disable all other puzzles if they are enable
             if self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.FAILURE:
                 self._gameStage = GAME_STAGE.FAILURE
-        
+
+            #Update Status Board
+            if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED:
+                self._controllers['status_board'].addCommand(COMMAND.CMD_SET_DOCKED_SHIP_SOLVED)
+
+            if self._controllers['lasergrid'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED:
+                self._controllers['status_board'].addCommand(COMMAND.CMD_SET_LASER_GRID_SOLVED)   
+
+            if self._controllers['keypad'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED:
+                self._controllers['status_board'].addCommand(COMMAND.CMD_SET_KEYPAD_SOLVED)
+
+            if self._controllers['life_support'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED:
+                self._controllers['status_board'].addCommand(COMMAND.CMD_SET_LIFE_SUPPORT_SOLVED)
+
+            #Enable Keypad if Life support, ship prep and lasergrid is Solved
+
+            if self._controllers['life_support'].registers[LS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED and \
+                self._controllers['lasergrid'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED and \
+                self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_STATE] == STATE.SOLVED:
+                self._controllers['keypad'].addCommand(COMMAND.CMD_ENABLE)
+
+
         if self._gameStage == GAME_STAGE.FAILURE:
             self.setSlaveStateCommandAllPuzzles(STATE.ENABLE, COMMAND.CMD_DISABLE)
             self._controllers['power_control'].addCommand(COMMAND.CMD_RESET)
-            delay(5)
+            time.sleep(5)
             self._gameStage = GAME_STAGE.RESET
 
         if self._gameStage == GAME_STAGE.RESET:
@@ -97,7 +118,7 @@ class ProximaCommand(object):
             self._gameStage = GAME_STAGE.START
 
 
-    def update(self, delay):   keypad
+    def update(self, delay):   
         for key_name in self._controllers.keys():
 
             if key_name not in ( 

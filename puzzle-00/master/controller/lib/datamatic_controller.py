@@ -33,5 +33,13 @@ class DatamaticController(BaseController):
         # if self.getCommand() == COMMAND.CMD_PAUSE and self.getCommandStatus() == COMMAND.STATUS_CREATED:
         #     registers[DM_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_PAUSE
         #     registers[DM_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand() == COMMAND.CMD_RESET and self.getCommandStatus() == STATUS.ST_CREATED:
+            registers[DM_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_RESET
+            registers[DM_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand() == COMMAND.CMD_DISABLE and self.getCommandStatus() == STATUS.ST_CREATED:
+            registers[DM_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_DISABLE
+            registers[DM_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
         
         self.setRegisters(registers)
