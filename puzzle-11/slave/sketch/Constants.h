@@ -34,7 +34,7 @@
 #define PWM_SPEAKER_DUTYCYCLE 200
 
 enum STATE {
-OFF = 0,
+  OFF = 0,
   ON = 1,
   ACTIVE = 2,
   STANDBY = 3,
@@ -106,12 +106,6 @@ enum COMMAND {
 typedef struct Puzzle {
   uint8_t address = ADDR_SLAVE;
   STATE state;
-  bool forced = false;
-  int totalPower = 10;
   uint8_t numberOfRegisters = 20;
   uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-  unsigned long startTime = 0;
-  unsigned long endTime = 0;
-  unsigned long timer = 0;
-  unsigned long counter = 0;
 };

@@ -16,11 +16,13 @@ class LightEffect
     void update();
     void display();
     void setState(STATE state);
+    void setPatternNumber(int number);
     STATE getState();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
     int _current;
+    int _patternNumber;
     STATE _state;
 };
 
@@ -46,6 +48,11 @@ STATE LightEffect::getState()
 
 void LightEffect::update()
 {
+}
+
+void LightEffect::setPatternNumber(int number)
+{
+  _patternNumber = number;
 }
 
 void LightEffect::display()

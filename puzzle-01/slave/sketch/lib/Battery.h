@@ -42,7 +42,8 @@ class Battery
 
 Battery::Battery(){
   _value = 0;
-  _rate = 0.01;
+  _rate = 1.00;
+  _maxValue = 13.00;
   _chargeTimer.current = 0;
   _chargeTimer.chargepoint = 0;
   _chargeTimer.interval = 1000;

@@ -111,7 +111,10 @@ enum REGISTER_INDEX {
   REG_SLAVE_BATTERY = 11,
   REG_SLAVE_SUPPLY = 12,
   REG_SLAVE_DEMAND = 13,
-  REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER = 14
+  REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER = 14,
+  REG_SLAVE_BATTERY_MAX_VALUE = 15,
+  REG_SLAVE_BATTERY_CHARGING_RATE = 16,
+  REG_SLAVE_FAILURE_PERIOD_VALUE = 17
 };
 
 enum COMMAND {
@@ -120,22 +123,16 @@ enum COMMAND {
   CMD_DISABLE = 2,
   CMD_RESET = 3,
   CMD_PAUSE = 4,
-  CMD_SET_DEMAND = 5
+  CMD_SET_LIGHT_EFFECT_PATTERN_NUMBER = 5,
+  CMD_SET_DEMAND = 11,
+  CMD_SET_BATTERY_MAX_VALUE = 12,
+  CMD_SET_BATTERY_CHARGING_RATE = 13,
+  CMD_SET_FAILURE_PERIOD_VALUE = 14
 };
 
 typedef struct {
   uint8_t address = ADDR_SLAVE;
-  STATE state = OFF;
-  bool forced = false;
-  int totalPower = 10;
+  STATE state;
   uint8_t numberOfRegisters = 20;
   uint16_t registers[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  unsigned long startTime = 0;
-  unsigned long endTime = 0;
-  unsigned long timer = 0;
-  unsigned long counter = 0;
-} Puzzle; 
-
-#define FAILURE_PERIOD_1 10000
-#define FAILURE_PERIOD_2 20000
-#define FAILURE_PERIOD_3 30000
+} Puzzle;

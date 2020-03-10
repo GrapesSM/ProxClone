@@ -94,15 +94,26 @@ extern int lightPinsForBlastDoor[] = {0, 1};
 #define NUMBER_OF_LIGHTS_FOR_LASER_GRID 2
 extern int lightPinsForLaserGrid[] = {0, 1};
 
+enum REGISTER_INDEX {
+  REG_MASTER_MILLIS = 0,
+  REG_MASTER_COMMAND = 1,
+  REG_MASTER_FORCE = 2,
+  REG_SLAVE_MILLIS = 3,
+  REG_SLAVE_CONFIRM = 4,
+  REG_SLAVE_STATE = 5,
+  REG_SLAVE_SHIP_PREP_STATUS_STATE = 6,
+  REG_SLAVE_LIFE_SUPPORT_STATUS_STATE = 7,
+  REG_SLAVE_BLAST_DOOR_STATUS_STATE = 8,
+  REG_SLAVE_LIFE_SUPPORT_STATUS_STATE = 9,
+  REG_SLAVE_GAME_POWER_SWITCH_STATE = 10,
+  REG_SLAVE_COUNTDOWN_STATE = 11,
+  REG_SLAVE_COUNTDOWN = 12,
+  REG_SLAVE_COUNTDOWN_CURRENT_VALUE = 13
+};
+
 typedef struct {
   uint8_t address = ADDR_SLAVE;
   STATE state;
-  bool forced = false;
-  int totalPower = 10;
   uint8_t numberOfRegisters = 20;
   uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-  unsigned long startTime = 0;
-  unsigned long endTime = 0;
-  unsigned long timer = 0;
-  unsigned long counter = 0;
 } Puzzle;
