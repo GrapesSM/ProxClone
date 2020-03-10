@@ -86,8 +86,12 @@ extern int buttonPins2[] = {7, 6, 5, 4, 3};
 
 extern char buttonLabels[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
 
-extern String keyForCodeReader1 = "65432";
+extern String keyForCodeReader1 = "12345";
 extern String keyForCodeReader2 = "23456";
+extern String keyForCodeReader3 = "34567";
+extern String keyForCodeReader4 = "45678";
+extern String keyForCodeReader5 = "56789";
+
 
 #define NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT 18
 extern int lightPinsForLightEffect[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};
@@ -109,7 +113,13 @@ enum REGISTER_INDEX {
   REG_SLAVE_CODE_READER_STATE = 7,
   REG_SLAVE_INFORMATION_DISPLAY_STATE = 8,
   REG_SLAVE_LIGHT_EFFECT_STATE = 9,
-  REG_SLAVE_SPEAKER_STATE = 10
+  REG_SLAVE_SPEAKER_STATE = 10,
+  REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER = 11,
+  REG_SLAVE_KEY_1 = 12,
+  REG_SLAVE_KEY_2 = 13,
+  REG_SLAVE_KEY_3 = 14,
+  REG_SLAVE_KEY_4 = 15,
+  REG_SLAVE_KEY_5 = 16
 };
 
 enum COMMAND {
@@ -117,7 +127,14 @@ enum COMMAND {
   CMD_ENABLE = 1,
   CMD_DISABLE = 2,
   CMD_RESET = 3,
-  CMD_PAUSE = 4
+  CMD_PAUSE = 4,
+  CMD_SET_LIGHT_EFFECT_PATTERN_NUMBER = 5,
+  CMD_SET_SOLVED = 6,
+  CMD_SET_DATAMATIC_KEY_1 = 30,
+  CMD_SET_DATAMATIC_KEY_2 = 31,
+  CMD_SET_DATAMATIC_KEY_3 = 32,
+  CMD_SET_DATAMATIC_KEY_4 = 34,
+  CMD_SET_DATAMATIC_KEY_5 = 35
 };
 
 typedef struct {
