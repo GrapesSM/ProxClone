@@ -86,22 +86,20 @@ void setup()
 
   setupPowerControl();
   pcComponents.state = SETUP;
-  puzzle.startTime = millis();
 }
 
 void loop() 
 { 
-  // Save timer to the variable
-  puzzle.timer = millis();
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   
   // Map puzzle's values with component's values
   PowerControl::update(puzzle, pcComponents);
 
-  // Enable Power Panel
+  // State changes
   PowerControl::run(pcComponents);
 
+  // Show changes
   PowerControl::show(pcComponents);
 }
 

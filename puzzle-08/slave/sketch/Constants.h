@@ -107,19 +107,13 @@ enum REGISTER_INDEX {
   REG_SLAVE_AIR_PRESSURE_STATUS_STATE = 7,
   REG_SLAVE_AIR_SUPPLY_PUMP_STATE = 8,
   REG_SLAVE_EXTERNAL_VENT_STATE = 9,
-  REG_SLAVE_SPEAKER_STATE = 10,
-  REG_SLAVE_LIGHT_EFFECT_STATE = 11
+  REG_SLAVE_LIGHT_EFFECT_STATE = 11,
+  REG_SLAVE_SPEAKER_STATE = 10
 };
 
 typedef struct {
   uint8_t address = ADDR_SLAVE;
-  STATE state = OFF;
-  bool forced = false;
-  int totalPower = 10;
+  STATE state;
   uint8_t numberOfRegisters = 20;
   uint16_t registers[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  unsigned long startTime = 0;
-  unsigned long endTime = 0;
-  unsigned long timer = 0;
-  unsigned long counter = 0;
 } Puzzle; 

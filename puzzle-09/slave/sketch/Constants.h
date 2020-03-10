@@ -142,12 +142,6 @@ enum {  // enumeration from 0, 1, 2 ...
 typedef struct {
   uint8_t address = ADDR_SLAVE;
   STATE state;
-  bool forced = false;
-  int totalPower = 10;
   uint8_t numberOfRegisters = 20;
   uint16_t registers[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  unsigned long startTime = 0;
-  unsigned long endTime = 0;
-  unsigned long timer = 0;
-  unsigned long counter = 0;  
 } Puzzle;
