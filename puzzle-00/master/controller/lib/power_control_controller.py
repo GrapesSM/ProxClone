@@ -10,6 +10,8 @@ class PowerControlController(BaseController):
         self._demand = 0
         self._lighEffectPatternNumber = 0
         self._baterryMaxValue = 7
+        self._batteryChargingRate = 5
+        self._failurePeriodValue = 3
 
     def update(self, registers):
         # controller register vs slave register
@@ -31,6 +33,10 @@ class PowerControlController(BaseController):
             registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_ENABLE
             registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
 
+        if self.getCommand() == COMMAND.CMD_PAUSE and self.getCommandStatus() == STATUS.ST_CREATED:
+            registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_PAUSE
+            registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
+
         if self.getCommand() == COMMAND.CMD_RESET and self.getCommandStatus() == STATUS.ST_CREATED:
             registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_RESET
             registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
@@ -44,16 +50,20 @@ class PowerControlController(BaseController):
             registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
             registers[PC_REGISTER_INDEX.REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER] = self._lighEffectPatternNumber
 
-        if self.getCommand() == COMMAND.CMD_SET_LIGHT_EFFECT_PATTERN_NUMBER and self.getCommandStatus() == STATUS.ST_CREATED:
-            registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_SET_LIGHT_EFFECT_PATTERN_NUMBER
-            registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
-            registers[PC_REGISTER_INDEX.REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER] = self._lighEffectPatternNumber
-
-        if self.getCommand() == COMMAND.CMD_SET_LIGHT_EFFECT_PATTERN_NUMBER and self.getCommandStatus() == STATUS.ST_CREATED:
-            registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_SET_LIGHT_EFFECT_PATTERN_NUMBER
+        if self.getCommand() == COMMAND.CMD_SET_BATTERY_MAX_VALUE and self.getCommandStatus() == STATUS.ST_CREATED:
+            registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_SET_BATTERY_MAX_VALUE
             registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
             registers[PC_REGISTER_INDEX.REG_SLAVE_BATTERY_MAX_VALUE] = self._baterryMaxValue
 
+        if self.getCommand() == COMMAND.CMD_SET_BATTERY_CHARGING_RATE and self.getCommandStatus() == STATUS.ST_CREATED:
+            registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_SET_BATTERY_CHARGING_RATE
+            registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
+            registers[PC_REGISTER_INDEX.REG_SLAVE_BATTERY_CHARGING_RATE] = self._batteryChargingRate
+
+        if self.getCommand() == COMMAND.CMD_SET_FAILURE_PERIOD_VALUE and self.getCommandStatus() == STATUS.ST_CREATED:
+            registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_SET_FAILURE_PERIOD_VALUE
+            registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
+            registers[PC_REGISTER_INDEX.REG_SLAVE_FAILURE_PERIOD_VALUE] = self._failurePeriodValue
 
         self.setRegisters(registers)
 

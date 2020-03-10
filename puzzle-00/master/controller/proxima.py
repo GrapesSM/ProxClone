@@ -23,11 +23,13 @@ class ProximaCommand(object):
             #Enabling the Puzzle-00 (Power Controller) if it's initialized
             if self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.INITIALIZED:
                 self._controllers['power_control'].addCommand(COMMAND.CMD_ENABLE)
-
+            
             #Check if the battery level is full and then enable all other puzzles if they are initialized
-            if self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_BATTERY_LEVEL_VALUE] == self._batteryLevelMax:
+            if self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_BATTERY] == self._batteryLevelMax:
                 self.setSlaveStateCommandAllPuzzles(STATE.INITIALIZED, COMMAND.CMD_ENABLE)
-                #Change game stage to ongoing
+
+            #Check if all enabled and then Change game stage to ongoing
+            if self.checkAllSlaves(STATE.ENABLE):
                 self._gameStage = GAME_STAGE.ONGOING
 
         if self._gameStage == GAME_STAGE.ONGOING:
@@ -185,6 +187,18 @@ class ProximaCommand(object):
 
         if self._controllers['keypad'].registers[KP_REGISTER_INDEX.REG_SLAVE_STATE] == stateCondition:
             self._controllers['keypad'].addCommand(command)
+
+    def checkAllSlaves(self, condition):     #except power control   
+        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_STATE] == condition and \
+            self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_STATE] == condition and \
+            self._controllers['datamatic'].registers[DM_REGISTER_INDEX.REG_SLAVE_STATE] == condition and \
+            self._controllers['lasergrid'].registers[LG_REGISTER_INDEX.REG_SLAVE_STATE] == condition and \
+            self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == condition and \
+            self._controllers['life_support'].registers[LS_REGISTER_INDEX.REG_SLAVE_STATE] == condition and \
+            self._controllers['safeomatic'].registers[SC_REGISTER_INDEX.REG_SLAVE_STATE] == condition and \
+            self._controllers['status_board'].registers[SB_REGISTER_INDEX.REG_SLAVE_STATE] == condition and \
+            self._controllers['keypad'].registers[KP_REGISTER_INDEX.REG_SLAVE_STATE] == condition :
+            return True
 
 
 
