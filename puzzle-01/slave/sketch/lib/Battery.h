@@ -20,8 +20,6 @@ class Battery
     float getMaxValue();
     void setRate(float rate);
     float getRate();
-    void setInterval(unsigned long milliseconds);
-    unsigned long getInterval();
     void setDrawRate(float drawRate);
     STATE getState();
     void display();
@@ -113,16 +111,6 @@ void Battery::setRate(float rate)
 float Battery::getRate()
 {
   return _rate;
-}
-
-void Battery::setInterval(unsigned long milliseconds)
-{
-  _chargeTimer.interval = milliseconds;
-}
-
-unsigned long Battery::getInterval() 
-{
-  return _chargeTimer.interval;
 }
 
 void Battery::setDrawRate(float drawRate) 
