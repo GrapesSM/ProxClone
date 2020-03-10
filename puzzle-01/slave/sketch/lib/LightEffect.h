@@ -28,6 +28,7 @@ class LightEffect
 
 LightEffect::LightEffect(){
   _current = 0;
+  _patternNumber = 0;
 }
 
 void LightEffect::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[])

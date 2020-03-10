@@ -61,7 +61,7 @@ namespace PowerControl {
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_DEMAND &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;   
-      c.powerAdjuster.setDemand(p.registers[REG_SLAVE_DEMAND]);  
+      c.powerAdjuster.setDemand(p.registers[REG_SLAVE_DEMAND] / 10.0);  
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_BATTERY_MAX_VALUE &&
@@ -73,7 +73,7 @@ namespace PowerControl {
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_BATTERY_CHARGING_RATE &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.battery.setRate(p.registers[REG_SLAVE_BATTERY_CHARGING_RATE]);
+      c.battery.setRate(p.registers[REG_SLAVE_BATTERY_CHARGING_RATE] / 10.0);
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_FAILURE_PERIOD_VALUE &&
@@ -119,7 +119,7 @@ namespace PowerControl {
   void run(Components & c)
   {
     if (c.state == INITIALIZED) {
-      // c.state = ENABLE;
+      c.state = ENABLE;
     }
 
     c.powerAdjuster.update();
