@@ -49,7 +49,8 @@ class CombinationReader
     STATE _state;
 };
 
-CombinationReader::CombinationReader() {
+CombinationReader::CombinationReader() 
+{
   _val = 0;
   _previousVal = 0;
   _min = 0;
@@ -60,7 +61,8 @@ CombinationReader::CombinationReader() {
   _prepped = false;
 }
 
-void CombinationReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, ESP32Encoder *encoder) {
+void CombinationReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, ESP32Encoder *encoder) 
+{
   _strip = strip;
   _encoder = encoder;
 }
@@ -91,7 +93,8 @@ void CombinationReader::setLightsOff()
   _strip->SetPixelColor(2, RgbColor(0, 0, 0));
 }
 
-void CombinationReader::checkNumber() {
+void CombinationReader::checkNumber() 
+{
   if (_submittedVal != _previousVal) {
     if (_submittedVal - _previousVal > 0) {
       _clockwise = false;
@@ -167,7 +170,8 @@ void CombinationReader::checkNumber() {
   }
 }
 
-void CombinationReader::update() {
+void CombinationReader::update() 
+{
   if(_state == DISABLE) return;
   if(_state == ENABLE){
     _val = _encoder->getCount();
@@ -193,7 +197,8 @@ void CombinationReader::update() {
   }
 }
 
-void CombinationReader::reset() {
+void CombinationReader::reset() 
+{
   _increment = 0;
   _numbersSolved = 0;
   _prepped = false;
@@ -202,7 +207,8 @@ void CombinationReader::reset() {
   CombinationReader::setLightsRed();
 }
 
-void CombinationReader::disable() {
+void CombinationReader::disable() 
+{
   _disabled = true;
   _solved = false;
   _prepped = false;
@@ -210,12 +216,12 @@ void CombinationReader::disable() {
   _encoder->pauseCount();
 }
 
-void CombinationReader::enable() {
+void CombinationReader::enable() 
+{
   _disabled = false;
   _solved = false;
   _prepped = false;
   _numbersSolved = 0;
-  Serial.println("combination enabled");
   _encoder->resumeCount();
   CombinationReader::setLightsRed();
   _encoder->setCount(100);
@@ -226,19 +232,23 @@ bool CombinationReader::isDisabled()
   return _disabled;
 }
 
-void CombinationReader::display() {
+void CombinationReader::display() 
+{
   // TO-DO
 }
 
-bool CombinationReader::isSolved() {
+bool CombinationReader::isSolved() 
+{
   return _solved;
 }
 
-STATE CombinationReader::getState(){
+STATE CombinationReader::getState()
+{
   return _state;
 }
 
-void CombinationReader::setState(STATE state){
+void CombinationReader::setState(STATE state)
+{
    _state = state;
 }
 

@@ -40,13 +40,13 @@ void ExternalVent::update()
   } 
   
   if (isSwitch(HIGH)) {
-    _state = OFF;
+    _state = CLOSED;
     _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
     _strip->SetPixelColor(_lightPins[1], RgbColor(255, 255, 255));
   }
 
   if (isSwitch(LOW)) {
-    _state = ON;
+    _state = OPEN;
     _strip->SetPixelColor(_lightPins[0], RgbColor(255, 255, 255));
     _strip->SetPixelColor(_lightPins[1], RgbColor(0,0,0));
   }

@@ -71,18 +71,16 @@ void setup()
 
 void loop() 
 {
-  // Save timings
-  puzzle.timer = millis();
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
   // Map puzzle's values to component's values
   LifeSupport::update(puzzle, lsComponents);
 
-  // Process change and assign states
+  // State changes
   LifeSupport::run(lsComponents);
 
-  // Show changes on the panel
+  // Show changes
   LifeSupport::show(lsComponents);
 }
 

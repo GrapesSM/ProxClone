@@ -92,8 +92,8 @@ extern int lightPinsForLightEffect[] = {7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
 
 #define NUMBER_OF_SOUNDS 3
 enum {  // enumeration from 0, 1, 2 ...
-  SOUND_POWER_UP,
-  SOUND_POWER_DOWN
+  SOUND_POWER_DOWN,
+  SOUND_POWER_UP
 };
 
 enum REGISTER_INDEX {
@@ -109,6 +109,16 @@ enum REGISTER_INDEX {
   REG_SLAVE_EXTERNAL_VENT_STATE = 9,
   REG_SLAVE_LIGHT_EFFECT_STATE = 11,
   REG_SLAVE_SPEAKER_STATE = 10
+};
+
+enum COMMAND {
+  CMD_NONE = 0,
+  CMD_ENABLE = 1,
+  CMD_DISABLE = 2,
+  CMD_RESET = 3,
+  CMD_PAUSE = 4,
+  CMD_SET_LIGHT_EFFECT_PATTERN_NUMBER = 5,
+  CMD_SET_SOLVED = 6
 };
 
 typedef struct {

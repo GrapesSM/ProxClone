@@ -46,7 +46,6 @@ bool Door::isClosed()
 void Door::open()
 {
   _closed = false;
-  Serial.println("opening safe");
   digitalWrite(_pin, HIGH);
   delay(200);
   digitalWrite(_pin, LOW);
@@ -58,9 +57,9 @@ void Door::update()
   if(_state == DISABLE) return;
   if(_state == ENABLE)
   {
-    if(isClosed()){
+    if (isClosed()) {
       open();
-    }else{
+    } else {
       reset();
     }
   }
