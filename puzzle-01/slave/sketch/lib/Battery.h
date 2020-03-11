@@ -38,7 +38,8 @@ class Battery
     } _chargeTimer;
 };
 
-Battery::Battery(){
+Battery::Battery()
+{
   _value = 0;
   _rate = 1.00;
   _maxValue = 13.00;
@@ -65,22 +66,27 @@ STATE Battery::getState()
 
 void Battery::update()
 {
-  if (_state == DISABLE) {
-    return;
-  }
-  
-  _state = CHARGING;
-  _chargeTimer.current = millis();
-  if ((_chargeTimer.current - _chargeTimer.chargepoint) > _chargeTimer.interval) {
-    _chargeTimer.chargepoint = millis();
-    _value += _rate;
-    _value -= _drawRate;
-    if (_value >= _maxValue) {
-      _value = _maxValue;
-    } else if (_value < 0) {
-      _value = 0;
-    }
-  }
+  switch (_state) {
+    case DISABLE:
+      break;
+
+    case ENABLE:
+    case CHARGING:
+    default:
+      _state = CHARGING;
+      _chargeTimer.current = millis();
+      if ((_chargeTimer.current - _chargeTimer.chargepoint) > _chargeTimer.interval) {
+        _chargeTimer.chargepoint = millis();
+        _value += _rate;
+        _value -= _drawRate;
+        if (_value >= _maxValue) {
+          _value = _maxValue;
+        } else if (_value < 0) {
+          _value = 0;
+        }
+      }
+      break;
+  }  
 }
 
 void Battery::setValue(float value)
