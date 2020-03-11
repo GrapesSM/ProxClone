@@ -90,11 +90,13 @@ String CodeReader::getTransmittedKey() {
 
 char CodeReader::readInput()
 {
+  Serial.println(_mcp1->digitalRead(_buttonPins1[i]));
   String _buttons = String("0000000000");
   char val;
   for (int i = 0; i < NUMBER_OF_BUTTONS_1; i++) {
     val = _mcp1->digitalRead(_buttonPins1[i]) ? '1' : '0';
     _buttons.setCharAt(i, val);
+
   }
 
   for (int i = NUMBER_OF_BUTTONS_1, n = NUMBER_OF_BUTTONS_1 + NUMBER_OF_BUTTONS_2; i < n; i++) {
@@ -141,16 +143,19 @@ MODE CodeReader::readMode()
 
 void CodeReader::update()
 {
+  MODE mode;
+  char input; 
   switch (_state)
   {
+
     case DISABLE:
       // Serial.println("DISABLE");
       break;
 
     case ENABLE:  
     default:
-      char input = readInput();
-      MODE mode = readMode();
+      input = readInput();
+      mode = readMode();
       switch(mode) {
         case INPUT_MODE: 
           // Update number -----------------
@@ -167,7 +172,6 @@ void CodeReader::update()
             _entered = false;
           }
           // ------------------------------
-
           break;
         case CLEAR_MODE:
           _key = "";

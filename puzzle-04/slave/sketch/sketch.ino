@@ -89,6 +89,7 @@ void setup()
   // parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
   
   setupDatamatic();
+
   dmComponents.state = SETUP;
 }
 

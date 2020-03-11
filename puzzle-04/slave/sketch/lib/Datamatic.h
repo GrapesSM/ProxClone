@@ -19,11 +19,6 @@ namespace Datamatic {
     LightEffect lightEffect;
     Speaker speaker;
     STATE state;
-    struct Timer {
-      unsigned long start = 0;
-      unsigned long end = 0;
-      unsigned long current = 0;
-    } timer;
     struct ShowTimer {
       unsigned long current = 0;
       unsigned long showpoint = 0;
@@ -164,7 +159,8 @@ namespace Datamatic {
       }
       else if (c.codeReader.getTransmittedKey() == keyForCodeReader5) {
         c.informationDisplay.setCurrentSeries(5);
-      }else{
+      }
+      else{
         c.informationDisplay.setCurrentSeries(0);
       }
     }
