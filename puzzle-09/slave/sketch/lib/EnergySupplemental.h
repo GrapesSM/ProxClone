@@ -26,12 +26,6 @@ namespace EnergySupplemental {
 
   void update(Puzzle & p, Components & c)
   {
-    p.registers[REG_SLAVE_ES_MILLIS] = millis();
-    p.registers[REG_SLAVE_ES_STATE] = c.state;
-    p.registers[REG_SLAVE_ES_POWER_SWITCH_STATE] = c.powerSwitch.getState();
-    p.registers[REG_SLAVE_ES_POWER_ADJUSTER_STATE] = c.powerAdjuster.getState();
-    p.registers[REG_SLAVE_ES_SYNCRO_READER_STATE] = c.syncroReader.getState();
-    p.registers[REG_SLAVE_ES_SPEAKER_STATE] = c.speaker.getState();
 
     if (p.registers[REG_MASTER_ES_COMMAND] == CMD_ENABLE &&
         p.registers[REG_SLAVE_ES_CONFIRM] != DONE) {
@@ -44,6 +38,38 @@ namespace EnergySupplemental {
       p.registers[REG_SLAVE_ES_CONFIRM] = DONE;
       c.state = DISABLE;
     }
+
+    if (p.registers[REG_MASTER_ES_COMMAND] == CMD_RESET &&
+        p.registers[REG_SLAVE_ES_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_ES_CONFIRM] = DONE;
+      c.state = RESET;
+    }
+
+    if (p.registers[REG_MASTER_ES_COMMAND] == CMD_SET_SOLVED &&
+        p.registers[REG_SLAVE_ES_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_ES_CONFIRM] = DONE;
+      c.state = SOLVED;
+    }
+
+    if (p.registers[REG_MASTER_ES_COMMAND] == CMD_SET_DS_SYNCRO_KEY_SOLVED &&
+        p.registers[REG_SLAVE_ES_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_ES_CONFIRM] = DONE;
+      c.syncroReader.setState(SOLVED);
+    }
+
+    if (p.registers[REG_MASTER_ES_COMMAND] == CMD_SET_DS_SYNCRO_KEY_WRONG_SOLVED &&
+        p.registers[REG_SLAVE_ES_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_ES_CONFIRM] = DONE;
+      c.syncroReader.setState(FLASH);
+    }
+
+    
+    p.registers[REG_SLAVE_ES_MILLIS] = millis();
+    p.registers[REG_SLAVE_ES_STATE] = c.state;
+    p.registers[REG_SLAVE_ES_POWER_SWITCH_STATE] = c.powerSwitch.getState();
+    p.registers[REG_SLAVE_ES_POWER_ADJUSTER_STATE] = c.powerAdjuster.getState();
+    p.registers[REG_SLAVE_ES_SYNCRO_READER_STATE] = c.syncroReader.getState();
+    p.registers[REG_SLAVE_ES_SPEAKER_STATE] = c.speaker.getState();
 
     if (c.state == SETUP) {
       c.state = INITIALIZING;
@@ -58,16 +84,13 @@ namespace EnergySupplemental {
   void run(Components &c) 
   {
     if (c.state == INITIALIZED) {
-      
-    }
-    if (Serial.available() > 1) {
-      keyForPowerAdjuster = Serial.parseInt();
-      Serial.println(keyForPowerAdjuster);
+      c.state = ENABLE;
     }
 
     c.powerSwitch.update();
     c.powerAdjuster.update();
     c.syncroReader.update();
+    c.speaker.update();
 
     if (c.state == ENABLE) {
       if (c.powerSwitch.getState() == DISABLE) {
@@ -77,23 +100,24 @@ namespace EnergySupplemental {
       if (c.powerSwitch.getState() == OFF) {
         c.powerAdjuster.setState(DISABLE);
         c.syncroReader.setState(DISABLE);
-        c.speaker.setState(DISABLE);
       } 
 
       if (c.powerSwitch.getState() == ON)
       {
         if (c.powerAdjuster.getState() == DISABLE) 
           c.powerAdjuster.setState(ENABLE);
-        if (c.speaker.getState() == DISABLE) 
-          c.speaker.setState(ENABLE);
+        if (c.speaker.getNumber() != SOUND_POWER_UP)
+          c.speaker.addToPlay(SOUND_POWER_UP);
       }
 
-      if (c.powerAdjuster.getInputKey() == keyForPowerAdjuster) {
+      if (c.powerAdjuster.getInputKey() == keyForPowerAdjuster && c.powerAdjuster.getState() == ENABLE) {
         c.powerAdjuster.setState(SOLVED);
       }
-      
-      if (c.powerAdjuster.getState() == SOLVED && c.syncroReader.getState() == SOLVED) {
-        
+      if (c.powerAdjuster.getState() == SOLVED && c.syncroReader.getState() == DISABLE) {
+        c.syncroReader.setState(ENABLE);
+        if (c.speaker.getNumber() != SOUND_KEY_INSERT) {
+          c.speaker.addToPlay(SOUND_KEY_INSERT);
+        }
       }
     }
 
@@ -103,9 +127,11 @@ namespace EnergySupplemental {
       c.syncroReader.setState(DISABLE);
       c.speaker.setState(DISABLE);
     }
+    Serial.println(c.syncroReader.getInputKey());
+
 
     if (c.state == RESET) {
-      
+      c.state = SETUP;
     }
 
     if (c.state == PAUSE) {

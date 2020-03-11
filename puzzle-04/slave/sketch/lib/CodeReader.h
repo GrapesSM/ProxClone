@@ -90,7 +90,10 @@ String CodeReader::getTransmittedKey() {
 
 char CodeReader::readInput()
 {
-  Serial.println(_mcp1->digitalRead(_buttonPins1[i]));
+  for (int i = 0; i < 10; i++) {
+    Serial.print(_mcp1->digitalRead(i));
+  }
+  Serial.println();
   String _buttons = String("0000000000");
   char val;
   for (int i = 0; i < NUMBER_OF_BUTTONS_1; i++) {

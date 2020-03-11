@@ -80,7 +80,7 @@ void SyncroReader::update()
     return;
   }
 
-  if (_state == START_TIMER) {
+  if (_state == ENABLE ) {
     _timer.start = millis();
     _timer.lastRefreshTime = _timer.start;
     _state = COUNTING;
@@ -100,7 +100,7 @@ void SyncroReader::update()
             for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
               _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
             }
-            _state = DONE;
+            _state = ENABLE; //DONE
             _count = 0;
             _timer.lastRefreshTime = millis();
           }

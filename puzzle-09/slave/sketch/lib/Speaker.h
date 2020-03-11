@@ -16,17 +16,20 @@ class Speaker
       int enablePin, 
       unsigned int rate, 
       unsigned char** listOfSounds, 
-      unsigned int* listOfLengthOfSounds);
+      unsigned int* listOfLengthOfSounds,
+      int channel);
     void setState(STATE state);
     STATE getState();
     void play();
     void play(int number);
     void speak(int frequency = PWM_SPEAKER_FREQUENCY, int dutycycle = PWM_SPEAKER_DUTYCYCLE);
     void addToPlay(int number);
-
+    void update();
+    int getNumber();
   private:
     int _pin;
     int _enablePin;
+    int _channel;
     int _counter;
     unsigned int _rate;
     unsigned char** _listOfSounds;
@@ -34,6 +37,8 @@ class Speaker
     int _numberOfSounds;
     int _frequency;
     int _dutycycle;
+    int _number;
+    int _index;
     STATE _state;
     DataQueue<unsigned int> _queue;
 };
@@ -42,6 +47,8 @@ Speaker::Speaker()
 {
   _counter = 0;
   _numberOfSounds = 0;
+  _number = 0;
+  _index = 0;
 }
 
 void Speaker::set(
@@ -49,10 +56,12 @@ void Speaker::set(
   int enablePin, 
   unsigned int rate,
   unsigned char** listOfSounds,
-  unsigned int* listOfLengthOfSounds)
+  unsigned int* listOfLengthOfSounds,
+  int channel)
 {
   _pin = pin;
   _enablePin = enablePin;
+  _channel = channel;
   _rate = rate;
   _listOfSounds = listOfSounds;
   _listOfLengthOfSounds = listOfLengthOfSounds;
@@ -81,12 +90,12 @@ void Speaker::speak(int frequency, int dutycycle)
 {
   if (_frequency != frequency) {
     _frequency = frequency;
-    ledcWriteTone(PWM_SPEAKER_CHANNEL, frequency);
+    ledcWriteTone(_channel, frequency);
   }
 
   if (_dutycycle != dutycycle) {
     _dutycycle = dutycycle;
-    ledcWrite(PWM_SPEAKER_CHANNEL, dutycycle);
+    ledcWrite(_channel, dutycycle);
   }
 
   if (_frequency && dutycycle) {
@@ -96,26 +105,35 @@ void Speaker::speak(int frequency, int dutycycle)
 
 void Speaker::addToPlay(int number)
 {
+  _number = number;
   _queue.enqueue(number);
 }
 
-void Speaker::play()
+int Speaker::getNumber()
+{
+  return _number;
+}
+
+void Speaker::update()
 {
   switch (_state)
   {
     case ENABLE:
-      if (_queue.isEmpty()) {
-        return;
+      if (digitalRead(PIN_AMPLIFIER) == LOW) {
+        digitalWrite(PIN_AMPLIFIER, HIGH);
+        delay(5);
       }
-      play(_queue.dequeue());    
       break;
     
     case DISABLE:
-      speak(PWM_SPEAKER_FREQUENCY, 0);
+      if (digitalRead(PIN_AMPLIFIER) == HIGH) {
+        digitalWrite(PIN_AMPLIFIER, LOW);
+        delay(5);
+      }
       break;
     
     case ALARM:
-      unsigned long sec = millis()/1000; 
+      unsigned long sec = millis() /1000; 
       if (sec % 3 == 0) {
         speak(1000);
       } else {
@@ -123,6 +141,19 @@ void Speaker::play()
       }
       break;
   }
+}
+
+void Speaker::play() 
+{
+  if (_queue.isEmpty()) {
+    return;
+  } 
+
+  _state = ENABLE;
+  update();
+  play(_queue.dequeue());
+  _state = DISABLE;
+  update();
 }
 
 #endif

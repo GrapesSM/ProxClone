@@ -105,7 +105,19 @@ enum COMMAND {
   CMD_ENABLE = 1,
   CMD_DISABLE = 2,
   CMD_RESET = 3,
-  CMD_PAUSE = 4
+  CMD_PAUSE = 4,
+  CMD_SET_SOLVED = 6,
+  CMD_START_TIMER = 7,
+  CMD_SET_DS_BATTERY_MATRIX_SOLVED = 20,
+  CMD_SET_DS_ENERGY_SUPP_SOLVED = 21,
+  CMD_SET_DS_GENERATOR_SOLVED = 22,
+  CMD_SET_POWER_ADJUSTER_KEY = 23,
+  CMD_SET_BATTERY_MATRIX_KEY= 24,
+  CMD_SET_GENERATOR_KEY= 25,
+  CMD_SET_DS_SYNCRO_KEY_SOLVED = 26,
+  CMD_SET_DS_SYNCRO_KEY_WRONG_SOLVED = 27,
+  CMD_SET_DS_SYNCRO_KEY_COUNTING_PERIOD = 28,
+  CMD_ENABLE_DS_SYNCRO_KEY = 29
 };
 
 // Number of Lights and Pin Numbers
@@ -130,7 +142,7 @@ extern int keyForGenerator = 46725;
 
 extern int lightPinForPowerSwitchOfShipPrep = 18;
 
-extern int keyForPowerAdjuster = 656;
+extern int keyForPowerAdjuster = 600;
 
 #define NUMBER_OF_SOUNDS 3
 enum {  // enumeration from 0, 1, 2 ...
