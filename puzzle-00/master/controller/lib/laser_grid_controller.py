@@ -30,5 +30,14 @@ class LaserGridController(BaseController):
         if self.getCommand() == COMMAND.CMD_DISABLE and self.getCommandStatus() == STATUS.ST_CREATED:
             registers[LG_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_DISABLE
             registers[LG_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand() == COMMAND.CMD_PAUSE and self.getCommandStatus() == STATUS.ST_CREATED:
+            registers[LG_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_PAUSE
+            registers[LG_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand() == COMMAND.CMD_SET_SOLVED and self.getCommandStatus() == STATUS.ST_CREATED:
+            registers[LG_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_SET_SOLVED
+            registers[LG_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
+            
         
         self.setRegisters(registers)

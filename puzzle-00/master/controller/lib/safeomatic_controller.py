@@ -30,4 +30,12 @@ class SafeomaticController(BaseController):
             registers[SC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_DISABLE
             registers[SC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
 
+        if self.getCommand() == COMMAND.CMD_PAUSE and self.getCommandStatus() == STATUS.ST_CREATED:
+            registers[SC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_PAUSE
+            registers[SC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand() == COMMAND.CMD_SET_SOLVED and self.getCommandStatus() == STATUS.ST_CREATED:
+            registers[SC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_SET_SOLVED
+            registers[SC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
+
         self.setRegisters(registers)

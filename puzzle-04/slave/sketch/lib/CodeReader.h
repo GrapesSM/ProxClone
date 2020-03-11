@@ -167,6 +167,7 @@ void CodeReader::update()
             _entered = false;
           }
           // ------------------------------
+
           break;
         case CLEAR_MODE:
           _key = "";

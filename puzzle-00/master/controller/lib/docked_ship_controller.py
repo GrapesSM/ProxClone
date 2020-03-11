@@ -14,6 +14,9 @@ class DockedShipController(BaseController):
         self._commandStatus_SP = COMMAND.CMD_NONE
         self._commandQueue_ES = []
         self._commandQueue_SP = []
+        self._powerAdjusterKey = 650
+        self._baterryMatrixKey = 12345
+        self._generatorKey = 12345
 
 
     def update(self, registers):
