@@ -119,6 +119,9 @@ namespace EnergySupplemental {
           c.speaker.addToPlay(SOUND_KEY_INSERT);
         }
       }
+      if(c.syncroReader.getState() == ENABLE && c.syncroReader.getInputKey() == 3){
+        c.syncroReader.setState(SYNCRONIZED);
+      }
     }
 
     if (c.state == DISABLE) {
