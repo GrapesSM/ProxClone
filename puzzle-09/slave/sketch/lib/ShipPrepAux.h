@@ -99,7 +99,7 @@ namespace ShipPrepAux {
           c.batteryMatrix.setState(ENABLE);
         if (c.generator.getState() == DISABLE) 
           c.generator.setState(ENABLE);
-        if (c.speaker.getNumber() != SOUND_POWER_UP)
+        if (c.speaker.getNumber() == SOUND_POWER_DOWN)
           c.speaker.addToPlay(SOUND_POWER_UP);
       }
 
