@@ -155,7 +155,6 @@ void CombinationReader::checkNumber()
         if (_submittedVal < 5) {
           _prepped = true;
           CombinationReader::setLightsYellow();
-          Serial.println("dial prepped");
         } else {
           CombinationReader::setLightsRed();
         }
@@ -172,29 +171,36 @@ void CombinationReader::checkNumber()
 
 void CombinationReader::update() 
 {
-  if(_state == DISABLE) return;
-  if(_state == ENABLE){
-    _val = _encoder->getCount();
-    if (_val >= _max) {
-      _val = _max;
-      _encoder->setCount(_max);
-    } else if (_val <= _min) {
-      _val = _min;
-      _encoder->setCount(_min);
-    }
-    if(millis() - lastRefreshTime >= _waitTimeMillis){
-        lastRefreshTime = millis();
-        _submittedVal = _val;
-    }
-    Serial.println(_submittedVal);
-    if(isSolved()){
-      _state = SOLVED;
-    }else
-    {
-      checkNumber();
-    }
+  switch (_state)
+  {
+    case DISABLE:
+      
+      break;
     
-  }
+    case ENABLE:
+      _val = _encoder->getCount();
+      if (_val >= _max) {
+        _val = _max;
+        _encoder->setCount(_max);
+      } else if (_val <= _min) {
+        _val = _min;
+        _encoder->setCount(_min);
+      }
+      if (millis() - lastRefreshTime >= _waitTimeMillis) {
+          lastRefreshTime = millis();
+          _submittedVal = _val;
+      }
+      
+      if (isSolved()) {
+        _state = SOLVED;
+      } else {
+        checkNumber();
+      }  
+      break;
+    
+    default:
+      break;
+  }  
 }
 
 void CombinationReader::reset() 
