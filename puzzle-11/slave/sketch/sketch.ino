@@ -79,16 +79,13 @@ void setup()
 
 void loop()
 {
-  // Save current timing
-  puzzle.timer = millis();
-
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
   // Map puzzle's values with component's values
   LaserGrid::update(puzzle, lgComponents);
 
-  // Run instructions to state changes
+  // State changes
   LaserGrid::run(lgComponents);
 
   // Show changes
@@ -100,5 +97,5 @@ void setupLaserGrid()
   lgComponents.waveAdjuster.set(PIN_ANALOG_INPUT_1, PIN_ANALOG_INPUT_2, PIN_ANALOG_INPUT_3, &Serial2);
   lgComponents.keyReader.set(PIN_INPUT_1, PIN_INPUT_2, PIN_INPUT_3, PIN_RELAY_1);
   lgComponents.powerSwitch.set(parts.strip, PIN_LIGHT_FOR_POWER_SWITCH, PIN_SWITCH_1);
-  lgComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
+  lgComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
 }

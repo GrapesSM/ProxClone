@@ -26,7 +26,6 @@ namespace EnergySupplemental {
 
   void update(Puzzle & p, Components & c)
   {
-
     if (p.registers[REG_MASTER_ES_COMMAND] == CMD_ENABLE &&
         p.registers[REG_SLAVE_ES_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_ES_CONFIRM] = DONE;
@@ -100,14 +99,18 @@ namespace EnergySupplemental {
       if (c.powerSwitch.getState() == OFF) {
         c.powerAdjuster.setState(DISABLE);
         c.syncroReader.setState(DISABLE);
+        if (c.speaker.getNumber() != SOUND_POWER_DOWN) {
+          c.speaker.addToPlay(SOUND_POWER_DOWN);
+        }
       } 
 
       if (c.powerSwitch.getState() == ON)
       {
         if (c.powerAdjuster.getState() == DISABLE) 
           c.powerAdjuster.setState(ENABLE);
-        if (c.speaker.getNumber() != SOUND_POWER_UP)
+        if (c.speaker.getNumber() == SOUND_POWER_DOWN) {
           c.speaker.addToPlay(SOUND_POWER_UP);
+        }
       }
 
       if (c.powerAdjuster.getInputKey() == keyForPowerAdjuster && c.powerAdjuster.getState() == ENABLE) {
@@ -130,7 +133,7 @@ namespace EnergySupplemental {
       c.syncroReader.setState(DISABLE);
       c.speaker.setState(DISABLE);
     }
-    Serial.println(c.syncroReader.getInputKey());
+    // Serial.println(c.syncroReader.getInputKey());
 
 
     if (c.state == RESET) {

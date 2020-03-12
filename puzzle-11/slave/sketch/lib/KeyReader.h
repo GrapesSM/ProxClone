@@ -26,9 +26,8 @@ class KeyReader
     int _inputPin3;
     int _outputPin;
     int _keys[3];
-    bool _solved;
-    bool _disabled;
     STATE _state;
+    bool _accessed;
 };
 
 KeyReader::KeyReader()
@@ -38,8 +37,7 @@ KeyReader::KeyReader()
 
 void KeyReader::init()
 {
-  _solved = false;
-  _disabled = true;
+  _accessed = false;
   _keys[0] = -1;
   _keys[1] = -1;
   _keys[2] = -1;
@@ -77,6 +75,8 @@ void KeyReader::update()
   _keys[2] = digitalRead(_inputPin3);
   
   if (isAllInserted()) {
+    if (_accessed == false)
+      access();
     _state = SOLVED;
   }
 }
@@ -93,6 +93,11 @@ STATE KeyReader::getState()
 
 void KeyReader::access()
 {
+  _accessed = true;
+  // Serial2.print("p1.pic=0");
+  // Serial2.write(0xff);
+  // Serial2.write(0xff);
+  // Serial2.write(0xff);
   latch();
   delay(1000);
   unlatch();
