@@ -25,6 +25,8 @@ class CombinationReader
     void enable();
     bool isDisabled();
     bool isSolved();
+    void setState(STATE);
+    STATE getState();
   private:
     ESP32Encoder *_encoder;
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
@@ -44,9 +46,11 @@ class CombinationReader
     const unsigned long _waitTimeMillis = 100; // ms
 	  unsigned long lastRefreshTime;
     int overtravel;
+    STATE _state;
 };
 
-CombinationReader::CombinationReader() {
+CombinationReader::CombinationReader() 
+{
   _val = 0;
   _previousVal = 0;
   _min = 0;
@@ -57,7 +61,8 @@ CombinationReader::CombinationReader() {
   _prepped = false;
 }
 
-void CombinationReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, ESP32Encoder *encoder) {
+void CombinationReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, ESP32Encoder *encoder) 
+{
   _strip = strip;
   _encoder = encoder;
 }
@@ -88,7 +93,8 @@ void CombinationReader::setLightsOff()
   _strip->SetPixelColor(2, RgbColor(0, 0, 0));
 }
 
-void CombinationReader::checkNumber() {
+void CombinationReader::checkNumber() 
+{
   if (_submittedVal != _previousVal) {
     if (_submittedVal - _previousVal > 0) {
       _clockwise = false;
@@ -149,7 +155,6 @@ void CombinationReader::checkNumber() {
         if (_submittedVal < 5) {
           _prepped = true;
           CombinationReader::setLightsYellow();
-          Serial.println("dial prepped");
         } else {
           CombinationReader::setLightsRed();
         }
@@ -164,23 +169,42 @@ void CombinationReader::checkNumber() {
   }
 }
 
-void CombinationReader::update() {
-  _val = _encoder->getCount();
-  if (_val >= _max) {
-    _val = _max;
-    _encoder->setCount(_max);
-  } else if (_val <= _min) {
-    _val = _min;
-    _encoder->setCount(_min);
-  }
-  if(millis() - lastRefreshTime >= _waitTimeMillis){
-      lastRefreshTime = millis();
-      _submittedVal = _val;
-  }
-  Serial.println(_submittedVal);
+void CombinationReader::update() 
+{
+  switch (_state)
+  {
+    case DISABLE:
+      
+      break;
+    
+    case ENABLE:
+      _val = _encoder->getCount();
+      if (_val >= _max) {
+        _val = _max;
+        _encoder->setCount(_max);
+      } else if (_val <= _min) {
+        _val = _min;
+        _encoder->setCount(_min);
+      }
+      if (millis() - lastRefreshTime >= _waitTimeMillis) {
+          lastRefreshTime = millis();
+          _submittedVal = _val;
+      }
+      
+      if (isSolved()) {
+        _state = SOLVED;
+      } else {
+        checkNumber();
+      }  
+      break;
+    
+    default:
+      break;
+  }  
 }
 
-void CombinationReader::reset() {
+void CombinationReader::reset() 
+{
   _increment = 0;
   _numbersSolved = 0;
   _prepped = false;
@@ -189,7 +213,8 @@ void CombinationReader::reset() {
   CombinationReader::setLightsRed();
 }
 
-void CombinationReader::disable() {
+void CombinationReader::disable() 
+{
   _disabled = true;
   _solved = false;
   _prepped = false;
@@ -197,12 +222,12 @@ void CombinationReader::disable() {
   _encoder->pauseCount();
 }
 
-void CombinationReader::enable() {
+void CombinationReader::enable() 
+{
   _disabled = false;
   _solved = false;
   _prepped = false;
   _numbersSolved = 0;
-  Serial.println("combination enabled");
   _encoder->resumeCount();
   CombinationReader::setLightsRed();
   _encoder->setCount(100);
@@ -213,12 +238,24 @@ bool CombinationReader::isDisabled()
   return _disabled;
 }
 
-void CombinationReader::display() {
+void CombinationReader::display() 
+{
   // TO-DO
 }
 
-bool CombinationReader::isSolved() {
+bool CombinationReader::isSolved() 
+{
   return _solved;
+}
+
+STATE CombinationReader::getState()
+{
+  return _state;
+}
+
+void CombinationReader::setState(STATE state)
+{
+   _state = state;
 }
 
 #endif

@@ -8,23 +8,10 @@
 #include "lib/EnergySupplemental.h"
 #include "lib/ShipPrepAux.h"
 #include "sounds/soundPowerUp.h"
-// #include "sounds/soundPowerDown.h"
-// #include "sounds/soundKeyInsert.h"
+#include "sounds/soundPowerDown.h"
+#include "sounds/soundKeyInsert.h"
 
-struct Puzzle {
-  uint8_t address = ADDR_SLAVE;
-  STATE state = INITIALIZED;
-  bool forced = false;
-  int totalPower = 10;
-  uint8_t numberOfRegisters = 10;
-  uint16_t registers[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  unsigned long startTime = 0;
-  unsigned long endTime = 0;
-  unsigned long timer = 0;
-  unsigned long counter = 0;
-  unsigned long checkpoint = 0;
-  unsigned long interval = 200;
-} puzzle;
+Puzzle puzzle;
 
 struct Parts {
   Modbus * slave;
@@ -92,40 +79,38 @@ void setup()
 
   // Setup speaker pins
   pinMode(PIN_SPEAKER, OUTPUT);
-  ledcSetup(PWM_CHANNEL, PWM_FREQUENCY, PWM_RESOLUTION);
-  ledcAttachPin(PIN_SPEAKER, PWM_CHANNEL);
+  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
+  ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
   pinMode(PIN_AMPLIFIER, OUTPUT);
   digitalWrite(PIN_AMPLIFIER, HIGH);
 
   // Setup sound list
   parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
   parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
-  // parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
-  // parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
-  // parts.listOfSounds[SOUND_KEY_INSERT] = soundKeyInsert;
-  // parts.listOfLengthOfSounds[SOUND_KEY_INSERT] = sizeof(soundKeyInsert)/sizeof(soundKeyInsert[0]);
+  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
+  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+  parts.listOfSounds[SOUND_KEY_INSERT] = soundKeyInsert;
+  parts.listOfLengthOfSounds[SOUND_KEY_INSERT] = sizeof(soundKeyInsert)/sizeof(soundKeyInsert[0]);
 
   setupEnergySupplemental();
   setupShipPrepAux();
 
-  puzzle.timer = millis();
+  esComponents.state = SETUP;
+  spComponents.state = SETUP;
 }
 
 void loop()
 {
-  // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-  // Enable Energy Supplemental
+
+  EnergySupplemental::update(puzzle, esComponents);
+  ShipPrepAux::update(puzzle, spComponents);
+  
   EnergySupplemental::run(esComponents);
   ShipPrepAux::run(spComponents);
 
-  puzzle.timer = millis();
-  if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
-    puzzle.checkpoint = millis();
-    EnergySupplemental::show(esComponents);
-    ShipPrepAux::show(spComponents);
-  }
-  puzzle.registers[5] = spComponents.powerSwitch.getState();
+  EnergySupplemental::show(esComponents);
+  ShipPrepAux::show(spComponents);
 }
 
 void setupEnergySupplemental()
@@ -133,7 +118,7 @@ void setupEnergySupplemental()
   esComponents.powerAdjuster.set(&parts.encoder, &parts.matrix);
   esComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader, PIN_INPUT_1);
   esComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitchOfEnergySupplemental, PIN_SWITCH_1);
-  esComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
+  esComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
 }
 
 void setupShipPrepAux()
@@ -141,5 +126,5 @@ void setupShipPrepAux()
   spComponents.batteryMatrix.set(parts.strip, lightPinsForBatteryMatrix, &parts.mcp2, switchPinsForBatteryMatrix, labelsForBatteryMatrix);
   spComponents.generator.set(parts.strip, lightPinsForGenerator, &parts.mcp1, switchPinsForGenerator, labelsForGenerator);
   spComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitchOfShipPrep, PIN_SWITCH_2);
-  spComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
+  spComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
 }

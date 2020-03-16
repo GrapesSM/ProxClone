@@ -3,23 +3,9 @@
 #include "lib/BlastDoorKeyPad.h"
 #include <ESP32Encoder.h>
 #include "sounds/soundPowerUp.h"
-//#include "sounds/soundPowerDown.h"
 
 
-struct Puzzle {
-  uint8_t address = ADDR_SLAVE;
-  STATE state = INITIALIZED;
-  bool forced = false;
-  int totalPower = 10;
-  uint8_t numberOfRegisters = 10;
-  uint16_t registers[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  unsigned long startTime = 0;
-  unsigned long endTime = 0;
-  unsigned long timer = 0;
-  unsigned long counter = 0;
-  unsigned long checkpoint = 0;
-  unsigned long interval = 200;
-} puzzle;
+Puzzle puzzle;
 
 struct Parts {
   Modbus * slave;
@@ -34,6 +20,11 @@ Modbus slave(puzzle.address, 1, PIN_485_EN);
 BlastDoorKeypad::Components bdComponents;
 
 void setupBlastDoorKeypad();
+void runTaskFunction(void*);
+void showTaskFunction(void*);
+
+TaskHandle_t runTask;
+TaskHandle_t showTask;
 
 void setup() 
 {
@@ -65,37 +56,83 @@ void setup()
 
   // Setup speaker pins
   pinMode(PIN_SPEAKER, OUTPUT);
-  ledcSetup(PWM_CHANNEL, PWM_FREQUENCY, PWM_RESOLUTION);
-  ledcAttachPin(PIN_SPEAKER, PWM_CHANNEL);
+  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
+  ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
   pinMode(PIN_AMPLIFIER, OUTPUT);
-  digitalWrite(PIN_AMPLIFIER, HIGH);
 
   parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
   parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
 //  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
 //  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
-
   
   setupBlastDoorKeypad();
-  puzzle.timer = millis();
+
+  // Setup Task functions
+  xTaskCreatePinnedToCore(
+    runTaskFunction,   /* Task function. */
+    "RunTask",     /* name of task. */
+    100000,       /* Stack size of task */
+    NULL,        /* parameter of the task */
+    1,           /* priority of the task */
+    &runTask,      /* Task handle to keep track of created task */
+    0);          /* pin task to core 0 */                  
+
+//  delay(500);
+
+  xTaskCreatePinnedToCore(
+    showTaskFunction,   /* Task function. */
+    "ShowTask",     /* name of task. */
+    100000,       /* Stack size of task */
+    NULL,        /* parameter of the task */
+    1,           /* priority of the task */
+    &showTask,      /* Task handle to keep track of created task */
+    1);
+    
+//  delay(500);
+
+  bdComponents.state = SETUP;
 }
 
-void loop() 
-{
-  // Enable communication to master
-  parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
-  // Enable Datamatic
-  BlastDoorKeypad::run(bdComponents);
-  
-  puzzle.timer = millis();
-  if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
-    puzzle.checkpoint = millis();
-  }
+void loop()
+{
+  // It should be empty
 }
 
 void setupBlastDoorKeypad()
 {
   bdComponents.codeReader.set(&parts.keypad, PIN_INPUT_1);
-  bdComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
+  bdComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
+}
+
+//Run Task Function: process changes of puzzle
+void runTaskFunction( void * parameters ) {
+  Serial.print("Run Task running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for(;;){
+    // Enable communication to master
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+    
+    // Map puzzle's values to component's values
+    BlastDoorKeypad::update(puzzle, bdComponents);
+
+    // State changes
+    BlastDoorKeypad::run(bdComponents);
+
+    vTaskDelay(10);
+  } 
+}
+
+//Show Task Fucntion: shows changes of puzzle
+void showTaskFunction( void * parameters ){
+  Serial.print("Show Task running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for(;;){
+    // Show changes
+    BlastDoorKeypad::show(bdComponents);
+
+    vTaskDelay(10);
+  } 
 }

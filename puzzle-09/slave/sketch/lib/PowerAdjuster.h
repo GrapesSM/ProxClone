@@ -17,13 +17,9 @@ class PowerAdjuster
     void set(ESP32Encoder * encoder, Adafruit_7segment * matrix);
     void update();
     void display();
-    void disable();
-    void enable();
-    bool isDisabled();
-    bool isSolved();
-    void setSolved(bool solved);
     int getInputKey();
     STATE getState();
+    void setState(STATE state);
   private:
     ESP32Encoder *_encoder;
     Adafruit_7segment *_matrix;
@@ -32,16 +28,13 @@ class PowerAdjuster
     int _submittedVal;
     int _min;
     int _max;
-    int _disabled = true;
-    bool _solved = false;
     const unsigned long _waitTimeMillis = 3000; // ms
 	  unsigned long lastRefreshTime;
     STATE _state;
 };
 
-
-
-PowerAdjuster::PowerAdjuster() {
+PowerAdjuster::PowerAdjuster()
+{
   _val = 0;
   _min = 600;
   _max = 700;
@@ -50,65 +43,52 @@ PowerAdjuster::PowerAdjuster() {
   lastRefreshTime = 0;
 }
 
-bool PowerAdjuster::isSolved() {
-  return _solved;
-}
-
-void PowerAdjuster::setSolved(bool solved = true) {
-  _solved = solved;
-  _state = SOLVED;
-}
-
-int PowerAdjuster::getInputKey() {
+int PowerAdjuster::getInputKey() 
+{
   return _submittedVal;
 }
 
-void PowerAdjuster::setDefaultValues() {
+void PowerAdjuster::setDefaultValues()
+{
   _val = 0;
   _encoder->setCount(_val);
 }
 
-void PowerAdjuster::set(ESP32Encoder *encoder, Adafruit_7segment *matrix) {
+void PowerAdjuster::set(ESP32Encoder *encoder, Adafruit_7segment *matrix) 
+{
   _encoder = encoder;
   _matrix = matrix;
 }
 
-void PowerAdjuster::update() {
-  if (_disabled) return;
-  _state = READING;
-  _val = _encoder->getCount();
-  if (_val >= _max) {
-    _val = _max;
-    _encoder->setCount(_max);
-  } else if (_val <= _min) {
-    _val = _min;
-    _encoder->setCount(_min);
-  }
-  if(millis() - lastRefreshTime >= _waitTimeMillis){
-      lastRefreshTime = millis();
-      _submittedVal = _val;
-  }
-}
-
-void PowerAdjuster::disable() {
-  _state = OFF;
-  _disabled = true;
-  _encoder->pauseCount();
-  _matrix->clear();
-}
-
-void PowerAdjuster::enable() {
-  _state = ON;
-  _disabled = false;
-  _encoder->resumeCount();
-}
-
-bool PowerAdjuster::isDisabled()
+void PowerAdjuster::update() 
 {
-  return _disabled;
+  switch (_state) {
+    case DISABLE:
+      _encoder->pauseCount();
+      _matrix->clear();
+      break;
+    
+    case ENABLE:
+    default:
+      _encoder->resumeCount();
+      _val = _encoder->getCount();
+      if (_val >= _max) {
+        _val = _max;
+        _encoder->setCount(_max);
+      } else if (_val <= _min) {
+        _val = _min;
+        _encoder->setCount(_min);
+      }
+      if (millis() - lastRefreshTime >= _waitTimeMillis){
+        lastRefreshTime = millis();
+        _submittedVal = _val;
+      }
+      break;
+  }
 }
 
-void PowerAdjuster::display() {
+void PowerAdjuster::display() 
+{
   _matrix->clear();
   _matrix->print(_val);
   _matrix->writeDisplay();
@@ -117,6 +97,11 @@ void PowerAdjuster::display() {
 STATE PowerAdjuster::getState()
 {
   return _state;
+}
+
+void PowerAdjuster::setState(STATE state)
+{
+  _state = state;
 }
 
 #endif

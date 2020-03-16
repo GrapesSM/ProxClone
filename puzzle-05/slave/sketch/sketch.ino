@@ -3,26 +3,17 @@
 #include "NeoPixelBus.h"
 #include <ESP32Encoder.h>
 #include "lib/Safeomatic.h"
+#include "sounds/soundPowerUp.h"
+#include "sounds/soundPowerDown.h"
 
-struct Puzzle {
-  uint8_t address = ADDR_SLAVE;
-  STATE state = INITIALIZED;
-  bool forced = false;
-  int totalPower = 10;
-  uint8_t numberOfRegisters = 10;
-  uint16_t registers[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-  unsigned long startTime = 0;
-  unsigned long endTime = 0;
-  unsigned long timer = 0;
-  unsigned long counter = 0;
-  unsigned long checkpoint = 0;
-  unsigned long interval = 200;
-} puzzle;
+Puzzle puzzle;
 
 struct Parts {
   Modbus * slave;
   NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip;
   ESP32Encoder encoder;
+  unsigned char* listOfSounds[NUMBER_OF_SOUNDS];
+  unsigned int listOfLengthOfSounds[NUMBER_OF_SOUNDS];
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
@@ -63,9 +54,21 @@ void setup()
   pinMode(PIN_RELAY_2, OUTPUT);
   digitalWrite(PIN_RELAY_2, LOW);
 
+  // Setup speaker pins
+  pinMode(PIN_SPEAKER, OUTPUT);
+  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
+  ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
+  pinMode(PIN_AMPLIFIER, OUTPUT);
+
+  // Setup sound list
+  parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
+  parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
+  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
+  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+
   setupSafeomatic();
 
-  puzzle.timer = millis();
+  smComponents.state = SETUP;
 }
 
 void loop()
@@ -73,21 +76,21 @@ void loop()
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
-  // Enable Datamatic
+  // Map puzzle's values to component's values
+  Safeomatic::update(puzzle, smComponents);
+
+  // State changes
   Safeomatic::run(smComponents);
 
-  puzzle.timer = millis();
-  if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
-    puzzle.checkpoint = millis();
-    Safeomatic::show(smComponents);
-  }
+  // Show changes
+  Safeomatic::show(smComponents);
 }
 
 void setupSafeomatic()
 {
   smComponents.combinationReader.set(parts.strip, &parts.encoder);
   smComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
-  //smComponents.speaker.set(&parts.speaker);
-  smComponents.accessPanel.set(PIN_INPUT_1, PIN_RELAY_1);
-  smComponents.door.set(parts.strip, safeLightPin, PIN_RELAY_2);
+  smComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
+  smComponents.accessPanel.set(PIN_INPUT_1, PIN_RELAY_2);
+  smComponents.door.set(parts.strip, safeLightPin, PIN_RELAY_1);
 }

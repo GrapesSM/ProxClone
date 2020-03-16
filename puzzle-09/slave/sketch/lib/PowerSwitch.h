@@ -1,3 +1,4 @@
+
 /*
   PowerSwitch.h - Library for playing sounds and voices.
 */
@@ -11,39 +12,35 @@ class PowerSwitch
 {
   public:
     PowerSwitch();
-    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin, int pin, bool reversed);
+    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin, int pin);
     void setLightOn();
     void setLightOff();
     void display();
-    bool isLightOn();
-    bool isLightOff();
+    void update();
+    void setState(STATE state);
+    STATE getState();
     bool isSwitchOn();
     bool isSwitchOff();
-    void listen();
-    void update();
-    STATE getState();
+
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
     int _lightPin;
     int _pin;
-    bool _reversed;
     STATE _state;
 };
 
 PowerSwitch::PowerSwitch() {}
 
-void PowerSwitch::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin, int pin, bool reversed = false) 
+void PowerSwitch::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin, int pin) 
 {
   _strip = strip;
   _lightPin = lightPin;
   _pin = pin;
-  _state = OFF;
-  _reversed = reversed;
 }
 
 bool PowerSwitch::isSwitchOn()
 {
-  return _reversed ? ! digitalRead(_pin) : digitalRead(_pin);
+  return digitalRead(_pin);
 }
 
 bool PowerSwitch::isSwitchOff()
@@ -66,19 +63,36 @@ void PowerSwitch::display()
   _strip->Show();
 }
 
-void PowerSwitch::update()
+void PowerSwitch::update() 
 {
-  if (isSwitchOff()) {
-    _state = OFF;
-  }
+  switch (_state)
+  {
+    case DISABLE:
+      setLightOff();
+      break;
+    
+    default:
+      if (isSwitchOff()) {
+        _state = OFF;
+        setLightOff();
+      }
 
-  if (isSwitchOn()) {
-    _state = ON;
+      if (isSwitchOn()) {
+        _state = ON;
+        setLightOn();
+      }
+      break;
   }
+}
+
+void PowerSwitch::setState(STATE state)
+{
+  _state = state;
 }
 
 STATE PowerSwitch::getState()
 {
   return _state;
-} 
+}
+
 #endif

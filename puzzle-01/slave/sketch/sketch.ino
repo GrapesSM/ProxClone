@@ -1,32 +1,14 @@
-/*
- * Power Panel puzzle is first puzzle connected to others.
- * There are 
- * 
- */
 #include "Constants.h"
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
 #include <Adafruit_GFX.h>
 #include "Adafruit_LEDBackpack.h"
 #include <ESP32Encoder.h>
-#include "lib/PowerPanel.h"
+#include "lib/PowerControl.h"
 #include "sounds/soundPowerUp.h"
-//#include "sounds/soundPowerDown.h"
+// #include "sounds/soundPowerDown.h"
 
-struct Puzzle {
-  uint8_t address = ADDR_SLAVE;
-  STATE state = INITIALIZED;
-  bool forced = false;
-  int totalPower = 10;
-  uint8_t numberOfRegisters = 10;
-  uint16_t registers[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  unsigned long startTime = 0;
-  unsigned long endTime = 0;
-  unsigned long timer = 0;
-  unsigned long counter = 0;
-  unsigned long checkpoint = 0;
-  unsigned long interval = 3000;
-} puzzle;
+Puzzle puzzle;
 
 struct Parts {
   Modbus * slave;
@@ -41,7 +23,7 @@ struct Parts {
 Modbus slave(puzzle.address, 1, PIN_485_EN);
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, PIN_NEOPIXEL);
 
-PowerPanel::Components ppComponents;
+PowerControl::Components pcComponents;
 
 void setupPowerPanel();
 
@@ -91,8 +73,8 @@ void setup()
 
   // Setup speaker pins
   pinMode(PIN_SPEAKER, OUTPUT);
-  ledcSetup(PWM_CHANNEL, PWM_FREQUENCY, PWM_RESOLUTION);
-  ledcAttachPin(PIN_SPEAKER, PWM_CHANNEL);
+  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
+  ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
   pinMode(PIN_AMPLIFIER, OUTPUT);
   digitalWrite(PIN_AMPLIFIER, HIGH);
 
@@ -102,31 +84,30 @@ void setup()
   // parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
   // parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
 
-  setupPowerPanel();
-
-  puzzle.timer = millis();
+  setupPowerControl();
+  pcComponents.state = SETUP;
 }
 
 void loop() 
-{
+{ 
   // Enable communication to master
   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   
-  // Enable Power Panel
-  PowerPanel::run(ppComponents);
+  // Map puzzle's values with component's values
+  PowerControl::update(puzzle, pcComponents);
 
-  puzzle.timer = millis();
-  if (puzzle.timer - puzzle.checkpoint > puzzle.interval) {
-    puzzle.checkpoint = millis();
-    PowerPanel::show(ppComponents);
-  }
+  // State changes
+  PowerControl::run(pcComponents);
+
+  // Show changes
+  PowerControl::show(pcComponents);
 }
 
-void setupPowerPanel()
+void setupPowerControl()
 {
-  ppComponents.powerAdjuster.set(&parts.encoder, &parts.matrix1, &parts.matrix2, PWM_OUTPUT_1_CHANNEL);
-  ppComponents.powerLightIndicator.set(parts.strip, lightPinForPowerLightIndicator);
-  ppComponents.powerBarIndicator.set(parts.strip, lightPinsForBarIndicator);
-  ppComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
-  ppComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
+  pcComponents.powerAdjuster.set(&parts.encoder, &parts.matrix1, &parts.matrix2, PWM_OUTPUT_1_CHANNEL);
+  pcComponents.powerLightIndicator.set(parts.strip, lightPinForPowerLightIndicator);
+  pcComponents.battery.set(parts.strip, lightPinsForBarIndicator);
+  pcComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
+  pcComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
 }

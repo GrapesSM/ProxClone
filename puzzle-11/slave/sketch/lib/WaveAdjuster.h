@@ -15,19 +15,16 @@ class WaveAdjuster
     void set(int inputPin1, int inputPin2, int inputPin3, HardwareSerial * serial);
     void update();
     void display();
-    void disable();
-    void enable();
     bool isSyncronized();
-    bool isDisabled();
     int getPhase(int number);
     int getInputValue(int number);
+    void setState(STATE state);
     STATE getState();
   private:
     int _inputPin1;
     int _inputPin2;
     int _inputPin3;
     HardwareSerial * _serial;
-    int _disabled;
     unsigned long timer;
     unsigned long interval;
     int i, j, k;
@@ -38,7 +35,6 @@ class WaveAdjuster
 
 WaveAdjuster::WaveAdjuster() 
 {
-  _disabled = true;
   i = 0; j = 0; k = 0;
   timer = 0;
   interval = 0;
@@ -56,19 +52,22 @@ void WaveAdjuster::set(int inputPin1, int inputPin2, int inputPin3, HardwareSeri
 
 int WaveAdjuster::getPhase(int number)
 {
-  return map(_inputValues[number - 1], 0, 4096, _offsetValues[number - 1], _offsetValues[number - 1] + 359);
+  int val = map(_inputValues[number - 1], 0, 4096, _offsetValues[number - 1], _offsetValues[number - 1] + 359);
+  if (val >= 360) {
+    val = val - 360;
+  }
+  return val;
 }
 
 void WaveAdjuster::update() 
 {
-  if (_disabled) return;
+  if (_state == DISABLE) {
+    return;
+  }
 
-  _state = READING;
   _inputValues[0] = analogRead(_inputPin1); 
   _inputValues[1] = analogRead(_inputPin2);
   _inputValues[2] = analogRead(_inputPin3);
-
-  display();
 
   if (isSyncronized()) {
     _state = SOLVED;
@@ -77,28 +76,17 @@ void WaveAdjuster::update()
 
 bool WaveAdjuster::isSyncronized()
 {
-  return (abs(abs(getPhase(1) - getPhase(2)) - abs(getPhase(1) - getPhase(3))) < TOLERANCE);
-}
-
-void WaveAdjuster::disable() 
-{
-  _state = OFF;
-  _disabled = true;
-}
-
-void WaveAdjuster::enable() 
-{
-  _state = ON;
-  _disabled = false; 
-}
-
-bool WaveAdjuster::isDisabled()
-{
-  return _disabled;
+  int diff1 = abs(getPhase(1) - getPhase(2));
+  int diff2 = abs(getPhase(2) - getPhase(3));
+  return (diff1 < TOLERANCE) && (diff2 < TOLERANCE);
 }
 
 void WaveAdjuster::display() 
 {
+  if (_state == DISABLE) {
+    return;
+  }
+
   if (millis() - timer > interval) {
     timer = millis();
     i++;
@@ -152,6 +140,11 @@ void WaveAdjuster::display()
 int WaveAdjuster::getInputValue(int number)
 {
   return _inputValues[number];
+}
+
+void WaveAdjuster::setState(STATE state)
+{
+  _state = state;
 }
 
 STATE WaveAdjuster::getState()

@@ -10,43 +10,64 @@ class AirSupplyPump
 {
   public:
     AirSupplyPump();
-    void set();
+    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], int pin);
     void update();
-    void disable();
-    void enable();
-    bool isDisabled();
+    bool isSwitch(int position);
+    void setState(STATE state);
+    STATE getState();
   private:
-    bool _disabled = true;
+    STATE _state;
+    NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
+    int * _lightPins;
+    int _pin;
 };
 
-AirSupplyPump::AirSupplyPump(){}
-
-void AirSupplyPump::set()
+AirSupplyPump::AirSupplyPump()
 {
-  // TO-DO:
+
+}
+
+void AirSupplyPump::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], int pin)
+{
+  _strip = strip;
+  _lightPins = lightPins;
+  _pin = pin;
 }
 
 void AirSupplyPump::update()
 {
-  // TO-DO:
+  if (_state == DISABLE) {
+    _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
+    _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
+    return;
+  } 
+  
+  if (isSwitch(LOW)) {
+    _state = ON;
+    _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
+    _strip->SetPixelColor(_lightPins[1], RgbColor(255, 255, 255));
+  }
+
+  if (isSwitch(HIGH)) {
+    _state = OFF;
+    _strip->SetPixelColor(_lightPins[0], RgbColor(255, 255, 255));
+    _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
+  }
 }
 
-void AirSupplyPump::disable() 
+bool AirSupplyPump::isSwitch(int position) 
 {
-  _disabled = true;
-  // TO-DO:
+  return digitalRead(_pin) == position;
 }
 
-void AirSupplyPump::enable() 
+void AirSupplyPump::setState(STATE state)
 {
-  _disabled = false;
-  // TO-DO:
+  _state = state;
 }
 
-bool AirSupplyPump::isDisabled()
+STATE AirSupplyPump::getState()
 {
-  return _disabled;
+  return _state;
 }
-
 
 #endif

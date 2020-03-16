@@ -12,16 +12,23 @@ class PowerLightIndicator
   public:
     PowerLightIndicator();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin);
-    void setOn();
-    void setOff();
     void display();
-    STATE _state;
+    void update();
+    void setState(STATE state);
+    STATE getState();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
     int _lightPin;
+    STATE _state;
+    int _flashCount;
+    bool _flashToggle;
 };
 
-PowerLightIndicator::PowerLightIndicator() {}
+PowerLightIndicator::PowerLightIndicator() 
+{
+  _flashCount = 0;
+  _flashToggle = false;
+}
 
 void PowerLightIndicator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin) 
 {
@@ -30,19 +37,50 @@ void PowerLightIndicator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *stri
   _state = OFF;
 }
 
-void PowerLightIndicator::setOn()
+void PowerLightIndicator::setState(STATE state)
 {
-  _strip->SetPixelColor(_lightPin, RgbColor(127, 127, 127));
+  _state = state;
 }
 
-void PowerLightIndicator::setOff()
+void PowerLightIndicator::update()
 {
-  _strip->SetPixelColor(_lightPin, RgbColor(0, 0, 0));
+  
 }
 
 void PowerLightIndicator::display()
 {
-  _strip->Show();
+  switch (_state)
+  {
+    case ENABLE:
+      _strip->SetPixelColor(_lightPin, RgbColor(127, 127, 127));    
+      break;
+    
+    case DISABLE:
+      _strip->SetPixelColor(_lightPin, RgbColor(0, 0, 0));
+      break;
+      
+    case FLASH:
+      _flashCount++;
+      if (_flashCount % 2 == 0) {
+        _flashToggle = !_flashToggle;
+      }
+
+      if (_flashToggle) {
+        _strip->SetPixelColor(_lightPin, RgbColor(255, 0, 0));
+      } else  {
+        _strip->SetPixelColor(_lightPin, RgbColor(127, 127, 127));
+      }      
+      break;
+
+    default:
+      break;
+  }
+   _strip->Show();
+}
+
+STATE PowerLightIndicator::getState()
+{
+  return _state;
 }
 
 #endif

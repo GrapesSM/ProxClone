@@ -18,11 +18,7 @@ class KeyReader
     void unlatch();
     bool isAllInserted();
     bool isInserted(int number);
-    bool isSolved();
-    void setSolved(bool value);   
-    void disable();
-    void enable();
-    bool isDisabled();
+    void setState(STATE state);
     STATE getState();
   private:
     int _inputPin1;
@@ -30,9 +26,8 @@ class KeyReader
     int _inputPin3;
     int _outputPin;
     int _keys[3];
-    bool _solved;
-    bool _disabled;
     STATE _state;
+    bool _accessed;
 };
 
 KeyReader::KeyReader()
@@ -42,8 +37,7 @@ KeyReader::KeyReader()
 
 void KeyReader::init()
 {
-  _solved = false;
-  _disabled = true;
+  _accessed = false;
   _keys[0] = -1;
   _keys[1] = -1;
   _keys[2] = -1;
@@ -62,33 +56,6 @@ bool KeyReader::isInserted(int number)
   return _keys[number - 1];
 }
 
-void KeyReader::setSolved(bool value = true)
-{
-  _solved = value;
-}
-
-bool KeyReader::isSolved()
-{
-  return _solved;
-}
-
-void KeyReader::disable()
-{
-  _state = OFF;
-  _disabled = true;
-}
-
-void KeyReader::enable()
-{
-  _state = ON;
-  _disabled = false;
-}
-
-bool KeyReader::isDisabled()
-{
-  return _disabled;
-}
-
 bool KeyReader::isAllInserted()
 {
   return _keys[0] && _keys[1] && _keys[2];
@@ -96,21 +63,27 @@ bool KeyReader::isAllInserted()
 
 void KeyReader::update()
 {
-  if (_disabled) {
+  if (_state == DISABLE) {
+    _keys[0] = LOW;
+    _keys[1] = LOW;
+    _keys[2] = LOW;  
     return;
-  } 
-
-  _state = READING;
+  }
+  
   _keys[0] = digitalRead(_inputPin1);
   _keys[1] = digitalRead(_inputPin2);
   _keys[2] = digitalRead(_inputPin3);
   
   if (isAllInserted()) {
-    _solved = true;
+    if (_accessed == false)
+      access();
     _state = SOLVED;
-  } else {
-    _solved = false;
   }
+}
+
+void KeyReader::setState(STATE state)
+{
+  _state = state;
 }
 
 STATE KeyReader::getState()
@@ -120,6 +93,11 @@ STATE KeyReader::getState()
 
 void KeyReader::access()
 {
+  _accessed = true;
+  // Serial2.print("p1.pic=0");
+  // Serial2.write(0xff);
+  // Serial2.write(0xff);
+  // Serial2.write(0xff);
   latch();
   delay(1000);
   unlatch();

@@ -12,25 +12,25 @@ class SyncroReader
   public:
     SyncroReader();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], int pin);
-    void disable();
-    void enable();
     void update();
     void display();
-    bool isDisabled();
-    bool isSynchronized();
-    void setSynchronized(bool solved);
     int getInputKey();
-    bool isSwitchOn();
+    void setState(STATE state);
+    STATE getState();
+    bool isSwitch(int position);
+    void startTimer();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
     int *_lightPins;
-    bool _disabled = true;
     int _pin;
-    bool _synchronized = false;
     int _count;
     int _inputKey;
-    const unsigned long _waitTimeMillis = 4000; // ms
-    unsigned long lastRefreshTime;
+    struct Timer {
+      unsigned long start;
+      unsigned long lastRefreshTime;
+      const unsigned long waitTimeMillis = 4000; // ms
+    } _timer;
+    STATE _state;
 };
 
 SyncroReader::SyncroReader() {}
@@ -44,77 +44,78 @@ void SyncroReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int 
   _inputKey = 0;
 }
 
-bool SyncroReader::isSwitchOn()
+bool SyncroReader::isSwitch(int position)
 {
-  return digitalRead(_pin);
+  return digitalRead(_pin) == position;
 }
 
-bool SyncroReader::isSynchronized(){
-  return _synchronized;
+void SyncroReader::setState(STATE state)
+{
+  _state = state;
 }
 
-void SyncroReader::setSynchronized(bool synchronized = true){
-  _synchronized = synchronized;
-  for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
-    _strip->SetPixelColor(_lightPins[i], RgbColor(0, 127, 0));
-  }
+STATE SyncroReader::getState() 
+{
+  return _state;
 }
 
-int SyncroReader::getInputKey() {
+int SyncroReader::getInputKey() 
+{
   return _inputKey;
-}
-
-void SyncroReader::disable()
-{
-  _disabled = true;
-  for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
-    _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
-  }
-  _synchronized = false;
-}
-
-void SyncroReader::enable()
-{
-  _disabled = false;
-  for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
-    _strip->SetPixelColor(_lightPins[i], RgbColor(127, 127, 127));
-  }
-}
-
-bool SyncroReader::isDisabled()
-{
-  return _disabled;
 }
 
 void SyncroReader::update()
 {
-  for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
-    _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+  if (_state == DISABLE) {
+    for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
+      _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+    }
+    return;
   }
-  _count = 0;
-  if(millis() - lastRefreshTime >= _waitTimeMillis / 4){
-    _strip->SetPixelColor(_lightPins[0], RgbColor(127, 127, 127));
-    _count = 3;
-    if(millis() - lastRefreshTime >= _waitTimeMillis * 2 / 4){
-      _strip->SetPixelColor(_lightPins[1], RgbColor(127, 127, 127));
-      _count = 2;
-      if(millis() - lastRefreshTime >= _waitTimeMillis * 3 / 4){
-        _strip->SetPixelColor(_lightPins[2], RgbColor(127, 127, 127));
-        _count = 1;
-        if(millis() - lastRefreshTime >= _waitTimeMillis){
-          lastRefreshTime = millis();
+
+  if (_state == SYNCRONIZED) {
+    for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
+      _strip->SetPixelColor(_lightPins[i], RgbColor(0, 127, 0));
+    }
+    return;
+  }
+
+  if (_state == START_TIMER) {
+    _timer.start = millis();
+    _timer.lastRefreshTime = _timer.start;
+    _state = COUNTING;
+  }
+
+  if (_state == COUNTING) {
+    if (millis() - _timer.lastRefreshTime >= _timer.waitTimeMillis / 4) {
+      _strip->SetPixelColor(_lightPins[0], RgbColor(127, 127, 127));
+      _count = 3;
+      if (millis() - _timer.lastRefreshTime >= _timer.waitTimeMillis * 2 / 4) {
+        _strip->SetPixelColor(_lightPins[1], RgbColor(127, 127, 127));
+        _count = 2;
+        if (millis() - _timer.lastRefreshTime >= _timer.waitTimeMillis * 3 / 4) {
+          _strip->SetPixelColor(_lightPins[2], RgbColor(127, 127, 127));
+          _count = 1;
+          if (millis() - _timer.lastRefreshTime >= _timer.waitTimeMillis) {
+            for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
+              _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+            }
+            _state = DONE;
+            _count = 0;
+            _timer.lastRefreshTime = millis();
+          }
         }
       }
     }
-  }
-  if(isSwitchOn()){
-    if(_inputKey == 0){
-      _inputKey = _count;
+    if (isSwitch(HIGH)) {
+      if(_inputKey == 0) {
+        _inputKey = _count;
+      }
+    }else{
+      _inputKey = 0;
     }
-  }else{
-    _inputKey = 0;
   }
-  Serial.println(_inputKey);
+  
 }
 
 void SyncroReader::display()

@@ -28,35 +28,83 @@
 #define LED_COUNT 1
 #define COLOR_SATURATION 128
 
-#define PWM_FREQUENCY 1500
-#define PWM_CHANNEL 0
-#define PWM_RESOLUTION 8
-#define PWM_DUTYCYCLE 200
+#define PWM_SPEAKER_FREQUENCY 1500
+#define PWM_SPEAKER_CHANNEL 0
+#define PWM_SPEAKER_RESOLUTION 8
+#define PWM_SPEAKER_DUTYCYCLE 200
 
 enum STATE {
-    ACTIVE = 1,
-    STANDBY = 2,
-    SOLVED = 3,
-    OFFLINE = 4,
-    FAILURE = 5,
-    SYSTEM_ERROR = 6,
-    ERROR = 7,
-    SYNCRONIZED = 8,
-    ON = 9,
-    OFF = 10,
-    INITIALIZED = 11,
-    NOT_INITIALIZED = 12,
-    READING = 15,
-    PLAYING = 16
+  OFF = 0,
+  ON = 1,
+  ACTIVE = 2,
+  STANDBY = 3,
+  SOLVED = 4,
+  OFFLINE = 5,
+  FAILURE = 6,
+  SYSTEM_ERROR = 7,
+  ERROR = 8,
+  SYNCRONIZED = 9,
+  INITIALIZING = 10,
+  INITIALIZED = 11,
+  START = 12,
+  END = 13,
+  READING = 14,
+  PLAYING = 15,
+  BALANCED = 16,
+  SETUP = 17,
+  FLASH = 18,
+  UNBALANCED = 19,
+  ALARM = 20,
+  RESET = 21,
+  UNSOLVED = 22,
+  DONE = 23,
+  DISABLE = 24,
+  ENABLE = 25,
+  PAUSE = 26,
+  COUNTING = 27,
+  START_TIMER = 28,
+  CHARGING = 29,
+  FULL = 30,
+  EMPTY = 31,
+  OPEN = 32,
+  CLOSED = 33,
+  DETECTED = 37,
+  OUT_OF_RANGE = 38
 };
 
-// Number of Lights and Pin Numbers
-extern int lightPinForPowerSwitch = 0;
+#define PIN_LIGHT_FOR_POWER_SWITCH 0
 
-#define NUMBER_OF_SOUNDS 1
+#define NUMBER_OF_SOUNDS 3
 enum {  // enumeration from 0, 1, 2 ...
-  SOUND_POWER_UP,
   SOUND_POWER_DOWN,
-  SOUND_KEY_INSERT,
-  SOUND_SINE_WAVE_DIAL
+  SOUND_POWER_UP,
+  SOUND_KEY_INSERT
+};
+
+enum REGISTER_INDEX {
+  REG_MASTER_MILLIS = 0,
+  REG_MASTER_COMMAND = 1,
+  REG_MASTER_FORCE = 2,
+  REG_SLAVE_MILLIS = 3,
+  REG_SLAVE_CONFIRM = 4,
+  REG_SLAVE_STATE = 5,
+  REG_SLAVE_POWER_SWITCH_STATE = 6,
+  REG_SLAVE_KEY_READER_STATE = 7,
+  REG_SLAVE_WAVE_ADJUSTER_STATE = 8,
+  REG_SLAVE_SPEAKER_STATE = 9
+};
+
+enum COMMAND {
+  CMD_NONE = 0,
+  CMD_ENABLE = 1,
+  CMD_DISABLE = 2,
+  CMD_RESET = 3,
+  CMD_PAUSE = 4
+};
+
+typedef struct Puzzle {
+  uint8_t address = ADDR_SLAVE;
+  STATE state;
+  uint8_t numberOfRegisters = 20;
+  uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 };

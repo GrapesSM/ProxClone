@@ -13,21 +13,15 @@ class Generator
     Generator();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], Adafruit_MCP23017 *mcp, int switchPins[], int labels[]);
     void update();
-    void disable();
-    void enable();
-    bool isDisabled();
     bool isAllSwitchesOff();
     void readSwitches();
     int getInputKey();
-    bool isSolved();
-    void setSolved(bool solved);
+    void setState(STATE state);
     STATE getState();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
     Adafruit_MCP23017 *_mcp;
-    bool _disabled = true;
-    bool _solved;
     int *_switchPins;
     int _input[7];
     int _order[10];
@@ -48,61 +42,61 @@ void Generator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lig
   _labels = labels;
   _count = 0;
   _reset = false;
-  _solved = false;
 }
 
 void Generator::update()
 {
-  if (_disabled) return;
-  _state = READING;
-  readSwitches();
-  getInputKey();
-  
-  if (! _reset) {
-    for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
-      if (_input[i] == HIGH && _order[_labels[i]] == 0) {
-        _order[_labels[i]] = ++_count;
-        _strip->SetPixelColor(_lightPins[i], RgbColor(127, 127, 127));
-      }
-
-      if (_input[i] == LOW && _order[_labels[i]] != 0) {
-        _reset = true;
-      }     
-    }
-  } 
-
-  if (_reset) {
-    for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
-      if (_input[i] == HIGH) {
-        _strip->SetPixelColor(_lightPins[i], RgbColor(127, 0, 0));
-      } else {
+  switch (_state)
+  {
+    case DISABLE:
+      for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
         _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
       }
-    }
-  }
+      break;
 
-  if (isAllSwitchesOff()) {
-    _reset = false;
-    for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
-      _order[_labels[i]] = 0;
-    }
-    _count = 0;
+    case SOLVED:
+      for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
+        _strip->SetPixelColor(_lightPins[i], RgbColor(0, 127, 0));
+      }
+      break;
+
+    case ENABLE: 
+    default:
+      readSwitches();
+      getInputKey();
+      if (! _reset) {
+        for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
+          if (_input[i] == HIGH && _order[_labels[i]] == 0) {
+            _order[_labels[i]] = ++_count;
+            _strip->SetPixelColor(_lightPins[i], RgbColor(127, 127, 127));
+          }
+
+          if (_input[i] == LOW && _order[_labels[i]] != 0) {
+            _reset = true;
+          }     
+        }
+      } 
+
+      if (_reset) {
+        for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
+          if (_input[i] == HIGH) {
+            _strip->SetPixelColor(_lightPins[i], RgbColor(127, 0, 0));
+          } else {
+            _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+          }
+        }
+      }
+
+      if (isAllSwitchesOff()) {
+        _reset = false;
+        for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
+          _order[_labels[i]] = 0;
+        }
+        _count = 0;
+      }
+      break;
   }
 }
-
-bool Generator::isSolved() 
-{
-  return _solved;
-} 
-
-void Generator::setSolved(bool solved = true) 
-{
-  _state = SOLVED;
-  _solved = solved;
-  for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
-    _strip->SetPixelColor(_lightPins[i], RgbColor(0, 127, 0));
-  }
-} 
 
 bool Generator::isAllSwitchesOff() 
 {
@@ -137,29 +131,14 @@ int Generator::getInputKey() {
   return input;
 }
 
-void Generator::disable() 
-{
-  _state = OFF;
-  _disabled = true;
-  for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
-    _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
-  }
-}
-
-void Generator::enable() 
-{
-  _state = ON;
-  _disabled = false;
-}
-
-bool Generator::isDisabled()
-{
-  return _disabled;
-}
-
 STATE Generator::getState()
 {
   return _state;
+}
+
+void Generator::setState(STATE state)
+{
+  _state = state;
 }
 
 

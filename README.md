@@ -43,3 +43,4 @@ struct Puzzle {
 ### Libraries
 - [Arduino Modbus](https://github.com/arduino-libraries/ArduinoModbus)
 - [Speaker](https://www.xtronical.com/the-dacaudio-library-download-and-installation/)
+- [Event Manager] https://github.com/igormiktor/arduino-EventManager

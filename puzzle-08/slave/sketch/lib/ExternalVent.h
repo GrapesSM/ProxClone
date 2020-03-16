@@ -10,43 +10,61 @@ class ExternalVent
 {
   public:
     ExternalVent();
-    void set();
+    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], int pin);
     void update();
-    void disable();
-    void enable();
-    bool isDisabled();
+    bool isSwitch(int position);
+    void setState(STATE state);
+    STATE getState();
   private:
-    bool _disabled = true;
+    STATE _state;
+    NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
+    int * _lightPins;
+    int _pin;
 };
 
 ExternalVent::ExternalVent(){}
 
-void ExternalVent::set()
+void ExternalVent::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], int pin)
 {
-  // TO-DO:
+  _strip = strip;
+  _lightPins = lightPins;
+  _pin = pin;
 }
 
 void ExternalVent::update()
 {
-  // TO-DO:
+  if (_state == DISABLE) {
+    _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
+    _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
+    return;
+  } 
+  
+  if (isSwitch(HIGH)) {
+    _state = CLOSED;
+    _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
+    _strip->SetPixelColor(_lightPins[1], RgbColor(255, 255, 255));
+  }
+
+  if (isSwitch(LOW)) {
+    _state = OPEN;
+    _strip->SetPixelColor(_lightPins[0], RgbColor(255, 255, 255));
+    _strip->SetPixelColor(_lightPins[1], RgbColor(0,0,0));
+  }
 }
 
-void ExternalVent::disable() 
+bool ExternalVent::isSwitch(int position)
 {
-  _disabled = true;
-  // TO-DO:
+  return digitalRead(_pin) == position;
 }
 
-void ExternalVent::enable() 
+void ExternalVent::setState(STATE state)
 {
-  _disabled = false;
-  // TO-DO:
+  _state = state;
 }
 
-bool ExternalVent::isDisabled()
+STATE ExternalVent::getState()
 {
-  return _disabled;
+  return _state;
 }
-
 
 #endif
