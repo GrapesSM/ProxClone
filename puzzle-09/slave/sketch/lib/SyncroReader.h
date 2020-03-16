@@ -40,7 +40,7 @@ void SyncroReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int 
   _strip = strip;
   _lightPins = lightPins;
   _pin = pin;
-  _count = 0;
+  _count = -1;
   _inputKey = 0;
 }
 
@@ -87,32 +87,45 @@ void SyncroReader::update()
   }
 
   if (_state == COUNTING) {
-    if (millis() - _timer.lastRefreshTime >= _timer.waitTimeMillis / 4) {
+    if (millis() - _timer.lastRefreshTime >= _timer.waitTimeMillis / 5) {
       _strip->SetPixelColor(_lightPins[0], RgbColor(127, 127, 127));
-      _count = 3;
-      if (millis() - _timer.lastRefreshTime >= _timer.waitTimeMillis * 2 / 4) {
-        _strip->SetPixelColor(_lightPins[1], RgbColor(127, 127, 127));
-        _count = 2;
-        if (millis() - _timer.lastRefreshTime >= _timer.waitTimeMillis * 3 / 4) {
-          _strip->SetPixelColor(_lightPins[2], RgbColor(127, 127, 127));
-          _count = 1;
-          if (millis() - _timer.lastRefreshTime >= _timer.waitTimeMillis) {
-            for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
-              _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
-            }
-            _state = ENABLE; //DONE
-            _count = 0;
-            _timer.lastRefreshTime = millis();
-          }
-        }
-      }
+      _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
+      _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
+      _count = 0;
     }
+    if (millis() - _timer.lastRefreshTime >= _timer.waitTimeMillis * 2 / 5) {
+      _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
+      _strip->SetPixelColor(_lightPins[1], RgbColor(127, 127, 127));
+      _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
+      _count = 1;
+    }
+    if (millis() - _timer.lastRefreshTime >= _timer.waitTimeMillis * 3 / 5) {
+      _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
+      _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
+      _strip->SetPixelColor(_lightPins[2], RgbColor(127, 127, 127));
+      _count = 2;
+    }
+    if (millis() - _timer.lastRefreshTime >= _timer.waitTimeMillis * 4 / 5) {
+      _strip->SetPixelColor(_lightPins[0], RgbColor(127, 127, 127));
+      _strip->SetPixelColor(_lightPins[1], RgbColor(127, 127, 127));
+      _strip->SetPixelColor(_lightPins[2], RgbColor(127, 127, 127));
+      _count = 3;
+    }
+    if (millis() - _timer.lastRefreshTime >= _timer.waitTimeMillis) {
+      for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
+        _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
+      }
+      _state = ENABLE; //DONE
+      _count = 4;
+      _timer.lastRefreshTime = millis();
+    }
+
     if (isSwitch(HIGH)) {
-      if(_inputKey == 0) {
+      if(_inputKey == -1) {
         _inputKey = _count;
       }
     }else{
-      _inputKey = 0;
+      _inputKey = -1;
     }
   }
   
