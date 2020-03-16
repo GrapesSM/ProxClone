@@ -81,8 +81,12 @@ void CodeReader::update()
   //Do something else. Don't call your Keypad a ton otherwise you'll tie up the I2C bus
   delay(25); //25 is good, more is better
 
+  if (key == 0) {
+    _state = DONE;
+  }
+
   if (isButton(HIGH)) {
     _state = TRANSMITTED;
-  } 
+  }
 }
 #endif
