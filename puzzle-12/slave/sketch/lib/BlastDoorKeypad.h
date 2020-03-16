@@ -48,7 +48,7 @@ namespace BlastDoorKeypad {
   void run(Components &c)
   {
     if (c.state == INITIALIZED) {
-      
+      c.state = ENABLE;
     }
 
     c.codeReader.update();
@@ -59,9 +59,7 @@ namespace BlastDoorKeypad {
       }
 
       if (c.codeReader.getState() == KEY_ENTERED) {
-        c.speaker.speak();
-        delay(10);
-        c.speaker.speak(0);
+        c.speaker.addToPlay(SOUND_POWER_UP);
       }
 
       if (c.codeReader.getState() == TRANSMITTED) {
@@ -75,7 +73,7 @@ namespace BlastDoorKeypad {
           c.state = SOLVED;
         }
 
-        c.codeReader.clear();
+        // c.codeReader.clear();
       } 
     }
 
@@ -99,11 +97,11 @@ namespace BlastDoorKeypad {
 
   void show(Components & c)
   {
-    // c.showTimer.current = millis();
-    // if (c.showTimer.current - c.showTimer.showpoint > c.showTimer.interval) {
-    //   c.showTimer.showpoint = millis();
+    c.showTimer.current = millis();
+    if (c.showTimer.current - c.showTimer.showpoint > c.showTimer.interval) {
+      c.showTimer.showpoint = millis();
 
-    // }
+    }
     c.speaker.play();
   }
 } // namespace BlastDoorKeypad
