@@ -26,6 +26,11 @@ NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, PIN_NEOPIXEL);
 Datamatic::Components dmComponents;
 
 void setupDatamatic();
+void runTaskFunction(void*);
+void showTaskFunction(void*);
+
+TaskHandle_t runTask;
+TaskHandle_t showTask;
 
 void setup() 
 {
@@ -42,6 +47,10 @@ void setup()
   parts.strip = &strip;
   parts.strip->Begin();
   parts.strip->Show();
+
+  // Setup Nextion Display
+  Serial2.begin(115200, SERIAL_8N1, RXD2, TXD2); 
+
 
   // Setup and Init Encoders
   ESP32Encoder::useInternalWeakPullResistors=false;
@@ -89,21 +98,36 @@ void setup()
   // parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
   
   setupDatamatic();
+    // Setup Task functions
+  xTaskCreatePinnedToCore(
+    runTaskFunction,   /* Task function. */
+    "RunTask",     /* name of task. */
+    100000,       /* Stack size of task */
+    NULL,        /* parameter of the task */
+    1,           /* priority of the task */
+    &runTask,      /* Task handle to keep track of created task */
+    0);          /* pin task to core 0 */                  
+
+  //  delay(500);
+
+  xTaskCreatePinnedToCore(
+    showTaskFunction,   /* Task function. */
+    "ShowTask",     /* name of task. */
+    100000,       /* Stack size of task */
+    NULL,        /* parameter of the task */
+    1,           /* priority of the task */
+    &showTask,      /* Task handle to keep track of created task */
+    1);
+    
+  //  delay(500);
+
 
   dmComponents.state = SETUP;
 }
 
 void loop() 
 {
-  // Enable communication to master
-  parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-  
-  Datamatic::update(puzzle, dmComponents);
 
-  // Enable Datamatic
-  Datamatic::run(dmComponents);
-
-  Datamatic::show(dmComponents);
 }
 
 void setupDatamatic()
@@ -113,4 +137,33 @@ void setupDatamatic()
   dmComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
   dmComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
   dmComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
+}
+
+//Run Task Function: process changes of puzzle
+void runTaskFunction( void * parameters ) {
+  Serial.print("Run Task running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for(;;){
+    // Enable communication to master
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+    
+    Datamatic::update(puzzle, dmComponents);
+
+    // Enable Datamatic
+    Datamatic::run(dmComponents);
+
+}
+
+//Show Task Fucntion: shows changes of puzzle
+void showTaskFunction( void * parameters ){
+  Serial.print("Show Task running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for(;;){
+    // Show changes
+    Datamatic::show(dmComponents);
+
+    vTaskDelay(10);
+  } 
 }

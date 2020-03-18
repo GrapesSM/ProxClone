@@ -120,7 +120,6 @@ void runTaskFunction( void * parameters ) {
     // State changes
     BlastDoorKeypad::run(bdComponents);
 
-    vTaskDelay(10);
   } 
 }
 

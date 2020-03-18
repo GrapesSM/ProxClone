@@ -23,6 +23,11 @@ NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, PIN_NEOPIXEL);
 LifeSupport::Components lsComponents;
 
 void setupLifeSupport();
+void runTaskFunction(void*);
+void showTaskFunction(void*);
+
+TaskHandle_t runTask;
+TaskHandle_t showTask;
 
 void setup() 
 {
@@ -66,22 +71,32 @@ void setup()
   parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
 
   setupLifeSupport();
+    // Setup Task functions
+  xTaskCreatePinnedToCore(
+    runTaskFunction,   /* Task function. */
+    "RunTask",     /* name of task. */
+    100000,       /* Stack size of task */
+    NULL,        /* parameter of the task */
+    1,           /* priority of the task */
+    &runTask,      /* Task handle to keep track of created task */
+    0);          /* pin task to core 0 */                  
+
+//  delay(500);
+
+  xTaskCreatePinnedToCore(
+    showTaskFunction,   /* Task function. */
+    "ShowTask",     /* name of task. */
+    100000,       /* Stack size of task */
+    NULL,        /* parameter of the task */
+    1,           /* priority of the task */
+    &showTask,      /* Task handle to keep track of created task */
+    1);
   lsComponents.state = SETUP;
 }
 
 void loop() 
 {
-  // Enable communication to master
-  parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
-  // Map puzzle's values to component's values
-  LifeSupport::update(puzzle, lsComponents);
-
-  // State changes
-  LifeSupport::run(lsComponents);
-
-  // Show changes
-  LifeSupport::show(lsComponents);
 }
 
 void setupLifeSupport()
@@ -92,4 +107,35 @@ void setupLifeSupport()
   lsComponents.airPressureStatus.set(parts.strip, lightPinsForAirPressureStatus, &parts.matrix);
   lsComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
   lsComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
+}
+
+//Run Task Function: process changes of puzzle
+void runTaskFunction( void * parameters ) {
+  Serial.print("Run Task running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for(;;){
+    // Enable communication to master
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+
+    // Map puzzle's values to component's values
+    LifeSupport::update(puzzle, lsComponents);
+
+    // State changes
+    LifeSupport::run(lsComponents);
+  } 
+}
+
+//Show Task Fucntion: shows changes of puzzle
+void showTaskFunction( void * parameters ){
+  Serial.print("Show Task running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for(;;){
+
+    // Show changes
+    LifeSupport::show(lsComponents);
+
+    vTaskDelay(10);
+  } 
 }

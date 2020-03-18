@@ -94,7 +94,7 @@ STATE KeyReader::getState()
 void KeyReader::access()
 {
   _accessed = true;
-  // Serial2.print("p1.pic=0");
+  // Serial2.print("page 1");
   // Serial2.write(0xff);
   // Serial2.write(0xff);
   // Serial2.write(0xff);

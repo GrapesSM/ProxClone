@@ -17,6 +17,11 @@ NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, PIN_NEOPIXEL);
 StatusBoard::Components sbComponents;
 
 void setupStatusBoard();
+void runTaskFunction(void*);
+void showTaskFunction(void*);
+
+TaskHandle_t runTask;
+TaskHandle_t showTask;
 
 void setup() 
 {
@@ -46,22 +51,35 @@ void setup()
   
   setupStatusBoard();
 
+  // Setup Task functions
+  xTaskCreatePinnedToCore(
+    runTaskFunction,   /* Task function. */
+    "RunTask",     /* name of task. */
+    100000,       /* Stack size of task */
+    NULL,        /* parameter of the task */
+    1,           /* priority of the task */
+    &runTask,      /* Task handle to keep track of created task */
+    0);          /* pin task to core 0 */                  
+
+//  delay(500);
+
+  xTaskCreatePinnedToCore(
+    showTaskFunction,   /* Task function. */
+    "ShowTask",     /* name of task. */
+    100000,       /* Stack size of task */
+    NULL,        /* parameter of the task */
+    1,           /* priority of the task */
+    &showTask,      /* Task handle to keep track of created task */
+    1);
+    
+//  delay(500);
+
   sbComponents.state = SETUP;
 }
 
 void loop() 
 {
-  // Enable communication to master
-  parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
-  // Map puzzle register's to component's values
-  StatusBoard::update(sbComponents);
-
-  // State changes
-  StatusBoard::run(sbComponents);
-
-  // Show changes
-  StatusBoard::show(sbComponents);
 }
 
 void setupStatusBoard()
@@ -70,4 +88,37 @@ void setupStatusBoard()
   sbComponents.lifeSupportStatus.set(parts.strip, lightPinsForLifeSupportStatus);
   sbComponents.blastDoorStatus.set(parts.strip, lightPinsForBlastDoorStatus);
   sbComponents.laserGrid.set(parts.strip, lightPinsForLaserGridStatus);
+}
+
+//Run Task Function: process changes of puzzle
+void runTaskFunction( void * parameters ) {
+  Serial.print("Run Task running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for(;;){
+    // Enable communication to master
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+
+    // Map puzzle register's to component's values
+    StatusBoard::update(sbComponents);
+
+    // State changes
+    StatusBoard::run(sbComponents);
+
+
+
+  } 
+}
+
+//Show Task Fucntion: shows changes of puzzle
+void showTaskFunction( void * parameters ){
+  Serial.print("Show Task running on core ");
+  Serial.println(xPortGetCoreID());
+
+  for(;;){
+    // Show changes
+    StatusBoard::show(sbComponents);
+
+    vTaskDelay(10);
+  } 
 }

@@ -72,7 +72,7 @@ namespace ShipPrepAux {
   void run(Components &c) 
   {
     if(c.state == INITIALIZED){
-      c.state = ENABLE;
+      //c.state = ENABLE;
     }
 
     c.powerSwitch.update();
@@ -115,6 +115,9 @@ namespace ShipPrepAux {
         if (c.speaker.getNumber() != SOUND_KEY_INSERT) {
           c.speaker.addToPlay(SOUND_KEY_INSERT);
         }
+      }  
+      if (c.generator.getState() == SOLVED && c.batteryMatrix.getState() == SOLVED) {
+        c.state = SOLVED;
       }      
     }
 

@@ -82,59 +82,72 @@ bool WaveAdjuster::isSyncronized()
 }
 
 void WaveAdjuster::display() 
-{
+{    
+  Serial.println(_state);
+
   if (_state == DISABLE) {
+    Serial2.print("page 0");
+    Serial2.write(0xff);
+    Serial2.write(0xff);
+    Serial2.write(0xff);
     return;
   }
 
-  if (millis() - timer > interval) {
-    timer = millis();
+
+  
+  if(_state == ENABLE){
     i++;
     j++;
     k++;
-  }
-  
-  int Value = map(waveValue(i, getPhase(1)), -150, 150, 10, 250);  //Read the pot value ann map it to 0.255 (max value of waveform=255)
-  String Tosend = "add ";                                       //We send the string "add "
-  Tosend += 1;                                                  //send the id of the block you want to add the value to
-  Tosend += ",";
-  Tosend += 0;                                                  //Channel of taht id, in this case channel 0 of the waveform
-  Tosend += ",";
-  Tosend += Value;                                              //Send the value and 3 full bytes
-  Tosend += "\xFF\xFF\xFF";
-  _serial->print(Tosend);
-  
-  int Value2 = map(waveValue(j, getPhase(2)), -150, 150, 10, 250);  //Read the pot value ann map it to 0.255 (max value of waveform=255)
-  String Tosend2 = "add ";                                       //We send the string "add "
-  Tosend2 += 1;                                                  //send the id of the block you want to add the value to
-  Tosend2 += ",";
-  Tosend2 += 1;                                                  //Channel of taht id, in this case channel 0 of the waveform
-  Tosend2 += ",";
-  Tosend2 += Value2;                                              //Send the value and 3 full bytes
-  Tosend2 += "\xFF\xFF\xFF";
-  _serial->print(Tosend2);
-  
-  int Value3 = map(waveValue(k,  getPhase(3)), -150, 150, 10, 250);  //Read the pot value ann map it to 0.255 (max value of waveform=255)
-  String Tosend3 = "add ";                                       //We send the string "add "
-  Tosend3 += 1;                                                  //send the id of the block you want to add the value to
-  Tosend3 += ",";
-  Tosend3 += 2;                                                  //Channel of taht id, in this case channel 0 of the waveform
-  Tosend3 += ",";
-  Tosend3 += Value3;                                              //Send the value and 3 full bytes
-  Tosend3 += "\xFF\xFF\xFF";
-  _serial->print(Tosend3);
-  
-  if (i >= 359) {
-    i = 0;
-  }
+    int Value = map(waveValue(i, getPhase(1)), -150, 150, 10, 250);  //Read the pot value ann map it to 0.255 (max value of waveform=255)
+    String Tosend = "add ";                                       //We send the string "add "
+    Tosend += 1;                                                  //send the id of the block you want to add the value to
+    Tosend += ",";
+    Tosend += 0;                                                  //Channel of taht id, in this case channel 0 of the waveform
+    Tosend += ",";
+    Tosend += Value;                                              //Send the value and 3 full bytes
+    Tosend += "\xFF\xFF\xFF";
+    _serial->print(Tosend);
+    
+    int Value2 = map(waveValue(j, getPhase(2)), -150, 150, 10, 250);  //Read the pot value ann map it to 0.255 (max value of waveform=255)
+    String Tosend2 = "add ";                                       //We send the string "add "
+    Tosend2 += 1;                                                  //send the id of the block you want to add the value to
+    Tosend2 += ",";
+    Tosend2 += 1;                                                  //Channel of taht id, in this case channel 0 of the waveform
+    Tosend2 += ",";
+    Tosend2 += Value2;                                              //Send the value and 3 full bytes
+    Tosend2 += "\xFF\xFF\xFF";
+    _serial->print(Tosend2);
+    
+    int Value3 = map(waveValue(k,  getPhase(3)), -150, 150, 10, 250);  //Read the pot value ann map it to 0.255 (max value of waveform=255)
+    String Tosend3 = "add ";                                       //We send the string "add "
+    Tosend3 += 1;                                                  //send the id of the block you want to add the value to
+    Tosend3 += ",";
+    Tosend3 += 2;                                                  //Channel of taht id, in this case channel 0 of the waveform
+    Tosend3 += ",";
+    Tosend3 += Value3;                                              //Send the value and 3 full bytes
+    Tosend3 += "\xFF\xFF\xFF";
+    _serial->print(Tosend3);
+    
+    Serial.print(Value);
+    Serial.print(",");
+    Serial.print(Value2);
+    Serial.print(",");
+    Serial.print(Value3);
+    Serial.println();
 
-  if (j >= 359) {
-    j = 0;
-  }
+    if (i >= 359) {
+      i = 0;
+    }
 
-  if (k >= 359) {
-    k = 0;
-  }  
+    if (j >= 359) {
+      j = 0;
+    }
+
+    if (k >= 359) {
+      k = 0;
+    }  
+  }
 }
 
 int WaveAdjuster::getInputValue(int number)

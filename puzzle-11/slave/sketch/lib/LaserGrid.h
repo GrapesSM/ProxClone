@@ -19,11 +19,17 @@ namespace LaserGrid {
     STATE state;
     boolean in;
     boolean flag;
+    int val = 0;
     struct Timer {
       unsigned long start = 0;
       unsigned long end = 0;
       unsigned long current = 0;
     } timer;
+    struct WaveTimer {
+      unsigned long current = 0;
+      unsigned long point = 0;
+      unsigned long interval = 8;
+    } waveTimer;
     struct ShowTimer {
       unsigned long current = 0;
       unsigned long showpoint = 0;
@@ -65,14 +71,39 @@ namespace LaserGrid {
 
   void run(Components & c) 
   {
+    // if (Serial.available()>1){
+    //   c.val = Serial.parseInt();
+    //   if( c.val == 0){
+    //     Serial2.print("page 0");
+    //     Serial2.write(0xff);
+    //     Serial2.write(0xff);
+    //     Serial2.write(0xff);
+    //   }
+    //   if( c.val == 1){
+    //     Serial2.print("page 1");
+    //     Serial2.write(0xff);
+    //     Serial2.write(0xff);
+    //     Serial2.write(0xff);
+    //   }
+    //   if( c.val == 2){
+    //     Serial2.print("p0.pic=0 ");
+    //     Serial2.write(0xff);
+    //     Serial2.write(0xff);
+    //     Serial2.write(0xff);
+    //   }
+    //   if( c.val == 3){
+    //     Serial2.print("p0.pic=1");
+    //     Serial2.write(0xff);
+    //     Serial2.write(0xff);
+    //     Serial2.write(0xff);
+    //   }
+    // }    
     if (c.state == INITIALIZED) {
       c.state = ENABLE;
     }
-
     c.powerSwitch.update();
     c.keyReader.update();
     c.waveAdjuster.update();
-
     if (c.state == ENABLE) {
       if (c.powerSwitch.getState() == DISABLE) {
         c.powerSwitch.setState(ENABLE);
@@ -94,7 +125,11 @@ namespace LaserGrid {
         }
       }
 
-      if (c.keyReader.getState() == SOLVED) {
+      if (c.keyReader.getState() == SOLVED && c.waveAdjuster.getState() == DISABLE) {
+          Serial2.print("page 1");
+          Serial2.write(0xff);
+          Serial2.write(0xff);
+          Serial2.write(0xff);
         c.waveAdjuster.setState(ENABLE);
       }
  
@@ -127,10 +162,17 @@ namespace LaserGrid {
       c.showTimer.showpoint = millis();
 
       c.powerSwitch.display();
+
     }
-    
+    c.waveTimer.current = millis();
+
+    if ((c.waveTimer.current - c.waveTimer.point) > c.waveTimer.interval) {
+      c.waveTimer.point = millis();
+
+      c.waveAdjuster.display();
+
+    }
     c.speaker.play();
-    c.waveAdjuster.display();
   }
 }
 

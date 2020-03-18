@@ -51,15 +51,13 @@ namespace PrepStatus {
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_START_TIMER &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      if (c.syncroReader.getState() == DONE || c.syncroReader.getState() == ENABLE) {
-        c.syncroReader.setState(START_TIMER);
-        p.registers[REG_SLAVE_CONFIRM] = DONE;
-      }
+          c.syncroReader.setState(START_TIMER);
+          p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
 
-    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_SYNCRONIZED &&
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_SOLVED &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      c.syncroReader.setState(SYNCRONIZED);
+      c.syncroReader.setState(SOLVED);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
 
@@ -87,13 +85,14 @@ namespace PrepStatus {
     p.registers[REG_SLAVE_MILLIS] = millis();
     p.registers[REG_SLAVE_STATE] = c.state;
     p.registers[REG_SLAVE_POWER_SWITCH_STATE] = c.powerSwitch.getState();
-    p.registers[REG_SLAVE_BATTERY_MATRIX_STATE] = c.batteryMatrixFlag == false ? c.batteryMatrix.getState() : p.registers[REG_SLAVE_BATTERY_MATRIX_STATE];
-    p.registers[REG_SLAVE_ENERGY_SUPP_STATE] = c.energySuppFlag == false ? c.energySupp.getState() : p.registers[REG_SLAVE_ENERGY_SUPP_STATE];
-    p.registers[REG_SLAVE_GENERATOR_STATE] = c.generatorFlag == false ? c.generator.getState() : p.registers[REG_SLAVE_GENERATOR_STATE];
+    p.registers[REG_SLAVE_BATTERY_MATRIX_STATE] = c.batteryMatrix.getState();
+    p.registers[REG_SLAVE_ENERGY_SUPP_STATE] = c.energySupp.getState();
+    p.registers[REG_SLAVE_GENERATOR_STATE] = c.generator.getState();
     p.registers[REG_SLAVE_SYNCRO_READER_STATE] = c.syncroReader.getState();
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
     p.registers[REG_SLAVE_LIGHT_EFFECT_STATE] = c.lightEffect.getState();
     p.registers[REG_SLAVE_SYNCRO_READER_INPUT_KEY] = c.syncroReader.getInputKey();
+    Serial.println(c.syncroReader.getInputKey());
     if (c.state == SETUP) {
       c.state = INITIALIZING;
       c.powerSwitch.setState(DISABLE);
