@@ -31,8 +31,12 @@ class KeypadController(BaseController):
             registers[KP_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_RESET
             registers[KP_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
 
+        if self.getCommand() == COMMAND.CMD_PAUSE and self.getCommandStatus() == STATUS.ST_CREATED:
+            registers[KP_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_PAUSE
+            registers[KP_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
 
-        print(self.getCommand())
+
+        # print(self.getCommand())
 
         self.setRegisters(registers)
 

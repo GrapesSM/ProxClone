@@ -10,6 +10,8 @@
 #include "BlastDoorStatus.h"
 #include "LaserGridStatus.h"
 #include "Speaker.h"
+#include "Countdown.h"
+
 
 namespace StatusBoard {
   typedef struct {
@@ -18,6 +20,7 @@ namespace StatusBoard {
     BlastDoorStatus blastDoorStatus;
     LaserGrid laserGrid;
     Speaker speaker;
+    Countdown countdown;
     STATE state;
     struct ShowTimer {
       unsigned long current = 0;
@@ -91,8 +94,8 @@ namespace StatusBoard {
     p.registers[REG_SLAVE_BLAST_DOOR_STATUS_STATE] = c.blastDoorStatus.getState();
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
     //p.registers[REG_SLAVE_GAME_POWER_SWITCH_STATE] = c.speaker.getState();
-    // p.registers[REG_SLAVE_COUNTDOWN_STATE] = c.speaker.getState();
-    // p.registers[REG_SLAVE_COUNTDOWN] = c.speaker.getState();
+    p.registers[REG_SLAVE_COUNTDOWN] = c.countdown.getTime();
+    p.registers[REG_SLAVE_COUNTDOWN_STATE] = c.countdown.getState();
 
 
     if (c.state == SETUP) {
@@ -176,6 +179,7 @@ namespace StatusBoard {
       c.lifeSupportStatus.display();
       c.blastDoorStatus.display();
       c.laserGrid.display();
+      c.countdown.display();
     }
     
   }
