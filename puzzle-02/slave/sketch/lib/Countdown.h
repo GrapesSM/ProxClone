@@ -9,10 +9,10 @@ class Countdown
   public:
     Countdown();
     void set(
-      SevenSegment *matrix, 
-      unsigned long time;
-      unsigned long lastStoppedTime;
-      unsigned long maxTime;
+      Adafruit_7segment *_matrix,
+      unsigned long time,
+      unsigned long lastStoppedTime,
+      unsigned long maxTime
     );
     void update();
     unsigned long getTime();
@@ -21,11 +21,10 @@ class Countdown
     void display();
     void setState(STATE);
   private:
-    SevenSegment *_matrix;
+    Adafruit_7segment * _matrix;
     unsigned long time;
     unsigned long lastStoppedTime;
     STATE _state;
-
 };
 
 Countdown::Countdown(){
@@ -34,7 +33,7 @@ Countdown::Countdown(){
     maxTime = 0;
 }
 
-void Countdown::set(SevenSegment *matrix){
+void Countdown::set(Adafruit_7segment *matrix){
     _matrix = matrix;
     time = 0
     lastStoppedTime = 0;
