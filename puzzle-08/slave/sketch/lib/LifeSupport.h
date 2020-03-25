@@ -60,6 +60,12 @@ namespace LifeSupport {
       c.state = SOLVED;
     }
 
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_LIGHT_EFFECT_PATTERN_NUMBER &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;   
+      c.lightEffect.setPatternNumber(p.registers[REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER]);
+    }
+
     p.registers[REG_SLAVE_MILLIS] = millis();
     p.registers[REG_SLAVE_STATE] = c.state;
     p.registers[REG_SLAVE_POWER_SWITCH_STATE] = c.powerSwitch.getState();
@@ -68,6 +74,8 @@ namespace LifeSupport {
     p.registers[REG_SLAVE_AIR_SUPPLY_PUMP_STATE] = c.airSupplyPump.getState();
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
     p.registers[REG_SLAVE_LIGHT_EFFECT_STATE] = c.lightEffect.getState();
+    p.registers[REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER] = c.lightEffect.getPatternNumber();
+
 
     if (c.state == SETUP) {
       c.state = INITIALIZING;
@@ -85,7 +93,7 @@ namespace LifeSupport {
   void run(Components & c) 
   {
     if (c.state == INITIALIZED) {
-      c.state = ENABLE;
+      //c.state = ENABLE;
     }
 
     c.powerSwitch.update();
@@ -158,7 +166,7 @@ namespace LifeSupport {
     }
 
     if (c.state == RESET) {
-      
+      c.state = SETUP;
     }
 
     if (c.state == PAUSE) {

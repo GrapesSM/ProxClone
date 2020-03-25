@@ -47,6 +47,12 @@ namespace Datamatic {
       c.state = RESET;
     }
 
+    if (p.registers[REG_MASTER_COMMAND] == CMD_PAUSE &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = PAUSE;
+    }
+
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_LIGHT_EFFECT_PATTERN_NUMBER &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;   
@@ -114,7 +120,7 @@ namespace Datamatic {
   void run(Components &c)
   {
     if(c.state == INITIALIZED) {
-      c.state = ENABLE;
+      //c.state = ENABLE;
     }
     
     c.powerSwitch.update();

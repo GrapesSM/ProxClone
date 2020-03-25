@@ -117,3 +117,17 @@ typedef struct {
   uint8_t numberOfRegisters = 20;
   uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 } Puzzle;
+
+enum COMMAND {
+  CMD_NONE = 0,
+  CMD_ENABLE = 1,
+  CMD_DISABLE = 2,
+  CMD_RESET = 3,
+  CMD_PAUSE = 4,
+  CMD_SET_SOLVED = 6,
+  CMD_SET_LASER_GRID_SOLVED = 90,
+  CMD_SET_DOCKED_SHIP_SOLVED = 91,
+  CMD_SET_KEYPAD_SOLVED = 92,
+  CMD_SET_COUNTDOWN_VALUE = 93,
+  CMD_SET_LIFE_SUPPORT_SOLVED = 94
+};

@@ -36,6 +36,16 @@ namespace BlastDoorKeypad {
       c.codeReader.setState(DISABLE);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
+    if (p.registers[REG_MASTER_COMMAND] == CMD_PAUSE &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      c.codeReader.setState(PAUSE);
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+    }
+    if (p.registers[REG_MASTER_COMMAND] == CMD_RESET &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      c.codeReader.setState(RESET);
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+    }
 
     if (c.state == SETUP) {
       c.state = INITIALIZING;
@@ -48,7 +58,7 @@ namespace BlastDoorKeypad {
   void run(Components &c)
   {
     if (c.state == INITIALIZED) {
-      c.state = ENABLE;
+      //c.state = ENABLE;
     }
 
     c.codeReader.update();
@@ -87,11 +97,10 @@ namespace BlastDoorKeypad {
     }
 
     if (c.state == RESET) {
-
+      c.state = SETUP;
     }    
 
     if (c.state == PAUSE) {
-
     }
   }
 

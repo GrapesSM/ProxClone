@@ -17,6 +17,7 @@ class LightEffect
     void display();
     void setState(STATE state);
     void setPatternNumber(int number);
+    int getPatternNumber();
     STATE getState();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
@@ -95,6 +96,12 @@ void LightEffect::display()
     default:
       break;
   }
+}
+
+
+int LightEffect::getPatternNumber()
+{
+  return _patternNumber;
 }
 
 

@@ -51,6 +51,18 @@ namespace ShipPrepAux {
       c.state = PAUSE;
     }
 
+    if (p.registers[REG_MASTER_SP_COMMAND] == CMD_SET_DS_BATTERY_MATRIX_SOLVED &&
+        p.registers[REG_SLAVE_SP_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_SP_CONFIRM] = DONE;
+      c.batteryMatrix.setState(SOLVED);
+    }
+
+    if (p.registers[REG_MASTER_SP_COMMAND] == CMD_SET_DS_GENERATOR_SOLVED &&
+        p.registers[REG_SLAVE_SP_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_SP_CONFIRM] = DONE;
+      c.generator.setState(SOLVED);
+    }
+
     p.registers[REG_SLAVE_SP_MILLIS] = millis();
     p.registers[REG_SLAVE_SP_STATE] = c.state;
     p.registers[REG_SLAVE_SP_POWER_SWITCH_STATE] = c.powerSwitch.getState();

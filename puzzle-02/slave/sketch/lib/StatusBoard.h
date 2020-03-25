@@ -28,6 +28,72 @@ namespace StatusBoard {
 
   void update(Puzzle & p, Components & c)
   {
+    if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE && 
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = ENABLE;
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_DISABLE && 
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = DISABLE;
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_RESET &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = RESET;
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_PAUSE &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = PAUSE;
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_SOLVED &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = SOLVED;
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_LASER_GRID_SOLVED &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;   
+      c.laserGrid.setState(SOLVED);
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_DOCKED_SHIP_SOLVED &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;   
+      c.shipPrepStatus.setState(SOLVED);
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_KEYPAD_SOLVED &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;   
+      c.blastDoorStatus.setState(SOLVED);
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_LIFE_SUPPORT_SOLVED &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;   
+      c.lifeSupportStatus.setState(SOLVED);
+    }
+
+
+
+    p.registers[REG_SLAVE_MILLIS] = millis();
+    p.registers[REG_SLAVE_STATE] = c.state;
+    p.registers[REG_SLAVE_SHIP_PREP_STATUS_STATE] = c.shipPrepStatus.getState();
+    p.registers[REG_SLAVE_LIFE_SUPPORT_STATUS_STATE] = c.lifeSupportStatus.getState();
+    p.registers[REG_SLAVE_BLAST_DOOR_STATUS_STATE] = c.blastDoorStatus.getState();
+    p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
+    //p.registers[REG_SLAVE_GAME_POWER_SWITCH_STATE] = c.speaker.getState();
+    // p.registers[REG_SLAVE_COUNTDOWN_STATE] = c.speaker.getState();
+    // p.registers[REG_SLAVE_COUNTDOWN] = c.speaker.getState();
+
 
     if (c.state == SETUP) {
       c.state = INITIALIZING;
@@ -42,10 +108,7 @@ namespace StatusBoard {
   void run(Components & c) 
   {
     if (c.state == INITIALIZED) {
-      c.shipPrepStatus.setState(DISABLE);
-      c.lifeSupportStatus.setState(DISABLE);
-      c.blastDoorStatus.setState(DISABLE);
-      c.laserGrid.setState(DISABLE);
+
     }
 
     c.shipPrepStatus.update();
@@ -95,7 +158,7 @@ namespace StatusBoard {
     }
 
     if (c.state == RESET) {
-
+      c.state = SETUP;
     }
 
     if (c.state == PAUSE) {

@@ -61,6 +61,12 @@ namespace PrepStatus {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
 
+    if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE_PS_SYNCRO_KEYs &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      c.syncroReader.setState(ENABLE);
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+    }
+
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_BATTERY_MATRIX_SOLVED &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       c.batteryMatrixFlag = true;
@@ -155,8 +161,8 @@ namespace PrepStatus {
         c.batteryMatrix.switchToGreen();
         c.energySupp.switchToGreen();
         c.generator.switchToGreen();
-        if (c.syncroReader.getState() == DISABLE)
-          c.syncroReader.setState(ENABLE);
+        // if (c.syncroReader.getState() == DISABLE)
+        //   c.syncroReader.setState(ENABLE);
       } 
 
       if (

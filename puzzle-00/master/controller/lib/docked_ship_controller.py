@@ -33,6 +33,12 @@ class DockedShipController(BaseController):
                 self._command_ES = COMMAND.CMD_NONE
                 self._commandStatus_ES = STATUS.ST_CONFIRMED
         
+        if self.getCommand_SP() == registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND]:
+            if registers[DS_REGISTER_INDEX.REG_SLAVE_SP_CONFIRM] == STATE.DONE:
+                registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND] = COMMAND.CMD_NONE
+                self._command_SP = COMMAND.CMD_NONE
+                self._commandStatus_SP = STATUS.ST_CONFIRMED
+
         if self.getCommand_ES() == COMMAND.CMD_ENABLE and self.getCommandStatus_ES() == STATUS.ST_CREATED:
             registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = COMMAND.CMD_ENABLE
             registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = STATE.ACTIVE
@@ -41,11 +47,38 @@ class DockedShipController(BaseController):
             registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = COMMAND.CMD_RESET
             registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = STATE.ACTIVE
 
-        if self.getCommand_SP() == registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND]:
-            if registers[DS_REGISTER_INDEX.REG_SLAVE_SP_CONFIRM] == STATE.DONE:
-                registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND] = COMMAND.CMD_NONE
-                self._command_SP = COMMAND.CMD_NONE
-                self._commandStatus_SP = STATUS.ST_CONFIRMED
+        if self.getCommand_ES() == COMMAND.CMD_DISABLE and self.getCommandStatus_ES() == STATUS.ST_CREATED:
+            registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = COMMAND.CMD_DISABLE
+            registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand_ES() == COMMAND.CMD_PAUSE and self.getCommandStatus_ES() == STATUS.ST_CREATED:
+            registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = COMMAND.CMD_PAUSE
+            registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand_ES() == COMMAND.CMD_SET_SOLVED and self.getCommandStatus_ES() == STATUS.ST_CREATED:
+            registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = COMMAND.CMD_SET_SOLVED
+            registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand_ES() == COMMAND.CMD_ENABLE_DS_SYNCRO_KEY and self.getCommandStatus_ES() == STATUS.ST_CREATED:
+            registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = COMMAND.CMD_ENABLE_DS_SYNCRO_KEY
+            registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand_ES() == COMMAND.CMD_SET_DS_SYNCRO_KEY_SOLVED and self.getCommandStatus_ES() == STATUS.ST_CREATED:
+            registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = COMMAND.CMD_SET_DS_SYNCRO_KEY_SOLVED
+            registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand_ES() == COMMAND.CMD_SET_DS_SYNCRO_KEY_WRONG_SOLVED and self.getCommandStatus_ES() == STATUS.ST_CREATED:
+            registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = COMMAND.CMD_SET_DS_SYNCRO_KEY_WRONG_SOLVED
+            registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand_ES() == COMMAND.CMD_START_TIMER and self.getCommandStatus_ES() == STATUS.ST_CREATED:
+            registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = COMMAND.CMD_START_TIMER
+            registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = STATE.ACTIVE
+
+
+
+
+
 
         if self.getCommand_SP() == COMMAND.CMD_ENABLE and self.getCommandStatus_SP() == STATUS.ST_CREATED:
             registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND] = COMMAND.CMD_ENABLE
@@ -58,6 +91,22 @@ class DockedShipController(BaseController):
 
         if self.getCommand_SP() == COMMAND.CMD_DISABLE and self.getCommandStatus_SP() == STATUS.ST_CREATED:
             registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND] = COMMAND.CMD_DISABLE
+            registers[DS_REGISTER_INDEX.REG_SLAVE_SP_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand_SP() == COMMAND.CMD_PAUSE and self.getCommandStatus_SP() == STATUS.ST_CREATED:
+            registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND] = COMMAND.CMD_PAUSE
+            registers[DS_REGISTER_INDEX.REG_SLAVE_SP_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand_SP() == COMMAND.CMD_SET_SOLVED and self.getCommandStatus_SP() == STATUS.ST_CREATED:
+            registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND] = COMMAND.CMD_SET_SOLVED
+            registers[DS_REGISTER_INDEX.REG_SLAVE_SP_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand_SP() == COMMAND.CMD_SET_DS_BATTERY_MATRIX_SOLVED and self.getCommandStatus_SP() == STATUS.ST_CREATED:
+            registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND] = COMMAND.CMD_SET_DS_BATTERY_MATRIX_SOLVED
+            registers[DS_REGISTER_INDEX.REG_SLAVE_SP_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand_SP() == COMMAND.CMD_SET_DS_GENERATOR_SOLVED and self.getCommandStatus_SP() == STATUS.ST_CREATED:
+            registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND] = COMMAND.CMD_SET_DS_GENERATOR_SOLVED
             registers[DS_REGISTER_INDEX.REG_SLAVE_SP_CONFIRM] = STATE.ACTIVE
 
         self.setRegisters(registers)

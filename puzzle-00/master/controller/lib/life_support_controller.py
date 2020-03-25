@@ -7,6 +7,7 @@ from enum import Enum
 class LifeSupportController(BaseController):
     def __init__(self, key_name, model, puzzle):
         super().__init__(key_name, model, puzzle)
+        self._lighEffectPatternNumber = 0
 
     def update(self, registers):
 
@@ -30,5 +31,16 @@ class LifeSupportController(BaseController):
         if self.getCommand() == COMMAND.CMD_DISABLE and self.getCommandStatus() == STATUS.ST_CREATED:
             registers[LS_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_DISABLE
             registers[LS_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand() == COMMAND.CMD_PAUSE and self.getCommandStatus() == STATUS.ST_CREATED:
+            registers[LS_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_PAUSE
+            registers[LS_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
+
+        if self.getCommand() == COMMAND.CMD_SET_LIGHT_EFFECT_PATTERN_NUMBER and self.getCommandStatus() == STATUS.ST_CREATED:
+            registers[LS_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_SET_LIGHT_EFFECT_PATTERN_NUMBER
+            registers[LS_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
+            registers[LS_REGISTER_INDEX.REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER] = self._lighEffectPatternNumber
+
+            
 
         self.setRegisters(registers)
