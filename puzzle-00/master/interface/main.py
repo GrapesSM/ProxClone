@@ -21,7 +21,7 @@ def index():
 def puzzle(id):
     puzzle = Puzzle.get(Puzzle.id == id)
     puzzles = Puzzle.select().where(Puzzle.disabled == False).dicts()
-    return render_template('index.html', puzzles=puzzles, puzzle=puzzle)
+    return render_template('puzzle.html', puzzles=puzzles, puzzle=puzzle)
 
 @app.route('/update', methods=['POST'])
 def update():

@@ -20,10 +20,6 @@ namespace BlastDoorKeypad {
 
   void update(Puzzle &p, Components &c)
   {
-    p.registers[REG_SLAVE_MILLIS] = millis();
-    p.registers[REG_SLAVE_STATE] = c.state;
-    p.registers[REG_SLAVE_CODE_READER_STATE] = c.codeReader.getState();
-    p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
@@ -46,6 +42,11 @@ namespace BlastDoorKeypad {
       c.codeReader.setState(RESET);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
+
+    p.registers[REG_SLAVE_MILLIS] = millis();
+    p.registers[REG_SLAVE_STATE] = c.state;
+    p.registers[REG_SLAVE_CODE_READER_STATE] = c.codeReader.getState();
+    p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
 
     if (c.state == SETUP) {
       c.state = INITIALIZING;
@@ -109,7 +110,7 @@ namespace BlastDoorKeypad {
     c.showTimer.current = millis();
     if (c.showTimer.current - c.showTimer.showpoint > c.showTimer.interval) {
       c.showTimer.showpoint = millis();
-
+      c.countdown.display();
     }
     c.speaker.play();
   }
