@@ -5,7 +5,7 @@ from flask import render_template, request, redirect, url_for
 from flask import send_from_directory
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import configuration as cfg
-from db import *
+from database.db import *
 
 app = Flask(__name__, 
             static_url_path='', 
@@ -14,7 +14,14 @@ app = Flask(__name__,
 
 @app.route('/')
 def index():
-    return render_template('index.html', puzzle=Puzzle.select())
+    puzzles = Puzzle.select().where(Puzzle.disabled == False).dicts()
+    return render_template('index.html', puzzles=puzzles)
+
+@app.route('/p/<int:id>')
+def puzzle(id):
+    puzzle = Puzzle.get(Puzzle.id == id)
+    puzzles = Puzzle.select().where(Puzzle.disabled == False).dicts()
+    return render_template('index.html', puzzles=puzzles, puzzle=puzzle)
 
 @app.route('/update', methods=['POST'])
 def update():

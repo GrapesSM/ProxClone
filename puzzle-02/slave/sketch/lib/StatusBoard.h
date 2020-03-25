@@ -16,7 +16,7 @@ namespace StatusBoard {
     ShipPrepStatus shipPrepStatus;
     LifeSupportStatus lifeSupportStatus;
     BlastDoorStatus blastDoorStatus;
-    LaserGrid laserGrid;
+    LaserGridStatus laserGrid;
     Speaker speaker;
     STATE state;
     struct ShowTimer {
@@ -24,6 +24,7 @@ namespace StatusBoard {
       unsigned long showpoint = 0;
       unsigned long interval = 200;
     } showTimer;
+    CountDown countdown;
   } Components;
 
   void update(Puzzle & p, Components & c)
@@ -82,7 +83,11 @@ namespace StatusBoard {
       c.lifeSupportStatus.setState(SOLVED);
     }
 
-
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_COUNT_DOWN_MASTER_TIME &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;   
+      c.countdown.setMasterTime([]); 
+    }
 
     p.registers[REG_SLAVE_MILLIS] = millis();
     p.registers[REG_SLAVE_STATE] = c.state;
@@ -176,6 +181,11 @@ namespace StatusBoard {
       c.lifeSupportStatus.display();
       c.blastDoorStatus.display();
       c.laserGrid.display();
+
+      c.matrix.clear();
+      c.matrix.print(c.countdown);
+      c.matrix.writeDisplay();
+
     }
     
   }
