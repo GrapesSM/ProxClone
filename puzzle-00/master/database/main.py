@@ -16,7 +16,7 @@ def initialize_db():
 
     # Create records of puzzles
     for key_name in cfg.puzzles.keys():
-        puzzle = Puzzle(key_name=key_name, state=json.dumps(cfg.puzzles[key_name]))
+        puzzle = Puzzle(name=cfg.puzzles[key_name]['name'], key_name=key_name, state=json.dumps(cfg.puzzles[key_name]))
         puzzle.save()
 
     db.close()
