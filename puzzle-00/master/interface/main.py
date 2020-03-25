@@ -23,12 +23,6 @@ def puzzle(id):
     puzzles = Puzzle.select().where(Puzzle.disabled == False).dicts()
     return render_template('puzzle.html', puzzles=puzzles, puzzle=puzzle)
 
-@app.route('/update', methods=['POST'])
-def update():
-    #color = request.form['color'].lstrip('#')
-    #colorRGB = tuple(int(color[i:i+2], 16) for i in (0, 2, 4))
-    return redirect(url_for('index'))
-
 @app.errorhandler(404)
 def not_found(error):
     return '404 Not Found', 404
