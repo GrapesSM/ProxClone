@@ -10,35 +10,46 @@ class Countdown
     Countdown();
     void set(
       Adafruit_7segment *_matrix,
-      unsigned long time,
-      unsigned long lastStoppedTime,
-      unsigned long maxTime
     );
     void update();
     unsigned long getTime();
     void resetTime();
     STATE getState();
+    unsigned long getmaxTimeCount();
     void display();
     void setState(STATE);
+    void setmaxTimeCount(unsigned long);
+
   private:
     Adafruit_7segment * _matrix;
-    unsigned long time;
-    unsigned long lastStoppedTime;
+    unsigned long timeCounter;
+    unsigned long maxTimeCount;
     STATE _state;
+    struct Timer {
+      unsigned long current = 0;
+      unsigned long countPoint = 0;
+      unsigned long interval = 1000;
+    } Timer;
 };
 
 Countdown::Countdown(){
-    time = 0;
-    lastStoppedTime = 0;
-    maxTime = 0;
+    maxTime = 600000;
+    timeCounter  = maxTimeCount
 }
 
 void Countdown::set(Adafruit_7segment *matrix){
     _matrix = matrix;
-    time = 0
-    lastStoppedTime = 0;
-    maxTime = 600000;
 }
+
+unsigned long Countdown::getmaxTimeCount() 
+{
+  return maxTimeCount;
+} 
+
+void Countdown::setmaxTimeCount(unsigned long _maxTimeCount) 
+{
+  maxTimeCount = _maxTimeCount;
+} 
 
 STATE Countdown::getState() 
 {
@@ -49,29 +60,33 @@ void Countdown::setState(STATE state) {
 }
 
 unsigned long Countdown::getTime() {
-  return time;
+  return timeCounter;
 }
 
 void Countdown::update()
 {
+    c.Timer.current = millis();
     switch (_state)
     {
-        case ENABLE:
-            time = maxTime - (millis() -lastStoppedTime);
-            break;
+      case ENABLE:
+        if((c.Timer.current - c.Timer.countPoint) > c.Timer.interval){
+          timeCounter--;
+          c.Timer.countPoint = millis();
+        }
+        break;
 
-        case DISABLE:
-            lastStoppedTime = millis();
-            break;
+      case DISABLE:
+        c.Timer.countPoint = c.Timer.current;
+        break;
 
-        case PAUSE: 
-            lastStoppedTime = millis();
-            break;
+      case PAUSE: 
+        c.Timer.countPoint = c.Timer.current;
+        break;
 
-        case RESET: 
-            lastStoppedTime = 0;
-            time = 0;
-            break;
+      case RESET: 
+        timeCounter = maxTimeCount;
+        c.Timer.countPoint = c.Timer.current;
+        break;
     }
 }
 
