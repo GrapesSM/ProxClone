@@ -77,7 +77,10 @@ enum STATE {
 
 // Number of Lights and Pin Numbers
 extern int lightPinForPowerSwitch = 4;
-extern int safeLightPin = 3;
+extern int lightPinForSafe = 3;
+
+#define NUMBER_OF_LIGHTS_FOR_COMBINATION_READER 3
+extern int lightPinsForCombinationReader[] = {0, 1, 2};
 
 #define NUMBER_OF_SOUNDS 2
 enum {  // enumeration from 0, 1, 2 ...

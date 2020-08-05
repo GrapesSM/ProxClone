@@ -24,6 +24,11 @@ class LightEffect
     int *_lightPins;
     int _current;
     int _patternNumber;
+    struct Timer {
+      unsigned long current = 0;
+      unsigned long point = 0;
+      unsigned long interval = 400;
+    } timer;
     STATE _state;
 };
 
@@ -50,15 +55,13 @@ STATE LightEffect::getState()
 
 void LightEffect::update()
 {
-}
+  timer.current = millis();
+  if ((timer.current - timer.point) < timer.interval) {
+    return;
+  }
 
-void LightEffect::setPatternNumber(int number)
-{
-  _patternNumber = number;
-}
+  timer.point = millis();
 
-void LightEffect::display()
-{
   _current++;
   if (_current == NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT) {
     _current = 0;
@@ -88,6 +91,12 @@ void LightEffect::display()
       _strip->SetPixelColor(_lightPins[next], RgbColor(255, 0, 0));
       break;
     
+    case SOLVED:
+      for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT; i++) {
+        _strip->SetPixelColor(_lightPins[i], RgbColor(0, 255, 0));
+      }
+      break;
+    
     case FAILURE:
       for(int i = 0; i <NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT; i++ ){
         _strip->SetPixelColor(_lightPins[i], RgbColor(127, 0, 0));
@@ -96,6 +105,16 @@ void LightEffect::display()
     default:
       break;
   }
+}
+
+void LightEffect::setPatternNumber(int number)
+{
+  _patternNumber = number;
+}
+
+void LightEffect::display()
+{
+  _strip->Show();
 }
 
 

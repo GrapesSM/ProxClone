@@ -31,31 +31,31 @@ namespace LifeSupport {
   void update(Puzzle & p, Components & c) 
   {
     if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE &&
-        p.registers[REG_SLAVE_CONFIRM] == DONE) {
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = ENABLE;
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_DISABLE &&
-        p.registers[REG_SLAVE_CONFIRM] == DONE) {
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = DISABLE;
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_RESET &&
-        p.registers[REG_SLAVE_CONFIRM] == DONE) {
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = RESET;
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_PAUSE &&
-        p.registers[REG_SLAVE_CONFIRM] == DONE) {
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = PAUSE;
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_SOLVED &&
-        p.registers[REG_SLAVE_CONFIRM] == DONE) {
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = SOLVED;
     }
@@ -93,7 +93,7 @@ namespace LifeSupport {
   void run(Components & c) 
   {
     if (c.state == INITIALIZED) {
-      //c.state = ENABLE;
+      
     }
 
     c.powerSwitch.update();
@@ -145,15 +145,29 @@ namespace LifeSupport {
       }
 
       if (
-        c.externalVent.getState() == OFF &&
-        c.airSupplyPump.getState() == CLOSED &&
+        c.externalVent.getState() == CLOSED &&
+        c.airSupplyPump.getState() == OFF &&
         c.airPressureStatus.getState() == BALANCED) {
         c.state = SOLVED;
       }
     }
 
     if (c.state == SOLVED) {
+      if (c.powerSwitch.getState() == OFF) {
+        c.externalVent.setState(DISABLE);
+        c.airPressureStatus.setState(DISABLE);
+        c.airSupplyPump.setState(DISABLE);
+        c.speaker.setState(DISABLE);
+        c.lightEffect.setState(DISABLE);
+      } 
 
+      if (c.powerSwitch.getState() == ON) {
+        c.externalVent.setState(ENABLE);
+        c.airPressureStatus.setState(ENABLE);
+        c.airSupplyPump.setState(ENABLE);
+        c.speaker.setState(ENABLE);
+        c.lightEffect.setState(SOLVED);
+      }
     }
 
     if (c.state == DISABLE) {
@@ -180,11 +194,13 @@ namespace LifeSupport {
     c.showTimer.current = millis();
     if ((c.showTimer.current - c.showTimer.showpoint) > c.showTimer.interval) {
       c.showTimer.showpoint = millis();
-    
-      c.lightEffect.display();
-      c.powerSwitch.display();
+
+      // Code here runs every interval (i.e. 200ms)
     }
+
+    c.lightEffect.display();
     c.airPressureStatus.display();
+    c.powerSwitch.display();
     c.speaker.play();
   }
 }

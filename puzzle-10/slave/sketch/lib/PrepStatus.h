@@ -61,7 +61,7 @@ namespace PrepStatus {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
 
-    if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE_PS_SYNCRO_KEYs &&
+    if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE_PS_SYNCRO_KEY &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       c.syncroReader.setState(ENABLE);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
@@ -98,7 +98,7 @@ namespace PrepStatus {
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
     p.registers[REG_SLAVE_LIGHT_EFFECT_STATE] = c.lightEffect.getState();
     p.registers[REG_SLAVE_SYNCRO_READER_INPUT_KEY] = c.syncroReader.getInputKey();
-    Serial.println(c.syncroReader.getInputKey());
+    // Serial.println(c.syncroReader.getInputKey());
     if (c.state == SETUP) {
       c.state = INITIALIZING;
       c.powerSwitch.setState(DISABLE);
@@ -116,7 +116,7 @@ namespace PrepStatus {
   void run(Components & c) 
   {
     if (c.state == INITIALIZED) {
-
+      
     }
     
     c.batteryMatrix.update();
@@ -174,7 +174,6 @@ namespace PrepStatus {
         c.state = SOLVED; 
       }
     }  
-
 
     if (c.state == SOLVED) {
       Serial.println("SOLVED");

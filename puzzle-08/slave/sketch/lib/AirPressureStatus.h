@@ -6,6 +6,8 @@
 
 #include <Arduino.h>
 
+#define CHANGE_VALUE 100
+
 class AirPressureStatus
 {
   public:
@@ -47,7 +49,7 @@ void AirPressureStatus::update()
     
     case ENABLE:
     default:
-      if ((_value / 500) == AIR_PRESSURE) {
+      if ((_value / CHANGE_VALUE) == AIR_PRESSURE) {
         _state = BALANCED;
         _strip->SetPixelColor(_lightPins[0], RgbColor(255, 255, 255));
         _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
@@ -62,10 +64,10 @@ void AirPressureStatus::update()
 
 void AirPressureStatus::increaseBy(int value)
 {
-  if ((_value + value) <= (150 * 500)) {
+  if ((_value + value) <= (150 * CHANGE_VALUE)) {
     _value = _value + value;
   } else {
-    _value = 150 * 500;
+    _value = 150 * CHANGE_VALUE;
   }
 }
 
@@ -99,7 +101,7 @@ void AirPressureStatus::display()
     
     default:
       _matrix->clear();
-      _matrix->print(_value / 500);
+      _matrix->print(_value / CHANGE_VALUE);
       _matrix->writeDisplay();
       break;
   }

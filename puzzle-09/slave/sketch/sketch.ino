@@ -128,7 +128,7 @@ void setup()
   spComponents.state = SETUP;
 }
 
-void loop()
+void loop() {
 
 }
 
@@ -153,17 +153,15 @@ void runTaskFunction( void * parameters ) {
   Serial.print("Run Task running on core ");
   Serial.println(xPortGetCoreID());
 
-  for(;;){
-{
-  parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-
-  EnergySupplemental::update(puzzle, esComponents);
-  ShipPrepAux::update(puzzle, spComponents);
+  for(;;) {
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   
-  EnergySupplemental::run(esComponents);
-  ShipPrepAux::run(spComponents);
-  vTaskDelay(10);
-
+    EnergySupplemental::update(puzzle, esComponents);
+    ShipPrepAux::update(puzzle, spComponents);
+    
+    EnergySupplemental::run(esComponents);
+    ShipPrepAux::run(spComponents);
+  }
 }
 
 //Show Task Fucntion: shows changes of puzzle

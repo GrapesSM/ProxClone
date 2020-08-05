@@ -25,6 +25,9 @@ void setupSafeomatic();
 void runTaskFunction(void*);
 void showTaskFunction(void*);
 
+TaskHandle_t runTask;
+TaskHandle_t showTask;
+
 void setup() 
 {
   Serial.begin(SERIAL_BAUDRATE);
@@ -85,7 +88,7 @@ void setup()
   xTaskCreatePinnedToCore(
     showTaskFunction,   /* Task function. */
     "ShowTask",     /* name of task. */
-    100000,       /* Stack size of task */
+    60000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
@@ -100,11 +103,11 @@ void loop()
 
 void setupSafeomatic()
 {
-  smComponents.combinationReader.set(parts.strip, &parts.encoder);
+  smComponents.combinationReader.set(parts.strip, lightPinsForCombinationReader, &parts.encoder);
   smComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
   smComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
   smComponents.accessPanel.set(PIN_INPUT_1, PIN_RELAY_2);
-  smComponents.door.set(parts.strip, safeLightPin, PIN_RELAY_1);
+  smComponents.door.set(parts.strip, lightPinForSafe, PIN_RELAY_1);
 }
 
 //Run Task Function: process changes of puzzle
@@ -122,8 +125,7 @@ void runTaskFunction( void * parameters ) {
     // State changes
     Safeomatic::run(smComponents);
 
-
-
+    vTaskDelay(10);
   } 
 }
 

@@ -30,3 +30,8 @@ class Puzzle(BaseModel):
     disabled = BooleanField(constraints=[SQL('DEFAULT FALSE')])
     updated_at = TimestampField(default=dt.now)
     created_at = TimestampField(constraints=[SQL('DEFAULT CURRENT_TIMESTAMP')])
+
+class Book(BaseModel):
+    title = CharField(null=True)
+    author = CharField(null=True)
+    read = BooleanField(constraints=[SQL('DEFAULT FALSE')])

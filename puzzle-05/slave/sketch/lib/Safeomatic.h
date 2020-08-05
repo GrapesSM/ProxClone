@@ -82,7 +82,7 @@ namespace Safeomatic {
   void run(Components & c) 
   {
     if (c.state == INITIALIZED) {
-      //c.state = ENABLE;
+      
     }
     
     c.powerSwitch.update();
@@ -123,7 +123,21 @@ namespace Safeomatic {
       if (c.combinationReader.getState() == SOLVED) {
         if (c.door.getState() == DISABLE) {
           c.door.setState(ENABLE);
+          c.state = SOLVED;
         }
+      }
+    }
+
+    if (c.state == SOLVED) {
+      if (c.powerSwitch.getState() == OFF) {
+        c.combinationReader.setState(DISABLE);
+        c.accessPanel.setState(DISABLE);
+        c.door.setState(DISABLE);
+        c.door.setClosed(true);
+        c.speaker.setState(DISABLE);
+      } else {
+        c.door.setState(ENABLE);
+        c.speaker.setState(ENABLE);
       }
     }
 
@@ -150,11 +164,14 @@ namespace Safeomatic {
     c.showTimer.current = millis();
     if (c.showTimer.current - c.showTimer.showpoint > c.showTimer.interval) {
       c.showTimer.showpoint = millis();
-      c.powerSwitch.display();
-      c.accessPanel.display();
-      c.combinationReader.display();
+
+      // Code here runs every interval (i.e. 200ms)
     }
-    c.speaker.play();
+
+    c.powerSwitch.display();
+    c.accessPanel.display();
+    c.combinationReader.display();
+    // c.speaker.play();
   }
 }
 

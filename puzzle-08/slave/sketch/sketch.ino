@@ -72,7 +72,8 @@ void setup()
 
   setupLifeSupport();
     // Setup Task functions
-  xTaskCreatePinnedToCore(
+
+  int temp1 = xTaskCreatePinnedToCore(
     runTaskFunction,   /* Task function. */
     "RunTask",     /* name of task. */
     100000,       /* Stack size of task */
@@ -81,23 +82,36 @@ void setup()
     &runTask,      /* Task handle to keep track of created task */
     0);          /* pin task to core 0 */                  
 
-//  delay(500);
-
-  xTaskCreatePinnedToCore(
+//  delay(50);
+  
+  if(temp1) {
+    Serial.println("Task created...");
+  } else {
+    Serial.printf("Couldn't create task %i", temp1);
+  }
+  
+  int temp2 = xTaskCreatePinnedToCore(
     showTaskFunction,   /* Task function. */
     "ShowTask",     /* name of task. */
-    100000,       /* Stack size of task */
+    60000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
     1);
+
+//  delay(500);
+
+  if(temp2) {
+    Serial.println("Task created...");
+  } else {
+    Serial.printf("Couldn't create task %i", temp2);
+  }
+    
   lsComponents.state = SETUP;
 }
 
-void loop() 
-{
-
-}
+void loop() { vTaskDelete(NULL); }
+//void loop() { vTaskDelay(100); }
 
 void setupLifeSupport()
 {
@@ -123,6 +137,8 @@ void runTaskFunction( void * parameters ) {
 
     // State changes
     LifeSupport::run(lsComponents);
+    
+    vTaskDelay(10);
   } 
 }
 
@@ -135,7 +151,7 @@ void showTaskFunction( void * parameters ){
 
     // Show changes
     LifeSupport::show(lsComponents);
-
+    
     vTaskDelay(10);
   } 
 }

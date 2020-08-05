@@ -152,7 +152,9 @@ void runTaskFunction( void * parameters ) {
 
     // Enable Datamatic
     Datamatic::run(dmComponents);
-
+   
+    vTaskDelay(10);
+  }
 }
 
 //Show Task Fucntion: shows changes of puzzle

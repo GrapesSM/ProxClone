@@ -11,7 +11,7 @@ class CombinationReader
 {
   public:
     CombinationReader();
-    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, ESP32Encoder * encoder);
+    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], ESP32Encoder * encoder);
     void setLightsRed();
     void setLightsYellow();
     void setLightGreen(int light);
@@ -61,24 +61,25 @@ CombinationReader::CombinationReader()
   _prepped = false;
 }
 
-void CombinationReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, ESP32Encoder *encoder) 
+void CombinationReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[], ESP32Encoder *encoder) 
 {
   _strip = strip;
+  _lightPins = lightPins;
   _encoder = encoder;
 }
 
 void CombinationReader::setLightsRed()
 {
-  _strip->SetPixelColor(0, RgbColor(127, 0, 0));
-  _strip->SetPixelColor(1, RgbColor(127, 0, 0));
-  _strip->SetPixelColor(2, RgbColor(127, 0, 0));
+  _strip->SetPixelColor(_lightPins[0], RgbColor(127, 0, 0));
+  _strip->SetPixelColor(_lightPins[1], RgbColor(127, 0, 0));
+  _strip->SetPixelColor(_lightPins[2], RgbColor(127, 0, 0));
 }
 
 void CombinationReader::setLightsYellow()
 {
-  _strip->SetPixelColor(0, RgbColor(64, 64, 0));
-  _strip->SetPixelColor(1, RgbColor(64, 64, 0));
-  _strip->SetPixelColor(2, RgbColor(64, 64, 0));
+  _strip->SetPixelColor(_lightPins[0], RgbColor(64, 64, 0));
+  _strip->SetPixelColor(_lightPins[1], RgbColor(64, 64, 0));
+  _strip->SetPixelColor(_lightPins[2], RgbColor(64, 64, 0));
 }
 
 void CombinationReader::setLightGreen(int light)
@@ -88,9 +89,9 @@ void CombinationReader::setLightGreen(int light)
 
 void CombinationReader::setLightsOff()
 {
-  _strip->SetPixelColor(0, RgbColor(0, 0, 0));
-  _strip->SetPixelColor(1, RgbColor(0, 0, 0));
-  _strip->SetPixelColor(2, RgbColor(0, 0, 0));
+  _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
+  _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
+  _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
 }
 
 void CombinationReader::checkNumber() 
@@ -107,14 +108,14 @@ void CombinationReader::checkNumber()
         case 0:
           if (_clockwise) {
             if (_submittedVal > 5) {
-              CombinationReader::reset();
+              reset();
             }
           } else {
             if (_submittedVal <= _numbers[_numbersSolved] + overtravel && _submittedVal >= _numbers[_numbersSolved] - overtravel) {
               _strip->SetPixelColor(_numbersSolved, RgbColor(0, 127, 0));
               _numbersSolved++;
             } else if (_submittedVal > _numbers[_numbersSolved] + overtravel) {
-              CombinationReader::reset();
+              reset();
             }
           }
         break;
@@ -125,16 +126,16 @@ void CombinationReader::checkNumber()
               _strip->SetPixelColor(_numbersSolved, RgbColor(0, 127, 0));
               _numbersSolved++;
             } else if (_submittedVal < _numbers[_numbersSolved] - overtravel) {
-              CombinationReader::reset();
+              reset();
             }
           } else {
-            CombinationReader::reset();
+            reset();
           }
         break;
 
         case 2:
           if (_clockwise) {
-            CombinationReader::reset();
+            reset();
           } else {
             if (_submittedVal <= _numbers[_numbersSolved] + overtravel && _submittedVal >= _numbers[_numbersSolved] - overtravel) {
               _strip->SetPixelColor(_numbersSolved, RgbColor(0, 127, 0));
@@ -142,7 +143,7 @@ void CombinationReader::checkNumber()
               _solved = true;
               _encoder->pauseCount();
             } else if (_submittedVal > _numbers[_numbersSolved] + overtravel) {
-              CombinationReader::reset();
+              reset();
             }
           }
         break;
@@ -154,9 +155,9 @@ void CombinationReader::checkNumber()
     } else {
         if (_submittedVal < 5) {
           _prepped = true;
-          CombinationReader::setLightsYellow();
+          setLightsYellow();
         } else {
-          CombinationReader::setLightsRed();
+          setLightsRed();
         }
 
         if (!_clockwise) {
@@ -174,7 +175,7 @@ void CombinationReader::update()
   switch (_state)
   {
     case DISABLE:
-      
+      setLightsOff();
       break;
     
     case ENABLE:
@@ -210,7 +211,7 @@ void CombinationReader::reset()
   _prepped = false;
   _solved = false;
   _encoder->setCount(100);
-  CombinationReader::setLightsRed();
+  setLightsRed();
 }
 
 void CombinationReader::disable() 
@@ -218,7 +219,7 @@ void CombinationReader::disable()
   _disabled = true;
   _solved = false;
   _prepped = false;
-  CombinationReader::setLightsOff();
+  setLightsOff();
   _encoder->pauseCount();
 }
 
@@ -229,7 +230,7 @@ void CombinationReader::enable()
   _prepped = false;
   _numbersSolved = 0;
   _encoder->resumeCount();
-  CombinationReader::setLightsRed();
+  setLightsRed();
   _encoder->setCount(100);
 }
 

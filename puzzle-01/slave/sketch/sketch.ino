@@ -144,9 +144,8 @@ void runTaskFunction( void * parameters ) {
     // State changes
     PowerControl::run(pcComponents);
 
-
-
-  } 
+    vTaskDelay(10);
+  }
 }
 
 //Show Task Fucntion: shows changes of puzzle
