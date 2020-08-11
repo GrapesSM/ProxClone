@@ -112,11 +112,13 @@ void PowerAdjuster::setState(STATE state)
 void PowerAdjuster::display() 
 {  
   _matrix1->clear();
-  _matrix1->print(_supply);
+  if (_state != DISABLE) 
+    _matrix1->print(_supply);
   _matrix1->writeDisplay();
 
   _matrix2->clear();
-  _matrix2->print(_demand);
+  if (_state != DISABLE) 
+    _matrix2->print(_demand);
   _matrix2->writeDisplay();
   
   ledcWrite(_channel, map(_demand - _supply, -_maxDemand, _maxDemand, 0, 255));

@@ -146,7 +146,6 @@ void SyncroReader::update()
 
 void SyncroReader::display()
 {
-
   _strip->Show();
 }
 

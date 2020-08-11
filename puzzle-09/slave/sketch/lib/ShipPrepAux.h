@@ -90,7 +90,7 @@ namespace ShipPrepAux {
     c.powerSwitch.update();
     c.batteryMatrix.update();
     c.generator.update();
-    c.speaker.update();
+    // c.speaker.update();
 
     if (c.state == ENABLE) {
       if (c.powerSwitch.getState() == DISABLE) {
@@ -101,36 +101,51 @@ namespace ShipPrepAux {
         c.batteryMatrix.setState(DISABLE);
         c.generator.setState(DISABLE);
         c.speaker.setState(DISABLE);
-        if (c.speaker.getNumber() != SOUND_POWER_DOWN) {
-          c.speaker.addToPlay(SOUND_POWER_DOWN);
-        }
+        // if (c.speaker.getNumber() != SOUND_POWER_DOWN) {
+        //   c.speaker.addToPlay(SOUND_POWER_DOWN);
+        // }
       } 
 
       if (c.powerSwitch.getState() == ON) {
-        if (c.batteryMatrix.getState() == DISABLE) 
+        if (c.batteryMatrix.getState() == DISABLE)
           c.batteryMatrix.setState(ENABLE);
         if (c.generator.getState() == DISABLE) 
           c.generator.setState(ENABLE);
-        if (c.speaker.getNumber() == SOUND_POWER_DOWN)
-          c.speaker.addToPlay(SOUND_POWER_UP);
+        // if (c.speaker.getNumber() == SOUND_POWER_DOWN) {
+        //   c.speaker.addToPlay(SOUND_POWER_UP);
+        // }
       }
 
+      Serial.println(c.batteryMatrix.getInputKey());
       if (c.batteryMatrix.getInputKey() == keyForBatteryMatrix && c.batteryMatrix.getState() == ENABLE) {
         c.batteryMatrix.setState(SOLVED);
-        if (c.speaker.getNumber() != SOUND_KEY_INSERT) {
-          c.speaker.addToPlay(SOUND_KEY_INSERT);
-        }
+        // if (c.speaker.getNumber() != SOUND_KEY_INSERT) {
+        //   c.speaker.addToPlay(SOUND_KEY_INSERT);
+        // }
       }
 
+      Serial.println(c.generator.getInputKey());
       if (c.generator.getInputKey() == keyForGenerator && c.generator.getState() == ENABLE) {
         c.generator.setState(SOLVED);
-        if (c.speaker.getNumber() != SOUND_KEY_INSERT) {
-          c.speaker.addToPlay(SOUND_KEY_INSERT);
-        }
+        // if (c.speaker.getNumber() != SOUND_KEY_INSERT) {
+        //   c.speaker.addToPlay(SOUND_KEY_INSERT);
+        // }
       }  
       if (c.generator.getState() == SOLVED && c.batteryMatrix.getState() == SOLVED) {
         c.state = SOLVED;
       }      
+    }
+
+    if (c.state == SOLVED) {
+      if (c.powerSwitch.getState() == OFF) {
+        c.batteryMatrix.setState(DISABLE);
+        c.generator.setState(DISABLE);
+      }
+      
+      if (c.powerSwitch.getState() == ON) {
+        c.batteryMatrix.setState(SOLVED);
+        c.generator.setState(SOLVED);
+      }
     }
 
     if (c.state == DISABLE) {
@@ -154,9 +169,11 @@ namespace ShipPrepAux {
     c.showTimer.current = millis();
     if (c.showTimer.current - c.showTimer.showpoint > c.showTimer.interval) {
       c.showTimer.showpoint = millis();
-      c.powerSwitch.display();
+
+      // code here runs every interval time
     }
-    c.speaker.play();
+    // c.powerSwitch.display();
+    // c.speaker.play();
   }
 }
 

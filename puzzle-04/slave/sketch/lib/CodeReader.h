@@ -33,9 +33,11 @@ class CodeReader
     void display();
     bool isDisabled();
     char readInput();
+
     String getTransmittedKey();
     MODE readMode();
     STATE getState();
+    char readKeyUp(Adafruit_MCP23017 *mcp, int pin);
     void setState(STATE state);
   private:
     SevenSegment *_matrix;
@@ -83,6 +85,18 @@ void CodeReader::set(
   _transmitPin = transmitPin;
 }
 
+char CodeReader::readKeyUp(Adafruit_MCP23017 *mcp, int pin)
+{
+  Serial.println(mcp->digitalRead(pin));
+  // if (mcp->digitalRead(pin) == HIGH) {
+  //   // vTaskDelay(1);
+  //   // if (mcp->digitalRead(pin) == LOW) {
+  //     return '1';
+  //   // }
+  // } else {
+    return '0';
+  // }
+}
 
 String CodeReader::getTransmittedKey() {
   return _transmittedKey;
@@ -93,13 +107,15 @@ char CodeReader::readInput()
   String _buttons = String("0000000000");
   char val;
   for (int i = 0; i < NUMBER_OF_BUTTONS_1; i++) {
-    val = _mcp1->digitalRead(_buttonPins1[i]) ? '1' : '0';
+    // val = _mcp1->digitalRead(_buttonPins1[i]) ? '1' : '0';
+    val = readKeyUp(_mcp1, _buttonPins1[i]);
     _buttons.setCharAt(i, val);
-
   }
 
   for (int i = NUMBER_OF_BUTTONS_1, n = NUMBER_OF_BUTTONS_1 + NUMBER_OF_BUTTONS_2; i < n; i++) {
-    val = _mcp2->digitalRead(_buttonPins2[i]) ? '1' : '0';
+    // val = _mcp2->digitalRead(_buttonPins2[i]) ? '1' : '0';
+
+    val = readKeyUp(_mcp2, _buttonPins2[i]);
     _buttons.setCharAt(i, val);
   }
 
@@ -151,7 +167,7 @@ void CodeReader::update()
       // Serial.println("DISABLE");
       break;
 
-    case ENABLE:  
+    case ENABLE:
     default:
       input = readInput();
       mode = readMode();
@@ -164,6 +180,7 @@ void CodeReader::update()
           }
 
           if (_entered == true && input != 'n' && _counter <= _matrix->getNumberOfDigits() && _counter > _key.length()) {
+            _entered = false;
             _key += String(input);
           }
 
@@ -204,7 +221,7 @@ void CodeReader::display()
     default:
       Serial.println(_key);
       _matrix->clear();
-      if (_key.length() > 0) _matrix->printString(_key);
+      // if (_key.length() > 0) _matrix->printString(_key);
       _matrix->writeDisplay();
       break;
   }

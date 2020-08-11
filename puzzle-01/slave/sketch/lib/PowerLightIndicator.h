@@ -44,11 +44,6 @@ void PowerLightIndicator::setState(STATE state)
 
 void PowerLightIndicator::update()
 {
-  
-}
-
-void PowerLightIndicator::display()
-{
   switch (_state)
   {
     case ENABLE:
@@ -75,6 +70,10 @@ void PowerLightIndicator::display()
     default:
       break;
   }
+}
+
+void PowerLightIndicator::display()
+{
    _strip->Show();
 }
 

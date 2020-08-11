@@ -78,9 +78,9 @@ namespace EnergySupplemental {
       c.syncroReader.setState(ENABLE);
     }
 
-    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_POWER_ADJUSTER_KEY &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;
+    if (p.registers[REG_MASTER_ES_COMMAND] == CMD_SET_POWER_ADJUSTER_KEY &&
+        p.registers[REG_SLAVE_ES_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_ES_CONFIRM] = DONE;
       keyForPowerAdjuster = (p.registers[REG_SLAVE_KEY]);
     } 
     
@@ -138,12 +138,12 @@ namespace EnergySupplemental {
       if (c.powerAdjuster.getInputKey() == keyForPowerAdjuster && c.powerAdjuster.getState() == ENABLE) {
         c.powerAdjuster.setState(SOLVED);
       }
-      // if (c.powerAdjuster.getState() == SOLVED && c.syncroReader.getState() == DISABLE) {
-      //   c.syncroReader.setState(ENABLE);
-      //   if (c.speaker.getNumber() != SOUND_KEY_INSERT) {
-      //     c.speaker.addToPlay(SOUND_KEY_INSERT);
-      //   }
-      // }
+      if (c.powerAdjuster.getState() == SOLVED && c.syncroReader.getState() == DISABLE) {
+        c.syncroReader.setState(ENABLE);
+        if (c.speaker.getNumber() != SOUND_KEY_INSERT) {
+          // c.speaker.addToPlay(SOUND_KEY_INSERT);
+        }
+      }
       if(c.syncroReader.getState() == ENABLE && c.syncroReader.getInputKey() == 3){
         c.syncroReader.setState(SYNCRONIZED);
       }
@@ -172,11 +172,14 @@ namespace EnergySupplemental {
     c.showTimer.current = millis();
     if (c.showTimer.current - c.showTimer.showpoint > c.showTimer.interval) {
       c.showTimer.showpoint = millis();
+
+      // code here runs every interval time
       c.powerSwitch.display();
       c.powerAdjuster.display();
-      c.syncroReader.display();
+      // c.syncroReader.display();
     }
-    c.speaker.play();
+
+    // c.speaker.play();
   }
 }
 

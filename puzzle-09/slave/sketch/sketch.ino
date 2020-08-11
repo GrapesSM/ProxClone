@@ -41,6 +41,7 @@ TaskHandle_t showTask;
 
 void setup()
 {
+//  Wire.setClock(400000);
   Serial.begin(SERIAL_BAUDRATE);
 
   // Setup Modbus communication
@@ -88,7 +89,7 @@ void setup()
   ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
   ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
   pinMode(PIN_AMPLIFIER, OUTPUT);
-  digitalWrite(PIN_AMPLIFIER, HIGH);
+  digitalWrite(PIN_AMPLIFIER, LOW);
 
   // Setup sound list
   parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
@@ -116,7 +117,7 @@ void setup()
   xTaskCreatePinnedToCore(
     showTaskFunction,   /* Task function. */
     "ShowTask",     /* name of task. */
-    100000,       /* Stack size of task */
+    80000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
@@ -155,12 +156,15 @@ void runTaskFunction( void * parameters ) {
 
   for(;;) {
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-  
+
+    vTaskDelay(10);
+   
     EnergySupplemental::update(puzzle, esComponents);
     ShipPrepAux::update(puzzle, spComponents);
     
     EnergySupplemental::run(esComponents);
     ShipPrepAux::run(spComponents);
+
   }
 }
 
@@ -169,7 +173,7 @@ void showTaskFunction( void * parameters ){
   Serial.print("Show Task running on core ");
   Serial.println(xPortGetCoreID());
 
-  for(;;){
+  for(;;){    
     // Show changes
     EnergySupplemental::show(esComponents);
     ShipPrepAux::show(spComponents);

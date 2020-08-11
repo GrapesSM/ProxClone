@@ -50,10 +50,6 @@ STATE LightEffect::getState()
 
 void LightEffect::update()
 {
-}
-
-void LightEffect::display()
-{
   _current++;
   if (_current == NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT) {
     _current = 0;
@@ -91,6 +87,10 @@ void LightEffect::display()
     default:
       break;
   }
+}
+
+void LightEffect::display()
+{
 }
 
 void LightEffect::setPatternNumber(int number)

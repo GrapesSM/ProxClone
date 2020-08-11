@@ -69,7 +69,6 @@ void PowerAdjuster::update()
       break;
     
     case ENABLE:
-    default:
       _encoder->resumeCount();
       _val = _encoder->getCount();
       if (_val >= _max) {
@@ -84,13 +83,18 @@ void PowerAdjuster::update()
         _submittedVal = _val;
       }
       break;
+    default:
+      _encoder->pauseCount();
+      _matrix->clear();
+      break;
   }
 }
 
 void PowerAdjuster::display() 
 {
   _matrix->clear();
-  _matrix->print(_val);
+  if (_val > 0 && _state != DISABLE)
+    _matrix->print(_val);
   _matrix->writeDisplay();
 }
 

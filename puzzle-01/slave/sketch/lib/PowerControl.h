@@ -129,6 +129,7 @@ namespace PowerControl {
     }
 
     c.powerAdjuster.update();
+    c.powerLightIndicator.update();
     c.battery.update();
     c.lightEffect.update();
 

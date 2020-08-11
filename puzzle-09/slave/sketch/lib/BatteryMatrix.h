@@ -58,7 +58,10 @@ bool BatteryMatrix::isAllSwitchesOff()
 void BatteryMatrix::readSwitches()
 {
   for (int i = 0; i < NUMBER_OF_SWITCHES_1; i++) {
-    _input[i] = _mcp->digitalRead(_switchPins[i]);
+    _input[i] = _mcp->digitalRead(_switchPins[i]); 
+    vTaskDelay(2);
+    _input[i] = _input[i] && _mcp->digitalRead(_switchPins[i]); 
+    vTaskDelay(1);
   }
 }
 
