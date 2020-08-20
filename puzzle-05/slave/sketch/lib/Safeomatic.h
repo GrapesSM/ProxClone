@@ -82,7 +82,7 @@ namespace Safeomatic {
   void run(Components & c) 
   {
     if (c.state == INITIALIZED) {
-      
+      c.state = ENABLE;
     }
     
     c.powerSwitch.update();

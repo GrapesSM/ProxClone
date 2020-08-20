@@ -46,11 +46,11 @@ void setup()
 
   // Setup and Init Encoders
   ESP32Encoder::useInternalWeakPullResistors=false;
+  //-- attach pins for use as encoder pins
+  parts.encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
   //-- adjust starting count value to 0
   parts.encoder.clearCount();
   parts.encoder.setCount(0);
-  //-- attach pins for use as encoder pins
-  parts.encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
    
   // Setup power switch
   pinMode(PIN_INPUT_1, INPUT);
@@ -64,6 +64,7 @@ void setup()
   ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
   ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
   pinMode(PIN_AMPLIFIER, OUTPUT);
+//  digitalWrite(PIN_AMPLIFIER, HIGH);
 
   // Setup sound list
   parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;

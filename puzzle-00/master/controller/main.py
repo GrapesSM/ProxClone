@@ -28,12 +28,12 @@ from lib.life_support_controller import LifeSupportController
 from lib.safeomatic_controller import SafeomaticController
 from lib.status_board_controller import StatusBoardController
 from lib.keypad_controller import KeypadController
+from lib.laserbar_controller import LaserbarController
 from proxima import ProximaCommand
 
 def createControllers():
     controllers = {}
     for key_name in cfg.puzzles.keys():
-        sid = cfg.puzzles[key_name]['slave_id']
         if key_name == "power_control":
             model = Puzzle.get_or_none(key_name=key_name)
             controllers[key_name] = PowerControlController(key_name, model, cfg.puzzles[key_name])
@@ -61,6 +61,9 @@ def createControllers():
         if key_name == "keypad":
             model = Puzzle.get_or_none(key_name=key_name)
             controllers[key_name] = KeypadController(key_name, model, cfg.puzzles[key_name])
+        if key_name == "laserbar":
+            model = Puzzle.get_or_none(key_name=key_name)
+            controllers[key_name] = LaserbarController(key_name, model, cfg.puzzles[key_name])
     return controllers
 
 def main():
@@ -79,7 +82,7 @@ def main():
     master.set_timeout(cfg.modbus['timeout'])
     master.set_verbose(cfg.modbus['verbose'])
 
-    controllers = createControllers()    
+    controllers = createControllers()
     proximaCommand = ProximaCommand(controllers, master)
     system_monitor = WorkerThread(proximaCommand.run)
 

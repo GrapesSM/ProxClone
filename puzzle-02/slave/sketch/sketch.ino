@@ -42,6 +42,11 @@ void setup()
   // Setup 7 segment LED
   parts.matrix.begin(ADDR_SEVENSEGMENT);
 
+  // Setup input switch
+  pinMode(PIN_INPUT_1, INPUT);
+  pinMode(PIN_INPUT_2, INPUT);
+  pinMode(PIN_INPUT_3, INPUT);
+
   // Setup speaker pins
   pinMode(PIN_SPEAKER, OUTPUT);
   ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
@@ -88,6 +93,8 @@ void setupStatusBoard()
   sbComponents.lifeSupportStatus.set(parts.strip, lightPinsForLifeSupportStatus);
   sbComponents.blastDoorStatus.set(parts.strip, lightPinsForBlastDoorStatus);
   sbComponents.laserGrid.set(parts.strip, lightPinsForLaserGridStatus);
+  sbComponents.countdown.set(&parts.matrix);
+  sbComponents.powerSwitch.set(PIN_INPUT_1, PIN_INPUT_2);
 }
 
 //Run Task Function: process changes of puzzle
@@ -100,13 +107,12 @@ void runTaskFunction( void * parameters ) {
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
     // Map puzzle register's to component's values
-    StatusBoard::update(sbComponents);
+    StatusBoard::update(puzzle, sbComponents);
 
     // State changes
     StatusBoard::run(sbComponents);
 
-
-
+    vTaskDelay(10);
   } 
 }
 

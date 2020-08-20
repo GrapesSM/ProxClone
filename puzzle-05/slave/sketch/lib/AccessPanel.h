@@ -18,6 +18,7 @@ class AccessPanel
     void reset();
     void display();
     void update();
+    void readSwitch();
     void setState(STATE state);
     STATE getState();
   private:
@@ -25,6 +26,11 @@ class AccessPanel
     int _solenoidPin;
     bool _closed;
     bool _keyInserted;
+    int _reading;
+    int _switchState;
+    int _lastSwitchState;
+    unsigned long _lastDebounceTime = 0;
+    unsigned long _debounceDelay = 50;
     STATE _state;
 };
 
@@ -38,13 +44,30 @@ void AccessPanel::set(int keyPin, int solenoidPin)
   _keyInserted = false;
 }
 
+void AccessPanel::readSwitch()
+{
+  _reading = digitalRead(_keyPin);
+  if (_reading != _lastSwitchState) {
+    _lastDebounceTime = millis();
+  }
+
+  if ((millis() - _lastDebounceTime) > _debounceDelay) {
+    // if (_reading != _switchState) {
+      _switchState = _reading;
+    // }
+  }
+
+  _lastSwitchState = _reading;
+}
+
 bool AccessPanel::keyInserted()
 {
-  return digitalRead(_keyPin);
+  return _switchState;
 }
 
 void AccessPanel::update()
 {
+  readSwitch();  
   switch (_state)
   {
     case DISABLE:

@@ -17,6 +17,7 @@ class SyncroReader
     int getInputKey();
     void setState(STATE state);
     STATE getState();
+    void readSwitch();
     bool isSwitch(int position);
     void startTimer();
   private:
@@ -25,6 +26,11 @@ class SyncroReader
     int _pin;
     int _count;
     int _inputKey;
+    int _reading;
+    int _switchState;
+    int _lastSwitchState;
+    unsigned long _lastDebounceTime = 0;
+    unsigned long _debounceDelay = 50;
     struct Timer {
       unsigned long start;
       unsigned long lastRefreshTime;
@@ -44,9 +50,25 @@ void SyncroReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int 
   _inputKey = 0;
 }
 
+void SyncroReader::readSwitch()
+{
+  _reading = digitalRead(_pin);
+  if (_reading != _lastSwitchState) {
+    _lastDebounceTime = millis();
+  }
+
+  if ((millis() - _lastDebounceTime) > _debounceDelay) {
+    // if (_reading != _switchState) {
+      _switchState = _reading;
+    // }
+  }
+
+  _lastSwitchState = _reading;
+}
+
 bool SyncroReader::isSwitch(int position)
 {
-  return digitalRead(_pin) == position;
+  return _switchState == position;
 }
 
 void SyncroReader::setState(STATE state)
@@ -66,6 +88,9 @@ int SyncroReader::getInputKey()
 
 void SyncroReader::update()
 {
+  readSwitch();
+  Serial.println(_switchState);
+
   if (_state == DISABLE) {
     for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
       _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));

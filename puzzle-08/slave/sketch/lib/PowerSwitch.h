@@ -1,3 +1,4 @@
+
 /*
   PowerSwitch.h - Library for playing sounds and voices.
 */
@@ -18,6 +19,7 @@ class PowerSwitch
     void update();
     void setState(STATE state);
     STATE getState();
+    void readSwitch();
     bool isSwitchOn();
     bool isSwitchOff();
 
@@ -25,6 +27,11 @@ class PowerSwitch
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
     int _lightPin;
     int _pin;
+    int _reading;
+    int _switchState;
+    int _lastSwitchState;
+    unsigned long _lastDebounceTime = 0;
+    unsigned long _debounceDelay = 50;
     STATE _state;
 };
 
@@ -37,9 +44,26 @@ void PowerSwitch::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int l
   _pin = pin;
 }
 
+void PowerSwitch::readSwitch()
+{
+  _reading = digitalRead(_pin);
+  if (_reading != _lastSwitchState) {
+    _lastDebounceTime = millis();
+  }
+
+  if ((millis() - _lastDebounceTime) > _debounceDelay) {
+    // if (_reading != _switchState) {
+      _switchState = _reading;
+    // }
+  }
+
+  _lastSwitchState = _reading;
+}
+
+
 bool PowerSwitch::isSwitchOn()
 {
-  return digitalRead(_pin);
+  return _switchState;
 }
 
 bool PowerSwitch::isSwitchOff()
@@ -64,13 +88,13 @@ void PowerSwitch::display()
 
 void PowerSwitch::update() 
 {
+  readSwitch();
   switch (_state)
   {
     case DISABLE:
       setLightOff();
       break;
     
-    case ENABLE:
     default:
       if (isSwitchOff()) {
         _state = OFF;

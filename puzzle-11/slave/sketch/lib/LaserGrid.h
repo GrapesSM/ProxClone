@@ -99,11 +99,13 @@ namespace LaserGrid {
     //   }
     // }    
     if (c.state == INITIALIZED) {
-      c.state = ENABLE;
+      // c.state = ENABLE;
     }
+
     c.powerSwitch.update();
     c.keyReader.update();
     c.waveAdjuster.update();
+
     if (c.state == ENABLE) {
       if (c.powerSwitch.getState() == DISABLE) {
         c.powerSwitch.setState(ENABLE);
@@ -161,16 +163,14 @@ namespace LaserGrid {
     if ((c.showTimer.current - c.showTimer.showpoint) > c.showTimer.interval) {
       c.showTimer.showpoint = millis();
 
-      c.powerSwitch.display();
-
     }
-    c.waveTimer.current = millis();
+    c.powerSwitch.display();
 
+    c.waveTimer.current = millis();
     if ((c.waveTimer.current - c.waveTimer.point) > c.waveTimer.interval) {
       c.waveTimer.point = millis();
 
       c.waveAdjuster.display();
-
     }
     c.speaker.play();
   }

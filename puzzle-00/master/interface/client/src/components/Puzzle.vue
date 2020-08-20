@@ -1,11 +1,12 @@
 <template>
   <div>
-    <!-- {{ id }}
-    {{ keyName }} -->
-
     <div v-if="keyName === 'power_control'">
       <puzzle1 
         v-bind:id="id"
+        v-bind:name="name"
+        v-bind:key-name="keyName"
+        v-bind:state="state"
+        v-bind:state-names="stateNames"
         ></puzzle1>
     </div>
     <div v-if="keyName === 'status_board'">
@@ -85,7 +86,7 @@ import Puzzle12 from './Puzzle12.vue';
 import Puzzle13 from './Puzzle13.vue';
 
 export default {
-  props: ['id', 'keyName'],
+  props: ['id', 'name', 'keyName', 'state', 'stateNames'],
   components: {
     puzzle1: Puzzle1,
     puzzle2: Puzzle2,

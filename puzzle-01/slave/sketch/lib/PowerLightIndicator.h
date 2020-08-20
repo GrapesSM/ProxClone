@@ -53,10 +53,14 @@ void PowerLightIndicator::update()
     case DISABLE:
       _strip->SetPixelColor(_lightPin, RgbColor(0, 0, 0));
       break;
+    
+    case FAILURE:
+      _strip->SetPixelColor(_lightPin, RgbColor(255,0,0));
+      break;
       
     case FLASH:
       _flashCount++;
-      if (_flashCount % 2 == 0) {
+      if (_flashCount % 3 == 0) {
         _flashToggle = !_flashToggle;
       }
 

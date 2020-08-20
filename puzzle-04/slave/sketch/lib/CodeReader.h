@@ -7,6 +7,7 @@
 #include <Arduino.h>
 #include <Adafruit_MCP23017.h>
 #include "SevenSegment.h"
+#include "DebounceSwitch.h"
 
 enum MODE {
   INPUT_MODE = 1,
@@ -46,14 +47,14 @@ class CodeReader
     Adafruit_MCP23017 *_mcp2;
     int *_buttonPins2;
     char *_buttonLabels;
-    int _modePin;
-    int _transmitPin;
     bool _disabled;
     int _counter;
     bool _entered;
     String _key;
     bool _transmitted;
     String _transmittedKey;
+    DebounceSwitch _modeSwitch;
+    DebounceSwitch _transmitSwitch;
     STATE _state;
 };
 
@@ -81,13 +82,13 @@ void CodeReader::set(
   _mcp2 = mcp2;
   _buttonPins2 = buttonPins2;
   _buttonLabels = buttonLabels;
-  _modePin = modePin;
-  _transmitPin = transmitPin;
+  _modeSwitch.set(modePin);
+  _transmitSwitch.set(transmitPin);  
 }
 
 char CodeReader::readKeyUp(Adafruit_MCP23017 *mcp, int pin)
 {
-  Serial.println(mcp->digitalRead(pin));
+  // Serial.println(mcp->digitalRead(pin));
   // if (mcp->digitalRead(pin) == HIGH) {
   //   // vTaskDelay(1);
   //   // if (mcp->digitalRead(pin) == LOW) {
@@ -149,7 +150,7 @@ char CodeReader::readInput()
 
 MODE CodeReader::readMode()
 {
-  if (digitalRead(_modePin) == HIGH) {
+  if (_modeSwitch.isSwitch(HIGH)) {
     return CLEAR_MODE;
   } else {
     return INPUT_MODE;
@@ -158,6 +159,8 @@ MODE CodeReader::readMode()
 
 void CodeReader::update()
 {
+  _modeSwitch.readSwitch();
+  _transmitSwitch.readSwitch();
   MODE mode;
   char input; 
   switch (_state)
@@ -197,11 +200,11 @@ void CodeReader::update()
           break;
       } 
 
-      if (digitalRead(_transmitPin) == HIGH && _transmitted == false) {
+      if (_transmitSwitch.isSwitch(HIGH) && _transmitted == false) {
         _transmitted = true;
         _transmittedKey = _key;
       }
-      if (digitalRead(_transmitPin) == LOW && _transmitted == true) {
+      if (_transmitSwitch.isSwitch(LOW) && _transmitted == true) {
         _transmitted = false;
       }
       break;
@@ -219,7 +222,7 @@ void CodeReader::display()
 
     case ENABLE:
     default:
-      Serial.println(_key);
+      // Serial.println(_key);
       _matrix->clear();
       // if (_key.length() > 0) _matrix->printString(_key);
       _matrix->writeDisplay();

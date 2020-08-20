@@ -47,7 +47,7 @@ Speaker::Speaker()
 {
   _counter = 0;
   _numberOfSounds = 0;
-  _number = 0;
+  _number = -1;
   _index = 0;
 }
 
@@ -145,10 +145,10 @@ void Speaker::update()
 
 void Speaker::play() 
 {
-  if (_queue.isEmpty()) {
+  if (_queue.isEmpty() ) {
     return;
-  } 
-
+  }
+  
   _state = ENABLE;
   update();
   play(_queue.dequeue());

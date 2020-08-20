@@ -24,6 +24,10 @@ class Generator
     Adafruit_MCP23017 *_mcp;
     int *_switchPins;
     int _input[7];
+    int _lastInput[7];
+    int _reading[7];
+    unsigned long _lastDebounceTime[7] = {0, 0, 0, 0, 0, 0, 0};
+    unsigned long _debounceDelay = 50;
     int _order[10];
     int _count;
     bool _reset;
@@ -63,7 +67,6 @@ void Generator::update()
     case ENABLE: 
     default:
       readSwitches();
-      getInputKey();
       if (! _reset) {
         for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
           if (_input[i] == HIGH && _order[_labels[i]] == 0) {
@@ -73,7 +76,8 @@ void Generator::update()
 
           if (_input[i] == LOW && _order[_labels[i]] != 0) {
             _reset = true;
-          }     
+            
+          } 
         }
       } 
 
@@ -111,12 +115,21 @@ bool Generator::isAllSwitchesOff()
 
 void Generator::readSwitches()
 {
-  _input[0] = LOW;
   for (int i = 0; i < NUMBER_OF_SWITCHES_2; i++) {
-    _input[i] = _mcp->digitalRead(_switchPins[i]); 
-    vTaskDelay(2);
-    _input[i] = _input[i] && _mcp->digitalRead(_switchPins[i]); 
-    vTaskDelay(1);
+    _reading[i] = _mcp->digitalRead(_switchPins[i]);
+
+    if (_reading[i] != _lastInput[i]) {
+      // reset the debouncing timer
+      _lastDebounceTime[i] = millis();
+    }
+
+    if ((millis() - _lastDebounceTime[i]) > _debounceDelay) {
+      // if (_reading[i] != _input[i]) {
+        _input[i] = _reading[i];
+      // }
+    }
+
+    _lastInput[i] = _reading[i];
   }
 }
 

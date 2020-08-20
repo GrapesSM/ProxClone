@@ -62,7 +62,10 @@
             <puzzle
               v-if="current > -1"
               v-bind:id="puzzles[current].id"
+              v-bind:name="puzzles[current].name"
               v-bind:key-name="puzzles[current].key_name"
+              v-bind:state="puzzles[current].state"
+              v-bind:state-names="stateNames"
             ></puzzle>
           </b-col>
         </b-row>
@@ -80,6 +83,7 @@ export default {
   data() {
     return {
       puzzles: [],
+      stateNames: [],
       current: -1
     };
   },
@@ -94,6 +98,7 @@ export default {
         .get(path)
         .then(res => {
           this.puzzles = res.data.puzzles;
+          this.stateNames = res.data.state_names;
         })
         .catch(error => {
           // eslint-disable-next-line

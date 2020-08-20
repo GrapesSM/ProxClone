@@ -41,15 +41,14 @@ TaskHandle_t showTask;
 
 void setup()
 {
-//  Wire.setClock(400000);
   Serial.begin(SERIAL_BAUDRATE);
 
   // Setup Modbus communication
   parts.slave = &slave;
   parts.slave->begin( SERIAL_BAUDRATE, PIN_RX_1, PIN_TX_1 );
-#if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
-  clock_prescale_set(clock_div_1);
-#endif
+  #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
+    clock_prescale_set(clock_div_1);
+  #endif
 
   // Setup NeoPixelBus for all lights
   parts.strip = &strip;
@@ -58,11 +57,11 @@ void setup()
 
   // Setup and Init Encoders
   ESP32Encoder::useInternalWeakPullResistors = false;
+  //-- attach pins for use as encoder pins
+  parts.encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
   //-- adjust starting count value to 0
   parts.encoder.clearCount();
   parts.encoder.setCount(0);
-  //-- attach pins for use as encoder pins
-  parts.encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
 
   // Setup 7 segment LED
   parts.matrix.begin(ADDR_SEVENSEGMENT);

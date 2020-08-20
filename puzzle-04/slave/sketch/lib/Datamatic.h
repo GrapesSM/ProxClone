@@ -120,7 +120,7 @@ namespace Datamatic {
   void run(Components &c)
   {
     if(c.state == INITIALIZED) {
-      //c.state = ENABLE;
+      c.state = ENABLE;
     }
     
     c.powerSwitch.update();

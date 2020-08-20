@@ -105,7 +105,7 @@ namespace EnergySupplemental {
   void run(Components &c) 
   {
     if (c.state == INITIALIZED) {
-      //c.state = ENABLE;
+      c.state = ENABLE;
     }
 
     c.powerSwitch.update();
@@ -141,7 +141,7 @@ namespace EnergySupplemental {
       if (c.powerAdjuster.getState() == SOLVED && c.syncroReader.getState() == DISABLE) {
         c.syncroReader.setState(ENABLE);
         if (c.speaker.getNumber() != SOUND_KEY_INSERT) {
-          // c.speaker.addToPlay(SOUND_KEY_INSERT);
+          c.speaker.addToPlay(SOUND_KEY_INSERT);
         }
       }
       if(c.syncroReader.getState() == ENABLE && c.syncroReader.getInputKey() == 3){
@@ -156,7 +156,6 @@ namespace EnergySupplemental {
       c.speaker.setState(DISABLE);
     }
     // Serial.println(c.syncroReader.getInputKey());
-
 
     if (c.state == RESET) {
       c.state = SETUP;
@@ -179,7 +178,7 @@ namespace EnergySupplemental {
       // c.syncroReader.display();
     }
 
-    // c.speaker.play();
+    c.speaker.play();
   }
 }
 

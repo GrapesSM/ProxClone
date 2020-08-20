@@ -6,7 +6,8 @@
 #include <ESP32Encoder.h>
 #include "lib/PowerControl.h"
 #include "sounds/soundPowerUp.h"
-// #include "sounds/soundPowerDown.h"
+#include "sounds/soundPowerDown.h"
+#include "sounds/soundPowerAdjust.h"
 
 Puzzle puzzle;
 
@@ -35,6 +36,7 @@ TaskHandle_t showTask;
 void setup() 
 {
   Serial.begin(SERIAL_BAUDRATE);
+  while(!Serial);
 
   // Setup Modbus communication
   parts.slave = &slave;
@@ -50,11 +52,11 @@ void setup()
 
   // Setup and Init Encoders
   ESP32Encoder::useInternalWeakPullResistors=false;
+  //-- attach pins for use as encoder pins
+  parts.encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
   //-- adjust starting count value to 0
   parts.encoder.clearCount();
   parts.encoder.setCount(0);
-  //-- attach pins for use as encoder pins
-  parts.encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
   
   // Setup 7 segment LED
   parts.matrix1.begin(ADDR_SEVENSEGMENT_1);
@@ -86,8 +88,10 @@ void setup()
   // Setup sound list
   parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
   parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
-  // parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
-  // parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
+  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+  parts.listOfSounds[SOUND_POWER_ADJUST] = soundPowerAdjust;
+  parts.listOfLengthOfSounds[SOUND_POWER_ADJUST] = sizeof(soundPowerAdjust)/sizeof(soundPowerAdjust[0]);
 
   setupPowerControl();
   // Setup Task functions
@@ -105,7 +109,7 @@ void setup()
   xTaskCreatePinnedToCore(
     showTaskFunction,   /* Task function. */
     "ShowTask",     /* name of task. */
-    100000,       /* Stack size of task */
+    60000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
@@ -137,7 +141,7 @@ void runTaskFunction( void * parameters ) {
   for(;;){
     // Enable communication to master
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-    
+
     // Map puzzle's values with component's values
     PowerControl::update(puzzle, pcComponents);
 

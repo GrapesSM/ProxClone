@@ -29,7 +29,7 @@ namespace PowerControl {
       unsigned long showpoint = 0;
       unsigned long interval = 200;
     } showTimer;
-    unsigned long failurePeriod = 9000;
+    unsigned long failurePeriod = 45000;
   } Components;
 
   void update(Puzzle & p, Components & c) 
@@ -106,7 +106,7 @@ namespace PowerControl {
       c.powerLightIndicator.setState(DISABLE);
       
       c.battery.setState(DISABLE);
-      c.battery.setRate(1.00);
+      c.battery.setRate(7.00);
       c.battery.setMaxValue(13.00);
 
       c.powerAdjuster.setState(DISABLE);
@@ -125,13 +125,14 @@ namespace PowerControl {
   void run(Components & c)
   {
     if (c.state == INITIALIZED) {
-      //c.state = ENABLE;
+      c.state = ENABLE;
     }
 
     c.powerAdjuster.update();
     c.powerLightIndicator.update();
     c.battery.update();
     c.lightEffect.update();
+    c.speaker.update();
 
     if (c.state == ENABLE) {
       if (c.powerAdjuster.getState() == DISABLE) {
@@ -159,7 +160,8 @@ namespace PowerControl {
         }
 
         if ((c.timer.current - c.timer.start) > (c.failurePeriod / 3 * 3)) {
-          c.state = FAILURE;
+          c.powerLightIndicator.setState(FAILURE);
+          // c.state = FAILURE;
         } else if ((c.timer.current - c.timer.start) > (c.failurePeriod / 3 * 2)) {
           c.speaker.setState(ALARM);
           c.lightEffect.setState(FLASH);
@@ -206,7 +208,13 @@ namespace PowerControl {
   void show(Components & c)
   {
     c.showTimer.current = millis();
+    float temp = 0;
     if ((c.showTimer.current - c.showTimer.showpoint) > c.showTimer.interval) {
+      if (temp != c.powerAdjuster.getSupply()) {
+        temp = c.powerAdjuster.getSupply();
+        c.speaker.addToPlay(SOUND_POWER_ADJUST);
+      }
+
       c.powerAdjuster.display();
       c.powerLightIndicator.display();
       c.lightEffect.display();
@@ -214,7 +222,7 @@ namespace PowerControl {
       c.showTimer.showpoint = millis();
     }
 
-    // c.speaker.play();
+    c.speaker.play();
   }
 }
 

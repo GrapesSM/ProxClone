@@ -7,7 +7,7 @@
 #define PIN_485_EN 15
 #define PIN_INPUT_1 4
 #define PIN_INPUT_2 33
-#define PIN_INPUT_3 // 18
+#define PIN_INPUT_3 18
 #define PIN_NEOPIXEL 26
 #define PIN_SPEAKER 25
 #define PIN_RELAY_1 23
@@ -19,8 +19,7 @@
 #define PIN_ANALOG_INPUT_2 35
 #define PIN_ANALOG_INPUT_3 37
 #define PIN_AMPLIFIER 2
-#define ADDR_SEVENSEGMENT_1 0x71
-#define ADDR_SEVENSEGMENT_2 0x72
+#define ADDR_SEVENSEGMENT 0x74
 #define ADDR_SLAVE 2
 
 #define SERIAL_BAUDRATE 38400
@@ -83,16 +82,16 @@ enum STATE {
 extern int lightPinFor____ = 0;
 
 #define NUMBER_OF_LIGHTS_FOR_SHIP_PREP_STATUS 2
-extern int lightPinsForShipPrepStatus[] = {0, 1};
+extern int lightPinsForShipPrepStatus[] = {7, 0};
 
 #define NUMBER_OF_LIGHTS_FOR_LIFE_SUPPORT 2
-extern int lightPinsForLifeSupport[] = {0, 1};
+extern int lightPinsForLifeSupportStatus[] = {6, 1};
 
 #define NUMBER_OF_LIGHTS_FOR_BLAST_DOOR 2
-extern int lightPinsForBlastDoor[] = {0, 1};
+extern int lightPinsForBlastDoorStatus[] = {5, 2};
 
 #define NUMBER_OF_LIGHTS_FOR_LASER_GRID 2
-extern int lightPinsForLaserGrid[] = {0, 1};
+extern int lightPinsForLaserGridStatus[] = {4, 3};
 
 enum REGISTER_INDEX {
   REG_MASTER_MILLIS = 0,
@@ -104,11 +103,11 @@ enum REGISTER_INDEX {
   REG_SLAVE_SHIP_PREP_STATUS_STATE = 6,
   REG_SLAVE_LIFE_SUPPORT_STATUS_STATE = 7,
   REG_SLAVE_BLAST_DOOR_STATUS_STATE = 8,
-  REG_SLAVE_LIFE_SUPPORT_STATUS_STATE = 9,
   REG_SLAVE_GAME_POWER_SWITCH_STATE = 10,
   REG_SLAVE_COUNTDOWN_STATE = 11,
   REG_SLAVE_COUNTDOWN = 12,
-  REG_SLAVE_COUNTDOWN_CURRENT_VALUE = 13
+  REG_SLAVE_COUNTDOWN_CURRENT_VALUE = 13,
+  REG_SLAVE_SPEAKER_STATE = 14
 };
 
 typedef struct {
@@ -129,5 +128,6 @@ enum COMMAND {
   CMD_SET_DOCKED_SHIP_SOLVED = 91,
   CMD_SET_KEYPAD_SOLVED = 92,
   CMD_SET_COUNTDOWN_VALUE = 93,
-  CMD_SET_LIFE_SUPPORT_SOLVED = 94
+  CMD_SET_LIFE_SUPPORT_SOLVED = 94,
+  CMD_SET_COUNT_DOWN_MASTER_TIME = 95
 };

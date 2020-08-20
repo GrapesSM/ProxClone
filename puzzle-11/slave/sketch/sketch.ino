@@ -95,7 +95,7 @@ void setup()
   xTaskCreatePinnedToCore(
     showTaskFunction,   /* Task function. */
     "ShowTask",     /* name of task. */
-    100000,       /* Stack size of task */
+    60000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
@@ -125,13 +125,12 @@ void runTaskFunction( void * parameters ) {
   for(;;){
     // Enable communication to master
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-
+    
     // Map puzzle's values with component's values
     LaserGrid::update(puzzle, lgComponents);
 
     // State changes
     LaserGrid::run(lgComponents);
-
 
     vTaskDelay(10);
   } 

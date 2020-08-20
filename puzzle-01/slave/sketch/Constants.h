@@ -29,11 +29,11 @@
 
 #define PIN_OUTPUT_1 18
 #define PWM_OUTPUT_1_FREQUENCY 5000
-#define PWM_OUTPUT_1_CHANNEL 0 // 0, 1, 2, or 3
+#define PWM_OUTPUT_1_CHANNEL 2 // 0, 1, 2, or 3
 #define PWM_OUTPUT_1_RESOLUTION 8 // 8, 10, 12, or 15
 
 #define PWM_SPEAKER_FREQUENCY 1500
-#define PWM_SPEAKER_CHANNEL 1
+#define PWM_SPEAKER_CHANNEL 0
 #define PWM_SPEAKER_RESOLUTION 8
 #define PWM_SPEAKER_DUTYCYCLE 200
 
@@ -93,7 +93,8 @@ extern int lightPinsForLightEffect[] = {9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1
 #define NUMBER_OF_SOUNDS 2
 enum {  // enumeration from 0, 1, 2 ...
   SOUND_POWER_UP,
-  SOUND_POWER_DOWN
+  SOUND_POWER_DOWN,
+  SOUND_POWER_ADJUST
 };
 
 enum REGISTER_INDEX {

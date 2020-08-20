@@ -5,7 +5,6 @@
 #define LifeSupportStatus_h
 
 #include <Arduino.h>
-#include <NeoPixelBus.h>
 
 class LifeSupportStatus
 {

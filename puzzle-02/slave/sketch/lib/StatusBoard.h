@@ -11,6 +11,7 @@
 #include "LaserGridStatus.h"
 #include "Speaker.h"
 #include "Countdown.h"
+#include "PowerSwitch.h"
 
 
 namespace StatusBoard {
@@ -21,13 +22,13 @@ namespace StatusBoard {
     LaserGridStatus laserGrid;
     Speaker speaker;
     Countdown countdown;
+    PowerSwitch powerSwitch;
     STATE state;
     struct ShowTimer {
       unsigned long current = 0;
       unsigned long showpoint = 0;
       unsigned long interval = 200;
     } showTimer;
-    CountDown countdown;
   } Components;
 
   void update(Puzzle & p, Components & c)
@@ -89,7 +90,7 @@ namespace StatusBoard {
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_COUNT_DOWN_MASTER_TIME &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;   
-      c.countdown.setMasterTime([]); 
+      c.countdown.setmaxTimeCount(p.registers[REG_SLAVE_COUNTDOWN_CURRENT_VALUE]); 
     }
 
     p.registers[REG_SLAVE_MILLIS] = millis();
@@ -98,7 +99,7 @@ namespace StatusBoard {
     p.registers[REG_SLAVE_LIFE_SUPPORT_STATUS_STATE] = c.lifeSupportStatus.getState();
     p.registers[REG_SLAVE_BLAST_DOOR_STATUS_STATE] = c.blastDoorStatus.getState();
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
-    //p.registers[REG_SLAVE_GAME_POWER_SWITCH_STATE] = c.speaker.getState();
+    p.registers[REG_SLAVE_GAME_POWER_SWITCH_STATE] = c.powerSwitch.getState();
     p.registers[REG_SLAVE_COUNTDOWN] = c.countdown.getTime();
     p.registers[REG_SLAVE_COUNTDOWN_STATE] = c.countdown.getState();
 
@@ -109,6 +110,7 @@ namespace StatusBoard {
       c.lifeSupportStatus.setState(DISABLE);
       c.blastDoorStatus.setState(DISABLE);
       c.laserGrid.setState(DISABLE);
+      c.countdown.setState(DISABLE);
       c.state = INITIALIZED;
     }
   }
@@ -116,13 +118,15 @@ namespace StatusBoard {
   void run(Components & c) 
   {
     if (c.state == INITIALIZED) {
-
+      // c.state = ENABLE;
     }
 
     c.shipPrepStatus.update();
     c.lifeSupportStatus.update();
     c.blastDoorStatus.update();
     c.laserGrid.update();
+    c.powerSwitch.update();
+    c.countdown.update();
 
     if (c.state == ENABLE) {
       if (c.shipPrepStatus.getState() == SOLVED) {
@@ -136,10 +140,10 @@ namespace StatusBoard {
       if (c.lifeSupportStatus.getState() == SOLVED) {
         c.lifeSupportStatus.setRedLight(OFF);
         c.lifeSupportStatus.setGreenLight(ON);
-      } else [
+      } else {
         c.lifeSupportStatus.setRedLight(ON);
         c.lifeSupportStatus.setGreenLight(OFF);
-      ]
+      }
 
       if (c.blastDoorStatus.getState() == SOLVED) {
         c.blastDoorStatus.setRedLight(OFF);
@@ -150,12 +154,14 @@ namespace StatusBoard {
       }
 
       if (c.laserGrid.getState() == SOLVED) {
-        c.laserGrid.setRedLightOff();
-        c.laserGrid.setGreenLightOn();
+        c.laserGrid.setRedLight(OFF);
+        c.laserGrid.setGreenLight(ON);
       } else {
-        c.laserGrid.setRedLightOn();
-        c.laserGrid.setGreenLightOff();
+        c.laserGrid.setRedLight(ON);
+        c.laserGrid.setGreenLight(OFF);
       }
+
+      c.countdown.setState(ENABLE);
     }
 
     if (c.state == DISABLE) {
@@ -163,6 +169,7 @@ namespace StatusBoard {
       c.lifeSupportStatus.setState(DISABLE);
       c.blastDoorStatus.setState(DISABLE);
       c.laserGrid.setState(DISABLE);
+      c.countdown.setState(DISABLE);
     }
 
     if (c.state == RESET) {

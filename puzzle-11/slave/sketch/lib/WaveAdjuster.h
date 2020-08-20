@@ -83,8 +83,6 @@ bool WaveAdjuster::isSyncronized()
 
 void WaveAdjuster::display() 
 {    
-  Serial.println(_state);
-
   if (_state == DISABLE) {
     Serial2.print("page 0");
     Serial2.write(0xff);
@@ -92,8 +90,6 @@ void WaveAdjuster::display()
     Serial2.write(0xff);
     return;
   }
-
-
   
   if(_state == ENABLE){
     i++;

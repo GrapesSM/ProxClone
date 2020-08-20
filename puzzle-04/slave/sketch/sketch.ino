@@ -6,7 +6,7 @@
 #include "lib/SevenSegment.h"
 #include "lib/Datamatic.h"
 #include "sounds/soundPowerUp.h"
-//#include "sounds/soundPowerDown.h"
+#include "sounds/soundPowerDown.h"
 Puzzle puzzle;
 
 struct Parts {
@@ -54,11 +54,11 @@ void setup()
 
   // Setup and Init Encoders
   ESP32Encoder::useInternalWeakPullResistors=false;
+  //-- attach pins for use as encoder pins
+  parts.encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
   //-- adjust starting count value to 0
   parts.encoder.clearCount();
   parts.encoder.setCount(0);
-  //-- attach pins for use as encoder pins
-  parts.encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
   
   // Setup 7 segment LED
   parts.matrix.begin(ADDR_SEVENSEGMENT);
@@ -94,8 +94,8 @@ void setup()
   // Setup sound list
   parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
   parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
-  // parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
-  // parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+   parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
+   parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
   
   setupDatamatic();
     // Setup Task functions

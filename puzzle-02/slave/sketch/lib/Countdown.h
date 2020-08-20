@@ -2,14 +2,15 @@
 #define Countdown_h
 
 #include <Arduino.h>
-#include "SevenSegment.h"
+#include <Adafruit_GFX.h>
+#include "Adafruit_LEDBackpack.h"
 
 class Countdown
 {
   public:
     Countdown();
     void set(
-      Adafruit_7segment *_matrix,
+      Adafruit_7segment *_matrix
     );
     void update();
     unsigned long getTime();
@@ -29,16 +30,16 @@ class Countdown
       unsigned long current = 0;
       unsigned long countPoint = 0;
       unsigned long interval = 1000;
-    } Timer;
+    } timer;
 };
 
 Countdown::Countdown(){
-    maxTime = 600000;
-    timeCounter  = maxTimeCount
+  maxTimeCount = 3600;
+  timeCounter  = maxTimeCount;
 }
 
 void Countdown::set(Adafruit_7segment *matrix){
-    _matrix = matrix;
+  _matrix = matrix;
 }
 
 unsigned long Countdown::getmaxTimeCount() 
@@ -65,27 +66,27 @@ unsigned long Countdown::getTime() {
 
 void Countdown::update()
 {
-    c.Timer.current = millis();
+    timer.current = millis();
     switch (_state)
     {
       case ENABLE:
-        if((c.Timer.current - c.Timer.countPoint) > c.Timer.interval){
+        if((timer.current - timer.countPoint) > timer.interval){
           timeCounter--;
-          c.Timer.countPoint = millis();
+          timer.countPoint = millis();
         }
         break;
 
       case DISABLE:
-        c.Timer.countPoint = c.Timer.current;
+        timer.countPoint = timer.current;
         break;
 
       case PAUSE: 
-        c.Timer.countPoint = c.Timer.current;
+        timer.countPoint = timer.current;
         break;
 
       case RESET: 
         timeCounter = maxTimeCount;
-        c.Timer.countPoint = c.Timer.current;
+        timer.countPoint = timer.current;
         break;
     }
 }
@@ -101,9 +102,8 @@ void Countdown::display()
 
     case ENABLE:
     default:
-       Serial.println(_key);
       _matrix->clear();
-      _matrix->printString(_key);
+      _matrix->print(((timeCounter / 60) * 100 + timeCounter % 60) % 10000);
       _matrix->writeDisplay();
       break;
   }

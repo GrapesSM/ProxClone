@@ -119,6 +119,7 @@ void Speaker::update()
   switch (_state)
   {
     case ENABLE:
+    case ALARM:
       if (digitalRead(PIN_AMPLIFIER) == LOW) {
         digitalWrite(PIN_AMPLIFIER, HIGH);
         delay(5);
@@ -131,9 +132,31 @@ void Speaker::update()
         delay(5);
       }
       break;
+  }
+}
+
+void Speaker::play()
+{
+  uint16_t sec;
+  switch (_state)
+  {
+    case ENABLE:
+      if (_queue.isEmpty()) {      
+        return;
+      }
+      _state = ENABLE;
+      update();
+      play(_queue.dequeue());    
+      _state = DISABLE;
+      update();
+      break;
+    
+    case DISABLE:
+      speak(PWM_SPEAKER_FREQUENCY, 0);
+      break;
     
     case ALARM:
-      unsigned long sec = millis() /1000; 
+      sec = millis()/1000; 
       if (sec % 3 == 0) {
         speak(1000);
       } else {
@@ -141,19 +164,6 @@ void Speaker::update()
       }
       break;
   }
-}
-
-void Speaker::play() 
-{
-  if (_queue.isEmpty()) {
-    return;
-  } 
-
-  _state = ENABLE;
-  update();
-  play(_queue.dequeue());
-  _state = DISABLE;
-  update();
 }
 
 #endif
