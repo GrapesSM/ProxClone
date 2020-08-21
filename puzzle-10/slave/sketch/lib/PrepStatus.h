@@ -116,7 +116,7 @@ namespace PrepStatus {
   void run(Components & c) 
   {
     if (c.state == INITIALIZED) {
-      
+      c.state = ENABLE;
     }
     
     c.batteryMatrix.update();
@@ -136,23 +136,36 @@ namespace PrepStatus {
         c.energySupp.setState(DISABLE);
         c.generator.setState(DISABLE);
         c.syncroReader.setState(DISABLE);
-        c.speaker.setState(DISABLE);
         c.lightEffect.setState(DISABLE);
+        if (c.speaker.getNumber() != SOUND_POWER_DOWN) {
+          c.speaker.addToPlay(SOUND_POWER_DOWN);
+        }
       } 
 
-    if (c.powerSwitch.getState() == ON) {
-      if (c.batteryMatrix.getState() == DISABLE) 
-        c.batteryMatrix.setState(ENABLE);
-      if (c.energySupp.getState() == DISABLE) 
-        c.energySupp.setState(ENABLE);
-      if (c.generator.getState() == DISABLE) 
-        c.generator.setState(ENABLE);
-      if (c.speaker.getState() == DISABLE) 
-        c.speaker.setState(ENABLE);
-      if (c.lightEffect.getState() == DISABLE) 
-        c.lightEffect.setState(ENABLE);
-    }
-    if(
+      if (c.powerSwitch.getState() == ON) {
+        if (c.batteryMatrix.getState() == DISABLE) 
+          c.batteryMatrix.setState(ENABLE);
+        if (c.energySupp.getState() == DISABLE) 
+          c.energySupp.setState(ENABLE);
+        if (c.generator.getState() == DISABLE) 
+          c.generator.setState(ENABLE);
+        if (c.speaker.getNumber() == SOUND_POWER_DOWN) {
+          c.speaker.addToPlay(SOUND_POWER_UP);
+        }
+        if (c.lightEffect.getState() == DISABLE) 
+          c.lightEffect.setState(ENABLE);
+        
+        if (c.syncroReader.getSyncroKeyState() && c.speaker.getNumber() != SOUND_KEY_INSERT) {
+          c.speaker.addToPlay(SOUND_KEY_INSERT);
+        }
+
+        if (! c.syncroReader.getSyncroKeyState() && c.speaker.getNumber() == SOUND_KEY_INSERT) {
+          c.speaker.setNumber(SOUND_POWER_UP);
+        }
+      }
+
+
+      if(
         c.batteryMatrix.getState() == SOLVED &&
         c.energySupp.getState() == SOLVED &&
         c.generator.getState() == SOLVED
@@ -161,8 +174,9 @@ namespace PrepStatus {
         c.batteryMatrix.switchToGreen();
         c.energySupp.switchToGreen();
         c.generator.switchToGreen();
-        // if (c.syncroReader.getState() == DISABLE)
-        //   c.syncroReader.setState(ENABLE);
+        if (c.syncroReader.getState() == DISABLE) {
+          c.syncroReader.setState(ENABLE);
+        }
       } 
 
       if (
@@ -200,6 +214,8 @@ namespace PrepStatus {
       c.lightEffect.display();
       c.syncroReader.display();
     }
+
+    c.speaker.play();
   }
 }
 

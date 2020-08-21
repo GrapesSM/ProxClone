@@ -3,8 +3,8 @@
 #include "NeoPixelBus.h"
 #include "lib/PrepStatus.h"
 #include "sounds/soundPowerUp.h"
-//#include "sounds/soundPowerDown.h"
-//#include "sounds/soundKeyInsert.h"
+#include "sounds/soundPowerDown.h"
+#include "sounds/soundKeyInsert.h"
 
 Puzzle puzzle;
 
@@ -58,10 +58,10 @@ void setup()
   // Setup sound list
   parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
   parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
-  // parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
-  // parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
-  // parts.listOfSounds[SOUND_KEY_INSERT] = soundKeyInsert;
-  // parts.listOfLengthOfSounds[SOUND_KEY_INSERT] = sizeof(soundKeyInsert)/sizeof(soundKeyInsert[0]);
+  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
+  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+  parts.listOfSounds[SOUND_KEY_INSERT] = soundKeyInsert;
+  parts.listOfLengthOfSounds[SOUND_KEY_INSERT] = sizeof(soundKeyInsert)/sizeof(soundKeyInsert[0]);
   
   setupPrepStatus();
 
@@ -103,7 +103,7 @@ void setupPrepStatus()
   psComponents.generator.set(parts.strip, lightPinsForGenerator);
   psComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader, PIN_INPUT_1);  
   psComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
-  psComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
+  psComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
 }
 
 //Run Task Function: process changes of puzzle
@@ -116,17 +116,10 @@ void runTaskFunction( void * parameters ) {
     // Enable communication to master
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
-    // for (int i = 0; i < puzzle.numberOfRegisters; i++) {
-    //   Serial.print(puzzle.registers[i]);
-    //   if (i < puzzle.numberOfRegisters - 1) Serial.print(",");
-    //   else Serial.println();
-    // }
-
     PrepStatus::update(puzzle, psComponents);
 
     // Enable Energy Supplemental
     PrepStatus::run(psComponents);
-
 
     vTaskDelay(10);
   } 

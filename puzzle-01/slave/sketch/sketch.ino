@@ -86,10 +86,6 @@ void setup()
   digitalWrite(PIN_AMPLIFIER, HIGH);
 
   // Setup sound list
-  parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
-  parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
-  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
-  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
   parts.listOfSounds[SOUND_POWER_ADJUST] = soundPowerAdjust;
   parts.listOfLengthOfSounds[SOUND_POWER_ADJUST] = sizeof(soundPowerAdjust)/sizeof(soundPowerAdjust[0]);
 

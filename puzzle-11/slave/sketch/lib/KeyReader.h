@@ -5,6 +5,7 @@
 #define KeyReader_h
 
 #include <Arduino.h>
+#include "DebounceSwitch.h"
 
 class KeyReader
 {
@@ -18,12 +19,11 @@ class KeyReader
     void unlatch();
     bool isAllInserted();
     bool isInserted(int number);
+    bool getKeyState(int i);
     void setState(STATE state);
     STATE getState();
   private:
-    int _inputPin1;
-    int _inputPin2;
-    int _inputPin3;
+    DebounceSwitch _dSwitch[3];
     int _outputPin;
     int _keys[3];
     STATE _state;
@@ -45,9 +45,9 @@ void KeyReader::init()
 
 void KeyReader::set(int inputPin1, int inputPin2, int inputPin3, int outputPin)
 {
-  _inputPin1 = inputPin1;
-  _inputPin2 = inputPin2;
-  _inputPin3 = inputPin3;
+  _dSwitch[0].set(inputPin1);
+  _dSwitch[1].set(inputPin2);
+  _dSwitch[2].set(inputPin3);
   _outputPin = outputPin;
 }
 
@@ -63,6 +63,10 @@ bool KeyReader::isAllInserted()
 
 void KeyReader::update()
 {
+  _dSwitch[0].readSwitch();
+  _dSwitch[1].readSwitch();
+  _dSwitch[2].readSwitch();
+
   if (_state == DISABLE) {
     _keys[0] = LOW;
     _keys[1] = LOW;
@@ -70,15 +74,23 @@ void KeyReader::update()
     return;
   }
   
-  _keys[0] = digitalRead(_inputPin1);
-  _keys[1] = digitalRead(_inputPin2);
-  _keys[2] = digitalRead(_inputPin3);
+  _keys[0] = _dSwitch[0].getState();
+  _keys[1] = _dSwitch[1].getState();
+  _keys[2] = _dSwitch[2].getState();
   
   if (isAllInserted()) {
     if (_accessed == false)
       access();
     _state = SOLVED;
   }
+}
+
+bool KeyReader::getKeyState(int i = -1) 
+{
+  if (i == -1)
+    return _keys[0] || _keys[1] || _keys[2];
+  
+  return _keys[i];
 }
 
 void KeyReader::setState(STATE state)
@@ -94,10 +106,6 @@ STATE KeyReader::getState()
 void KeyReader::access()
 {
   _accessed = true;
-  // Serial2.print("page 1");
-  // Serial2.write(0xff);
-  // Serial2.write(0xff);
-  // Serial2.write(0xff);
   latch();
   delay(1000);
   unlatch();

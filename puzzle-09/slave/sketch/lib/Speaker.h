@@ -25,6 +25,7 @@ class Speaker
     void speak(int frequency = PWM_SPEAKER_FREQUENCY, int dutycycle = PWM_SPEAKER_DUTYCYCLE);
     void addToPlay(int number);
     void update();
+    void setNumber(int number);
     int getNumber();
   private:
     int _pin;
@@ -47,7 +48,7 @@ Speaker::Speaker()
 {
   _counter = 0;
   _numberOfSounds = 0;
-  _number = 0;
+  _number = -1;
   _index = 0;
 }
 
@@ -109,6 +110,11 @@ void Speaker::addToPlay(int number)
   _queue.enqueue(number);
 }
 
+void Speaker::setNumber(int number) 
+{
+  _number = number;
+}
+
 int Speaker::getNumber()
 {
   return _number;
@@ -119,7 +125,6 @@ void Speaker::update()
   switch (_state)
   {
     case ENABLE:
-    case ALARM:
       if (digitalRead(PIN_AMPLIFIER) == LOW) {
         digitalWrite(PIN_AMPLIFIER, HIGH);
         delay(5);
@@ -135,35 +140,16 @@ void Speaker::update()
   }
 }
 
-void Speaker::play()
+void Speaker::play() 
 {
-  uint16_t sec;
-  switch (_state)
-  {
-    case ENABLE:
-      if (_queue.isEmpty()) {      
-        return;
-      }
-      _state = ENABLE;
-      update();
-      play(_queue.dequeue());    
-      _state = DISABLE;
-      update();
-      break;
-    
-    case DISABLE:
-      speak(PWM_SPEAKER_FREQUENCY, 0);
-      break;
-    
-    case ALARM:
-      sec = millis()/1000; 
-      if (sec % 3 == 0) {
-        speak(1000);
-      } else {
-        speak(PWM_SPEAKER_FREQUENCY, 0);
-      }
-      break;
+  if (_queue.isEmpty()) {      
+    return;
   }
+  _state = ENABLE;
+  update();
+  play(_queue.dequeue());    
+  _state = DISABLE;
+  update();
 }
 
 #endif

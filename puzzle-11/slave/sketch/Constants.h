@@ -78,7 +78,8 @@ enum STATE {
 enum {  // enumeration from 0, 1, 2 ...
   SOUND_POWER_DOWN,
   SOUND_POWER_UP,
-  SOUND_KEY_INSERT
+  SOUND_KEY_INSERT,
+  SOUND_WAVE_ADJUST
 };
 
 enum REGISTER_INDEX {

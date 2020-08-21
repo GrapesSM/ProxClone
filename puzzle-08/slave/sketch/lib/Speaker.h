@@ -25,6 +25,7 @@ class Speaker
     void speak(int frequency = PWM_SPEAKER_FREQUENCY, int dutycycle = PWM_SPEAKER_DUTYCYCLE);
     void addToPlay(int number);
     void update();
+    void setNumber(int number);
     int getNumber();
   private:
     int _pin;
@@ -109,6 +110,11 @@ void Speaker::addToPlay(int number)
   _queue.enqueue(number);
 }
 
+void Speaker::setNumber(int number) 
+{
+  _number = number;
+}
+
 int Speaker::getNumber()
 {
   return _number;
@@ -131,27 +137,17 @@ void Speaker::update()
         delay(5);
       }
       break;
-    
-    case ALARM:
-      unsigned long sec = millis() /1000; 
-      if (sec % 3 == 0) {
-        speak(1000);
-      } else {
-        speak(PWM_SPEAKER_FREQUENCY, 0);
-      }
-      break;
   }
 }
 
 void Speaker::play() 
 {
-  if (_queue.isEmpty() ) {
+  if (_queue.isEmpty()) {      
     return;
   }
-  
   _state = ENABLE;
   update();
-  play(_queue.dequeue());
+  play(_queue.dequeue());    
   _state = DISABLE;
   update();
 }

@@ -30,6 +30,7 @@ class WaveAdjuster
     int i, j, k;
     int _inputValues[3];
     int _offsetValues[3];
+    bool _waveScreenSwitch = false;
     STATE _state;
 };
 
@@ -84,14 +85,25 @@ bool WaveAdjuster::isSyncronized()
 void WaveAdjuster::display() 
 {    
   if (_state == DISABLE) {
-    Serial2.print("page 0");
-    Serial2.write(0xff);
-    Serial2.write(0xff);
-    Serial2.write(0xff);
+    if (! _waveScreenSwitch) {
+      _serial->print("page 0");
+      _serial->write(0xff);
+      _serial->write(0xff);
+      _serial->write(0xff);
+      _waveScreenSwitch = true;
+    }
     return;
   }
   
-  if(_state == ENABLE){
+  if(_state == ENABLE) {
+    if (_waveScreenSwitch) {
+      _serial->print("page 1");
+      _serial->write(0xff);
+      _serial->write(0xff);
+      _serial->write(0xff);
+      _waveScreenSwitch = false;
+      return;
+    }
     i++;
     j++;
     k++;
@@ -124,13 +136,6 @@ void WaveAdjuster::display()
     Tosend3 += Value3;                                              //Send the value and 3 full bytes
     Tosend3 += "\xFF\xFF\xFF";
     _serial->print(Tosend3);
-    
-    Serial.print(Value);
-    Serial.print(",");
-    Serial.print(Value2);
-    Serial.print(",");
-    Serial.print(Value3);
-    Serial.println();
 
     if (i >= 359) {
       i = 0;

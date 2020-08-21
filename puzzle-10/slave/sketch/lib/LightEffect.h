@@ -5,7 +5,6 @@
 #define LightEffect_h
 
 #include <Arduino.h>
-#include <NeoPixelBus.h>
 
 class LightEffect
 {

@@ -19,6 +19,7 @@ namespace LaserGrid {
     STATE state;
     boolean in;
     boolean flag;
+    boolean keyInserted[3];
     int val = 0;
     struct Timer {
       unsigned long start = 0;
@@ -70,41 +71,15 @@ namespace LaserGrid {
   }
 
   void run(Components & c) 
-  {
-    // if (Serial.available()>1){
-    //   c.val = Serial.parseInt();
-    //   if( c.val == 0){
-    //     Serial2.print("page 0");
-    //     Serial2.write(0xff);
-    //     Serial2.write(0xff);
-    //     Serial2.write(0xff);
-    //   }
-    //   if( c.val == 1){
-    //     Serial2.print("page 1");
-    //     Serial2.write(0xff);
-    //     Serial2.write(0xff);
-    //     Serial2.write(0xff);
-    //   }
-    //   if( c.val == 2){
-    //     Serial2.print("p0.pic=0 ");
-    //     Serial2.write(0xff);
-    //     Serial2.write(0xff);
-    //     Serial2.write(0xff);
-    //   }
-    //   if( c.val == 3){
-    //     Serial2.print("p0.pic=1");
-    //     Serial2.write(0xff);
-    //     Serial2.write(0xff);
-    //     Serial2.write(0xff);
-    //   }
-    // }    
+  {  
     if (c.state == INITIALIZED) {
-      // c.state = ENABLE;
+      c.state = ENABLE;
     }
 
     c.powerSwitch.update();
     c.keyReader.update();
     c.waveAdjuster.update();
+    c.speaker.update();
 
     if (c.state == ENABLE) {
       if (c.powerSwitch.getState() == DISABLE) {
@@ -115,7 +90,7 @@ namespace LaserGrid {
         c.keyReader.setState(DISABLE);
         c.waveAdjuster.setState(DISABLE);
         if (c.speaker.getNumber() != SOUND_POWER_DOWN) {
-          c.speaker.addToPlay(SOUND_POWER_DOWN);
+          // c.speaker.addToPlay(SOUND_POWER_DOWN);
         }
       }
 
@@ -123,15 +98,30 @@ namespace LaserGrid {
         if (c.keyReader.getState() == DISABLE)
           c.keyReader.setState(ENABLE);
         if (c.speaker.getNumber() == SOUND_POWER_DOWN) {
-          c.speaker.addToPlay(SOUND_POWER_UP);
+          // c.speaker.addToPlay(SOUND_POWER_UP);
         }
+
+        if (c.keyReader.getKeyState(0) && c.keyInserted[0] == false) {
+          c.keyInserted[0] = true;
+          // c.speaker.addToPlay(SOUND_KEY_INSERT);
+        }
+
+        if (c.keyReader.getKeyState(1) && c.keyInserted[1] == false) {
+          c.keyInserted[1] = true;
+          // c.speaker.addToPlay(SOUND_KEY_INSERT);
+        }
+
+        if (c.keyReader.getKeyState(2) && c.keyInserted[2] == false) {
+          c.keyInserted[2] = true;
+          // c.speaker.addToPlay(SOUND_KEY_INSERT);
+        }
+
+        if (! c.keyReader.getKeyState(0)) c.keyInserted[0] = false;
+        if (! c.keyReader.getKeyState(1)) c.keyInserted[1] = false;
+        if (! c.keyReader.getKeyState(2)) c.keyInserted[2] = false;
       }
 
       if (c.keyReader.getState() == SOLVED && c.waveAdjuster.getState() == DISABLE) {
-          Serial2.print("page 1");
-          Serial2.write(0xff);
-          Serial2.write(0xff);
-          Serial2.write(0xff);
         c.waveAdjuster.setState(ENABLE);
       }
  
@@ -145,7 +135,19 @@ namespace LaserGrid {
     
 
     if (c.state == SOLVED) {
-      Serial.println("SOLVED");
+      if (c.powerSwitch.getState() == OFF) { 
+        c.keyReader.setState(DISABLE);
+        c.waveAdjuster.setState(DISABLE);
+        if (c.speaker.getNumber() != SOUND_POWER_DOWN) {
+          // c.speaker.addToPlay(SOUND_POWER_DOWN);
+        }
+      }
+
+      if (c.powerSwitch.getState() == ON) {
+        if (c.speaker.getNumber() == SOUND_POWER_DOWN) {
+          // c.speaker.addToPlay(SOUND_POWER_UP);
+        }
+      }
     }
 
     if (c.state == RESET) {
@@ -169,7 +171,6 @@ namespace LaserGrid {
     c.waveTimer.current = millis();
     if ((c.waveTimer.current - c.waveTimer.point) > c.waveTimer.interval) {
       c.waveTimer.point = millis();
-
       c.waveAdjuster.display();
     }
     c.speaker.play();

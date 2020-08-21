@@ -1,12 +1,12 @@
 
 /*
-  PowerSwitch.h - Library for playing sounds and voices.
+  PowerSwitch.h
 */
 #ifndef PowerSwitch_h
 #define PowerSwitch_h
 
 #include <Arduino.h>
-#include <NeoPixelBus.h>
+#include "DebounceSwitch.h"
 
 class PowerSwitch
 {
@@ -19,13 +19,14 @@ class PowerSwitch
     void update();
     void setState(STATE state);
     STATE getState();
+    void readSwitch();
     bool isSwitchOn();
     bool isSwitchOff();
 
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
     int _lightPin;
-    int _pin;
+    DebounceSwitch _dSwitch;
     STATE _state;
 };
 
@@ -35,12 +36,12 @@ void PowerSwitch::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int l
 {
   _strip = strip;
   _lightPin = lightPin;
-  _pin = pin;
+  _dSwitch.set(pin);
 }
 
 bool PowerSwitch::isSwitchOn()
 {
-  return digitalRead(_pin);
+  return _dSwitch.getState();
 }
 
 bool PowerSwitch::isSwitchOff()
@@ -65,6 +66,8 @@ void PowerSwitch::display()
 
 void PowerSwitch::update() 
 {
+  _dSwitch.readSwitch();
+
   switch (_state)
   {
     case DISABLE:

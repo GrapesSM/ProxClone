@@ -147,9 +147,6 @@ namespace PowerControl {
       if (c.lightEffect.getState() == DISABLE) {
         c.lightEffect.setState(ENABLE);
       }
-      if (c.speaker.getState() == DISABLE) {
-        c.speaker.setState(ENABLE);
-      }
 
       c.battery.setDrawRate(c.powerAdjuster.getSupply());
 
@@ -163,7 +160,6 @@ namespace PowerControl {
           c.powerLightIndicator.setState(FAILURE);
           // c.state = FAILURE;
         } else if ((c.timer.current - c.timer.start) > (c.failurePeriod / 3 * 2)) {
-          c.speaker.setState(ALARM);
           c.lightEffect.setState(FLASH);
           c.powerLightIndicator.setState(FLASH);
         } else if ((c.timer.current - c.timer.start) > (c.failurePeriod / 3 * 1)) {
@@ -173,7 +169,6 @@ namespace PowerControl {
 
       if (c.powerAdjuster.getState() == BALANCED) {
         c.powerLightIndicator.setState(ENABLE);
-        c.speaker.setState(ENABLE);
         c.lightEffect.setState(ENABLE);
         c.battery.setState(ENABLE);
         c.timer.start = 0;
@@ -181,7 +176,6 @@ namespace PowerControl {
     }
 
     if (c.state == FAILURE) {
-      c.speaker.setState(DISABLE);
       c.powerLightIndicator.setState(DISABLE);
       c.lightEffect.setState(FAILURE);
       c.powerAdjuster.setState(DISABLE);
@@ -192,7 +186,6 @@ namespace PowerControl {
       c.powerLightIndicator.setState(DISABLE);
       c.battery.setState(DISABLE);
       c.powerAdjuster.setState(DISABLE);
-      c.speaker.setState(DISABLE);
       c.lightEffect.setState(DISABLE);
     }
 

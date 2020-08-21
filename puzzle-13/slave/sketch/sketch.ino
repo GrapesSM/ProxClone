@@ -56,10 +56,8 @@ void setup()
   pinMode(PIN_AMPLIFIER, OUTPUT);
   digitalWrite(PIN_AMPLIFIER, HIGH);
 
-  parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
-  parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
-  //  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
-  //  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+  parts.listOfSounds[SOUND_DETECTED] = soundDetected;
+  parts.listOfLengthOfSounds[SOUND_DETECTED] = sizeof(soundDetected)/sizeof(soundDetected[0]);
   // ----------------------------------------------------------
 
   setupLaserBar();

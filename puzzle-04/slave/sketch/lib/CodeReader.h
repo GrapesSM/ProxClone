@@ -38,7 +38,6 @@ class CodeReader
     String getTransmittedKey();
     MODE readMode();
     STATE getState();
-    char readKeyUp(Adafruit_MCP23017 *mcp, int pin);
     void setState(STATE state);
   private:
     SevenSegment *_matrix;
@@ -55,6 +54,11 @@ class CodeReader
     String _transmittedKey;
     DebounceSwitch _modeSwitch;
     DebounceSwitch _transmitSwitch;
+    int _reading[10];
+    int _switchState[10];
+    int _lastSwitchState[10];
+    unsigned long _lastDebounceTime[10];
+    unsigned long _debounceDelay = 50;
     STATE _state;
 };
 
@@ -86,19 +90,6 @@ void CodeReader::set(
   _transmitSwitch.set(transmitPin);  
 }
 
-char CodeReader::readKeyUp(Adafruit_MCP23017 *mcp, int pin)
-{
-  // Serial.println(mcp->digitalRead(pin));
-  // if (mcp->digitalRead(pin) == HIGH) {
-  //   // vTaskDelay(1);
-  //   // if (mcp->digitalRead(pin) == LOW) {
-  //     return '1';
-  //   // }
-  // } else {
-    return '0';
-  // }
-}
-
 String CodeReader::getTransmittedKey() {
   return _transmittedKey;
 }
@@ -108,17 +99,40 @@ char CodeReader::readInput()
   String _buttons = String("0000000000");
   char val;
   for (int i = 0; i < NUMBER_OF_BUTTONS_1; i++) {
-    // val = _mcp1->digitalRead(_buttonPins1[i]) ? '1' : '0';
-    val = readKeyUp(_mcp1, _buttonPins1[i]);
-    _buttons.setCharAt(i, val);
+    _reading[i] = _mcp1->digitalRead(_buttonPins1[i]);
+    if (_reading[i] != _lastSwitchState[i]) {
+      _lastDebounceTime[i] = millis();
+    }
+
+    if ((millis() - _lastDebounceTime[i]) > _debounceDelay) {
+      // if (_reading[i] != _switchState[i]) {
+        _switchState[i] = _reading[i];
+        // Serial.print(_switchState[i]);
+      // }
+    }
+
+    _lastSwitchState[i] = _reading[i];
+    _buttons.setCharAt(i, _switchState[i] ? '1' : '0');
   }
 
   for (int i = NUMBER_OF_BUTTONS_1, n = NUMBER_OF_BUTTONS_1 + NUMBER_OF_BUTTONS_2; i < n; i++) {
-    // val = _mcp2->digitalRead(_buttonPins2[i]) ? '1' : '0';
+    _reading[i] = _mcp2->digitalRead(_buttonPins2[i]);
+    if (_reading[i] != _lastSwitchState[i]) {
+      _lastDebounceTime[i] = millis();
+    }
 
-    val = readKeyUp(_mcp2, _buttonPins2[i]);
-    _buttons.setCharAt(i, val);
+    if ((millis() - _lastDebounceTime[i]) > _debounceDelay) {
+      // if (_reading[i] != _switchState[i]) {
+        _switchState[i] = _reading[i];
+        // Serial.print(_switchState[i]);
+      // }
+    }
+
+    _lastSwitchState[i] = _reading[i];
+    _buttons.setCharAt(i, _switchState[i] ? '1' : '0');
+
   }
+  // Serial.println();
 
   switch (strtol( _buttons.c_str(), NULL, 2 ))
   {
@@ -177,14 +191,14 @@ void CodeReader::update()
       switch(mode) {
         case INPUT_MODE: 
           // Update number -----------------
-          if (_entered == false && input != 'n' && _counter < _matrix->getNumberOfDigits()) {
+          if (input != 'n' && _entered == false && _counter < _matrix->getNumberOfDigits()) {
             _counter++;
-            _entered = true;
-          }
-
-          if (_entered == true && input != 'n' && _counter <= _matrix->getNumberOfDigits() && _counter > _key.length()) {
-            _entered = false;
             _key += String(input);
+            _entered = true;
+          } 
+
+          if (_entered == true && input == 'n') {
+            _entered = false;
           }
 
           if (input == 'n') {
@@ -222,9 +236,8 @@ void CodeReader::display()
 
     case ENABLE:
     default:
-      // Serial.println(_key);
       _matrix->clear();
-      // if (_key.length() > 0) _matrix->printString(_key);
+      if (_key.length() > 0) _matrix->printString(_key);
       _matrix->writeDisplay();
       break;
   }

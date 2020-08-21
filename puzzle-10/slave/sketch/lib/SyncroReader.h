@@ -5,7 +5,7 @@
 #define SyncroReader_h
 
 #include <Arduino.h>
-#include <NeoPixelBus.h>
+#include "DebounceSwitch.h"
 
 class SyncroReader
 {
@@ -16,13 +16,14 @@ class SyncroReader
     void display();
     int getInputKey();
     void setState(STATE state);
+    bool getSyncroKeyState();
     STATE getState();
     bool isSwitch(int position);
     void startTimer();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
     int *_lightPins;
-    int _pin;
+    DebounceSwitch _dSyncroKey;
     int _count;
     int _inputKey;
     struct Timer {
@@ -39,14 +40,9 @@ void SyncroReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int 
 {
   _strip = strip;
   _lightPins = lightPins;
-  _pin = pin;
+  _dSyncroKey.set(pin);
   _count = -1;
   _inputKey = 10;
-}
-
-bool SyncroReader::isSwitch(int position)
-{
-  return digitalRead(_pin) == position;
 }
 
 void SyncroReader::setState(STATE state)
@@ -64,8 +60,15 @@ int SyncroReader::getInputKey()
   return _inputKey;
 }
 
+bool SyncroReader::getSyncroKeyState()
+{
+  return _dSyncroKey.getState();
+}
+
 void SyncroReader::update()
 {
+  _dSyncroKey.readSwitch();
+
   if (_state == DISABLE) {
     for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_SYNCRO_READER; i++) {
       _strip->SetPixelColor(_lightPins[i], RgbColor(0, 0, 0));
@@ -87,7 +90,7 @@ void SyncroReader::update()
   }
 
   if (_state == FLASH){
-    if(isSwitch(HIGH)){
+    if(_dSyncroKey.isSwitch(HIGH)){
       _strip->SetPixelColor(_lightPins[0], RgbColor(127, 0, 0));
       _strip->SetPixelColor(_lightPins[1], RgbColor(127, 0, 0));
       _strip->SetPixelColor(_lightPins[2], RgbColor(127, 0, 0));
@@ -98,8 +101,7 @@ void SyncroReader::update()
   }
 
   if (_state == COUNTING) {
-    //Serial.println(_inputKey);
-    if(isSwitch(HIGH)){
+    if(_dSyncroKey.isSwitch(HIGH)){
       if(_inputKey == 10) {
         _inputKey = _count;
       }
@@ -148,7 +150,7 @@ void SyncroReader::update()
 
 void SyncroReader::display()
 {
-  _strip->Show();
+  // _strip->Show();
 }
 
 #endif

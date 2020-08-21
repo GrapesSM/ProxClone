@@ -1,7 +1,7 @@
-/* C:\Users\GBC\Downloads\Proxima\a Space Staion X Sound Effects-20200206T170429Z-001\a Space Staion X Sound Effects\Laser Grid\Modified\Laser Grid Station Power Down.wav (06/02/2020 1:35:35 PM)
-   StartOffset(h): 00000000, EndOffset(h): 0000C0D9, Length(h): 0000C0DA */
+/* C:\Users\GBC\Downloads\Proxima\Laser Grid Station Power Up.wav (31/01/2020 10:16:37 AM)
+   StartOffset(h): 00000000, EndOffset(h): 00003EFE, Length(h): 00003EFF */
 
-unsigned char soundPowerDown[600] = {
+unsigned char soundEntered[600] = {
 	0x80, 0x80, 0x80, 0x7F, 0x80, 0x80, 0x80, 0x7F, 0x80, 0x80, 0x80, 0x80,
 	0x80, 0x7F, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x7F,
 	0x80, 0x80, 0x7F, 0x7F, 0x80, 0x80, 0x7F, 0x80, 0x80, 0x80, 0x80, 0x7F,

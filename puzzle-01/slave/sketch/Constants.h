@@ -92,8 +92,6 @@ extern int lightPinsForLightEffect[] = {9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1
 
 #define NUMBER_OF_SOUNDS 2
 enum {  // enumeration from 0, 1, 2 ...
-  SOUND_POWER_UP,
-  SOUND_POWER_DOWN,
   SOUND_POWER_ADJUST
 };
 
