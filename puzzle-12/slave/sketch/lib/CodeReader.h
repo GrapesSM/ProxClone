@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "SparkFun_Qwiic_Keypad_Arduino_Library.h"
+#include "DebounceSwitch.h"
 
 class CodeReader
 {
@@ -13,13 +14,13 @@ class CodeReader
       int pin
     );
     void update();
+    void clear();
     String getInputKey();
     STATE getState();
     void setState(STATE);
-    bool isButton(int);
   private:
     String _input;
-    int _pin;
+    DebounceSwitch _dSwitch;
     KEYPAD *_keypad;
     STATE _state;
 };
@@ -30,7 +31,7 @@ CodeReader::CodeReader(){
 
 void CodeReader::set(KEYPAD *keypad, int pin){
   _keypad = keypad;
-  _pin = pin;
+  _dSwitch.set(pin);
 }
 
 STATE CodeReader::getState() 
@@ -45,23 +46,14 @@ String CodeReader::getInputKey() {
   return _input;
 }
 
-bool CodeReader::isButton(int position)
-{
-  if (digitalRead(_pin) == position) {
-    delay(1);
-    if (digitalRead(_pin) == position) {
-      return true;
-    }
-  }
-  return false;
-}
-
 void CodeReader::update()
 {
   if (_state == DISABLE) {
     return;
   }
 
+  _dSwitch.readSwitch();
+  
   _keypad->updateFIFO();  // necessary for keypad to pull button from stack to readable register
   char key = _keypad->getButton();
 
@@ -85,8 +77,16 @@ void CodeReader::update()
     _state = DONE;
   }
 
-  if (isButton(HIGH)) {
-    _state = TRANSMITTED;
+  if (_dSwitch.isSwitch(HIGH)) {
+    _dSwitch.readSwitch();
+    if (_dSwitch.isSwitch(LOW)) {
+      _state = TRANSMITTED;
+    }
   }
 }
+
+void CodeReader::clear() {
+  _input = "";
+}
+
 #endif

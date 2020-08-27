@@ -17,6 +17,21 @@ class ProximaCommand(object):
         self._waitTimeToReset = 5
         self._gameStage = GAME_STAGE.START
 
+    def run_test_cycle(self):
+        self.update(delay=0.15)
+        
+        if self._controllers['status_board'].registers[SB_REGISTER_INDEX.REG_SLAVE_COUNTDOWN_VALUE] < 3590:
+            self._controllers['status_board'].setCountdownTime(3600)
+            self._controllers['status_board'].addCommand(COMMAND.CMD_RESET_COUNTDOWN_TIME)
+
+        if self._controllers['lasergrid'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED:
+            self._controllers['status_board'].addCommand(COMMAND.CMD_SET_LASER_GRID_SOLVED)
+        
+        # self._controllers['status_board'].addCommand(COMMAND.CMD_SET_DOCKED_SHIP_SOLVED)
+        # self._controllers['status_board'].addCommand(COMMAND.CMD_SET_KEYPAD_SOLVED)
+        # self._controllers['status_board'].addCommand(COMMAND.CMD_SET_LIFE_SUPPORT_SOLVED)
+
+
     def run(self):
         self.update(delay=0.15)
 
@@ -164,6 +179,7 @@ class ProximaCommand(object):
             
             controller = self._controllers[key_name]
             registers = None
+            readAgain = False
             for _ in range(1):
                 try: 
                     registers = list(self._master.execute(controller.getSlaveID(), cst.READ_HOLDING_REGISTERS, 0, controller.getNumberOfRegisters()))
@@ -176,14 +192,27 @@ class ProximaCommand(object):
                 controller.update(registers)
                 print(controller.getKeyName() ,"Slave Registers (modified):  ", controller.registers)
             
-            
             if controller.getCommand() != COMMAND.CMD_NONE:
+                readAgain = True
                 print("COMMAND: ", controller.getCommand(), " to " , controller.getKeyName())
-                try: 
-                    self._master.execute(controller.getSlaveID(), cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=controller.registers)
-                except Exception as excpt:
-                    print(controller.getKeyName(), end=" ")
-                    LOGGER.debug("SystemDataCollector error: %s", str(excpt))
+                for _ in range(1):
+                    try: 
+                        self._master.execute(controller.getSlaveID(), cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=controller.registers)
+                    except Exception as excpt:
+                        print(controller.getKeyName(), end=" ")
+                        LOGGER.debug("SystemDataCollector error: %s", str(excpt))
+            
+            if readAgain:
+                registers = None
+                for _ in range(1):
+                    try: 
+                        registers = list(self._master.execute(controller.getSlaveID(), cst.READ_HOLDING_REGISTERS, 0, controller.getNumberOfRegisters()))
+                    except Exception as excpt:
+                        print(controller.getKeyName(), end=" ")
+                        LOGGER.debug("SystemDataCollector1 error: %s", str(excpt))
+                
+                if registers:
+                    controller.setRegisters(registers)
 
             controller.refreshCommand()
             time.sleep(delay)
@@ -235,7 +264,4 @@ class ProximaCommand(object):
 
 
 def cmp(a, b):
-    print("a > b", a > b)
-    print("a < b", a < b)
-    print("a == b", a == b)
     return (a > b) - (a < b) 

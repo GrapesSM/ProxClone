@@ -23,23 +23,23 @@ namespace BlastDoorKeypad {
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      c.codeReader.setState(ENABLE);
+      c.state = ENABLE;
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_DISABLE &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      c.codeReader.setState(DISABLE);
+      c.state = DISABLE;
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
     if (p.registers[REG_MASTER_COMMAND] == CMD_PAUSE &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      c.codeReader.setState(PAUSE);
+      c.state = PAUSE;
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
     if (p.registers[REG_MASTER_COMMAND] == CMD_RESET &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      c.codeReader.setState(RESET);
+      c.state = RESET;
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
 
@@ -59,7 +59,7 @@ namespace BlastDoorKeypad {
   void run(Components &c)
   {
     if (c.state == INITIALIZED) {
-      //c.state = ENABLE;
+      c.state = ENABLE;
     }
 
     c.codeReader.update();
@@ -70,26 +70,29 @@ namespace BlastDoorKeypad {
       }
 
       if (c.codeReader.getState() == KEY_ENTERED) {
-        c.speaker.addToPlay(SOUND_POWER_UP);
+        c.speaker.addToPlay(SOUND_ENTERED);
       }
 
       if (c.codeReader.getState() == TRANSMITTED) {
+        
         if (c.codeReader.getInputKey() == keyForCodeReader) {
+          c.speaker.addToPlay(SOUND_CORRECT);
           c.codeReader.setState(SOLVED);
         } else {
+          c.speaker.addToPlay(SOUND_WRONG);
           c.codeReader.setState(ENABLE);
         }
         
+        c.codeReader.clear();
+
         if (c.codeReader.getState() == SOLVED) {
           c.state = SOLVED;
         }
-
-        // c.codeReader.clear();
       } 
     }
 
     if (c.state == SOLVED) {
-      Serial.println("SOLVED");
+      // Serial.println("SOLVED");
     }
 
     if (c.state == DISABLE) {
@@ -110,7 +113,8 @@ namespace BlastDoorKeypad {
     c.showTimer.current = millis();
     if (c.showTimer.current - c.showTimer.showpoint > c.showTimer.interval) {
       c.showTimer.showpoint = millis();
-      c.countdown.display();
+
+      // code here runs every interval, i.e. 200ms 
     }
     c.speaker.play();
   }

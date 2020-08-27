@@ -2,8 +2,9 @@
 #include "lib/ModbusRtu.h"
 #include "lib/BlastDoorKeyPad.h"
 #include <ESP32Encoder.h>
-#include "sounds/soundPowerUp.h"
-
+#include "sounds/soundWrong.h"
+#include "sounds/soundEntered.h"
+#include "sounds/soundCorrect.h"
 
 Puzzle puzzle;
 
@@ -39,11 +40,11 @@ void setup()
 
   //Setup and Init Encoders
   ESP32Encoder::useInternalWeakPullResistors=false;
+  //-- attach pins for use as encoder pins
+  parts.encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
   //-- adjust starting count value to 0
   parts.encoder.clearCount();
   parts.encoder.setCount(0);
-  //-- attach pins for use as encoder pins
-  parts.encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
 
   //Keypad setup
   
@@ -60,10 +61,12 @@ void setup()
   ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
   pinMode(PIN_AMPLIFIER, OUTPUT);
 
-  parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
-  parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
-//  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
-//  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+  parts.listOfSounds[SOUND_WRONG] = soundWrong;
+  parts.listOfLengthOfSounds[SOUND_WRONG] = sizeof(soundWrong)/sizeof(soundWrong[0]);
+  parts.listOfSounds[SOUND_ENTERED] = soundEntered;
+  parts.listOfLengthOfSounds[SOUND_ENTERED] = sizeof(soundEntered)/sizeof(soundEntered[0]);
+  parts.listOfSounds[SOUND_CORRECT] = soundCorrect;
+  parts.listOfLengthOfSounds[SOUND_CORRECT] = sizeof(soundCorrect)/sizeof(soundCorrect[0]);
   
   setupBlastDoorKeypad();
 
@@ -82,7 +85,7 @@ void setup()
   xTaskCreatePinnedToCore(
     showTaskFunction,   /* Task function. */
     "ShowTask",     /* name of task. */
-    100000,       /* Stack size of task */
+    40000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
@@ -102,7 +105,7 @@ void loop()
 void setupBlastDoorKeypad()
 {
   bdComponents.codeReader.set(&parts.keypad, PIN_INPUT_1);
-  bdComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
+  bdComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 5, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
 }
 
 //Run Task Function: process changes of puzzle
@@ -120,6 +123,7 @@ void runTaskFunction( void * parameters ) {
     // State changes
     BlastDoorKeypad::run(bdComponents);
 
+    vTaskDelay(10);
   } 
 }
 

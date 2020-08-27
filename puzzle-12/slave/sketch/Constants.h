@@ -75,12 +75,13 @@ enum STATE {
   OUT_OF_RANGE = 38
 };
 
-extern String keyForCodeReader = "198362*";
+extern String keyForCodeReader = "12369";
 
-#define NUMBER_OF_SOUNDS 2
+#define NUMBER_OF_SOUNDS 3
 enum {  // enumeration from 0, 1, 2 ...
-  SOUND_POWER_DOWN,
-  SOUND_POWER_UP
+  SOUND_WRONG,
+  SOUND_ENTERED,
+  SOUND_CORRECT
 };
 
 enum REGISTER_INDEX {

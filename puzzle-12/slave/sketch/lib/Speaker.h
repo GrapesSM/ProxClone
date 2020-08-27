@@ -83,7 +83,7 @@ void Speaker::play(int number)
 {
   for (int i = 0; i < _listOfLengthOfSounds[number]; i++) {
     dacWrite(_pin, _listOfSounds[number][i]);
-    delayMicroseconds(_rate);
+    if (_rate > 0) delayMicroseconds(_rate);
   }
 }
 

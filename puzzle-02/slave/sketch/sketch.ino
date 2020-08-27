@@ -92,7 +92,7 @@ void setupStatusBoard()
   sbComponents.shipPrepStatus.set(parts.strip, lightPinsForShipPrepStatus);
   sbComponents.lifeSupportStatus.set(parts.strip, lightPinsForLifeSupportStatus);
   sbComponents.blastDoorStatus.set(parts.strip, lightPinsForBlastDoorStatus);
-  sbComponents.laserGrid.set(parts.strip, lightPinsForLaserGridStatus);
+  sbComponents.laserGridStatus.set(parts.strip, lightPinsForLaserGridStatus);
   sbComponents.countdown.set(&parts.matrix);
   sbComponents.powerSwitch.set(PIN_INPUT_1, PIN_INPUT_2);
 }

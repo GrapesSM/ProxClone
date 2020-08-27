@@ -42,6 +42,11 @@ class BaseController:
             if len(self._commandQueue) != 0:
                 self._command = self._commandQueue.pop(0)
                 self._commandStatus = STATUS.ST_CREATED
+        else:
+            if self._puzzle['registers'][REGISTER_INDEX.REG_SLAVE_CONFIRM] == STATE.DONE:
+                self._command = COMMAND.CMD_NONE
+                self._commandStatus = STATUS.ST_CREATED
+
 
 
     def getCommandStatus(self):
@@ -52,7 +57,8 @@ class BaseController:
         self._commandStatus = STATUS.ST_CREATED
 
     def setRegisters(self, registers):
-        self._puzzle['registers'] = registers
+        for i in range(len(self._puzzle['registers'])):
+            self._puzzle['registers'][i] = registers[i]
 
     def getNumberOfRegisters(self):
         return len(self._puzzle['registers'])

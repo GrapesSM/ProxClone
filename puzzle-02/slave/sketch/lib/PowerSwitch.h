@@ -5,6 +5,7 @@
 #define PowerSwitch_h
 
 #include <Arduino.h>
+#include "DebounceSwitch.h"
 
 class PowerSwitch
 {
@@ -17,25 +18,32 @@ class PowerSwitch
     STATE getState();
 
   private:
-    int _pin1;
-    int _pin2;
+    DebounceSwitch _dSwitch[2];
     STATE _state;
 };
 
 PowerSwitch::PowerSwitch() {}
 
 void PowerSwitch::set(int pin1, int pin2) {
-  _pin1 = pin1;
-  _pin2 = pin2;
+  _dSwitch[0].set(pin1);
+  _dSwitch[1].set(pin2);
 }
 
 void PowerSwitch::update() 
 {
-  if (digitalRead(_pin1) == HIGH) {
+  _dSwitch[0].readSwitch();
+  _dSwitch[1].readSwitch();
+  if (_dSwitch[0].getState() && ! _dSwitch[1].getState()) {
     _state = ON;
-  } else {
+  } 
+
+  if (!_dSwitch[0].getState() && _dSwitch[1].getState()) {
     _state = OFF;
-  }
+  } 
+
+  if (!_dSwitch[0].getState() && ! _dSwitch[1].getState()) {
+    _state = RESET;
+  } 
 }
 
 void PowerSwitch::setState(STATE state)

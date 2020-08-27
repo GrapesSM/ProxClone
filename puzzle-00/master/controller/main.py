@@ -84,7 +84,7 @@ def main():
 
     controllers = createControllers()
     proximaCommand = ProximaCommand(controllers, master)
-    system_monitor = WorkerThread(proximaCommand.run)
+    system_monitor = WorkerThread(proximaCommand.run_test_cycle)
 
     try:
         LOGGER.info("'quit' for closing the server")

@@ -45,7 +45,13 @@ void Countdown::set(Adafruit_7segment *matrix){
 unsigned long Countdown::getmaxTimeCount() 
 {
   return maxTimeCount;
-} 
+}
+
+void Countdown::resetTime()
+{
+  timeCounter = maxTimeCount;
+  timer.countPoint = timer.current;
+}
 
 void Countdown::setmaxTimeCount(unsigned long _maxTimeCount) 
 {
@@ -66,29 +72,29 @@ unsigned long Countdown::getTime() {
 
 void Countdown::update()
 {
-    timer.current = millis();
-    switch (_state)
-    {
-      case ENABLE:
-        if((timer.current - timer.countPoint) > timer.interval){
-          timeCounter--;
-          timer.countPoint = millis();
-        }
-        break;
+  timer.current = millis();
+  switch (_state)
+  {
+    case ENABLE:
+      if((timer.current - timer.countPoint) > timer.interval){
+        timeCounter--;
+        timer.countPoint = millis();
+      }
+      break;
 
-      case DISABLE:
-        timer.countPoint = timer.current;
-        break;
+    case DISABLE:
+      timer.countPoint = timer.current;
+      break;
 
-      case PAUSE: 
-        timer.countPoint = timer.current;
-        break;
+    case PAUSE: 
+      timer.countPoint = timer.current;
+      break;
 
-      case RESET: 
-        timeCounter = maxTimeCount;
-        timer.countPoint = timer.current;
-        break;
-    }
+    case RESET: 
+      timeCounter = maxTimeCount;
+      timer.countPoint = timer.current;
+      break;
+  }
 }
 
 void Countdown::display()
