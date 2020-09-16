@@ -45,12 +45,6 @@ namespace ShipPrepAux {
       c.state = RESET;
     }
 
-    if (p.registers[REG_MASTER_SP_COMMAND] == CMD_PAUSE &&
-        p.registers[REG_SLAVE_SP_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_SP_CONFIRM] = DONE;
-      c.state = PAUSE;
-    }
-
     if (p.registers[REG_MASTER_SP_COMMAND] == CMD_SET_SOLVED &&
         p.registers[REG_SLAVE_SP_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_SP_CONFIRM] = DONE;
@@ -78,30 +72,44 @@ namespace ShipPrepAux {
 
     if (c.state == SETUP) {
       c.state = INITIALIZING;
+
+      c.powerSwitch.init();
+      c.batteryMatrix.init();
+      c.generator.init();
+      c.speaker.init();
+
       c.powerSwitch.setState(DISABLE);
       c.batteryMatrix.setState(DISABLE);
       c.generator.setState(DISABLE);
       c.speaker.setState(DISABLE);
       p.registers[REG_SLAVE_SP_CONFIRM] = DONE;
-      c.state = INITIALIZED;
+      c.state = DISABLE;
     }
   }
 
   void run(Components &c) 
   {
-    if(c.state == INITIALIZED){
-      // c.state = ENABLE;
-    }
-
     c.powerSwitch.update();
     c.batteryMatrix.update();
     c.generator.update();
     c.speaker.update();
 
+    if (c.powerSwitch.getState() == DISABLE) {
+      c.powerSwitch.setState(ENABLE);
+    }
+
+    if (c.state == DISABLE) {
+      c.powerSwitch.setLightOff();
+      c.batteryMatrix.setState(DISABLE);
+      c.generator.setState(DISABLE);
+      c.speaker.setState(DISABLE);
+    }
+
+    if (c.state == RESET) {
+      c.state = SETUP;
+    }
+
     if (c.state == ENABLE) {
-      if (c.powerSwitch.getState() == DISABLE) {
-        c.powerSwitch.setState(ENABLE);
-      }
 
       if (c.powerSwitch.getState() == OFF) {
         c.batteryMatrix.setState(DISABLE);
@@ -152,20 +160,6 @@ namespace ShipPrepAux {
       }
     }
 
-    if (c.state == DISABLE) {
-      c.powerSwitch.setState(DISABLE);
-      c.batteryMatrix.setState(DISABLE);
-      c.generator.setState(DISABLE);
-      c.speaker.setState(DISABLE);
-    }
-
-    if (c.state == RESET) {
-      c.state = SETUP;
-    }
-
-    if (c.state == PAUSE) {
-
-    }
   }
 
   void show(Components &c)

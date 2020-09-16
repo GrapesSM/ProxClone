@@ -10,6 +10,7 @@ class BatteryMatrix
 {
   public:
     BatteryMatrix();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[], Adafruit_MCP23017 *mcp, int switchPins[], int labels[]);
     void update();
     bool isAllSwitchesOff();
@@ -34,7 +35,16 @@ class BatteryMatrix
     STATE _state;
 };
 
-BatteryMatrix::BatteryMatrix() {}
+BatteryMatrix::BatteryMatrix() 
+{
+  init();
+}
+
+void BatteryMatrix::init() 
+{
+  _count = 0;
+  _reset = false;
+}
 
 void BatteryMatrix::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[], Adafruit_MCP23017 *mcp, int switchPins[], int labels[])
 {
@@ -43,8 +53,6 @@ void BatteryMatrix::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, in
   _mcp = mcp;
   _switchPins = switchPins;
   _labels = labels;
-  _count = 0;
-  _reset = false;
 }
 
 bool BatteryMatrix::isAllSwitchesOff() 

@@ -44,12 +44,6 @@ namespace EnergySupplemental {
       c.state = RESET;
     }
 
-    if (p.registers[REG_MASTER_ES_COMMAND] == CMD_PAUSE &&
-        p.registers[REG_SLAVE_ES_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_ES_CONFIRM] = DONE;
-      c.state = PAUSE;
-    }
-
     if (p.registers[REG_MASTER_ES_COMMAND] == CMD_SET_SOLVED &&
         p.registers[REG_SLAVE_ES_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_ES_CONFIRM] = DONE;
@@ -102,29 +96,43 @@ namespace EnergySupplemental {
 
     if (c.state == SETUP) {
       c.state = INITIALIZING;
+
+      c.powerSwitch.init();
+      c.syncroReader.init();
+      c.powerAdjuster.init();
+      c.speaker.init();
+
       c.powerSwitch.setState(DISABLE);
       c.powerAdjuster.setState(DISABLE);
       c.syncroReader.setState(DISABLE);
       c.speaker.setState(DISABLE);
       p.registers[REG_SLAVE_ES_CONFIRM] = DONE;
-      c.state = INITIALIZED;
+      c.state = DISABLE;
     }
   }
   void run(Components &c) 
   {
-    if (c.state == INITIALIZED) {
-      // c.state = ENABLE;
-    }
-
     c.powerSwitch.update();
     c.powerAdjuster.update();
     c.syncroReader.update();
     c.speaker.update();
 
+    if (c.powerSwitch.getState() == DISABLE) {
+      c.powerSwitch.setState(ENABLE);
+    }
+
+    if (c.state == DISABLE) {
+      c.powerSwitch.setLightOff();
+      c.powerAdjuster.setState(DISABLE);
+      c.syncroReader.setState(DISABLE);
+      c.speaker.setState(DISABLE);
+    }
+
+    if (c.state == RESET) {
+      c.state = SETUP;
+    }
+
     if (c.state == ENABLE) {
-      if (c.powerSwitch.getState() == DISABLE) {
-        c.powerSwitch.setState(ENABLE);
-      }
 
       if (c.powerSwitch.getState() == OFF) {
         c.powerAdjuster.setState(DISABLE);
@@ -168,21 +176,6 @@ namespace EnergySupplemental {
           c.speaker.addToPlay(SOUND_POWER_UP);
         }
       }
-    }
-
-    if (c.state == DISABLE) {
-      c.powerSwitch.setState(DISABLE);
-      c.powerAdjuster.setState(DISABLE);
-      c.syncroReader.setState(DISABLE);
-      c.speaker.setState(DISABLE);
-    }
-
-    if (c.state == RESET) {
-      c.state = SETUP;
-    }
-
-    if (c.state == PAUSE) {
-      
     }
   }
 

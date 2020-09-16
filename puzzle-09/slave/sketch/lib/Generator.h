@@ -10,6 +10,7 @@ class Generator
 {
   public:
     Generator();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], Adafruit_MCP23017 *mcp, int switchPins[], int labels[]);
     void update();
     bool isAllSwitchesOff();
@@ -34,7 +35,16 @@ class Generator
     STATE _state;
 };
 
-Generator::Generator(){}
+Generator::Generator()
+{
+  init();
+}
+
+void Generator::init()
+{
+  _count = 0;
+  _reset = false;
+}
 
 void Generator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], Adafruit_MCP23017 *mcp, int switchPins[], int labels[])
 {
@@ -43,8 +53,6 @@ void Generator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lig
   _mcp = mcp;
   _switchPins = switchPins;
   _labels = labels;
-  _count = 0;
-  _reset = false;
 }
 
 void Generator::update()

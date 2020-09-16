@@ -11,6 +11,7 @@ class SyncroReader
 {
   public:
     SyncroReader();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], int pin);
     void update();
     void display();
@@ -34,15 +35,22 @@ class SyncroReader
     STATE _state;
 };
 
-SyncroReader::SyncroReader() {}
+SyncroReader::SyncroReader() 
+{
+  init();
+}
+
+void SyncroReader::init()
+{
+  _count = -1;
+  _inputKey = 10;
+}
 
 void SyncroReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], int pin)
 {
   _strip = strip;
   _lightPins = lightPins;
   _dSyncroKey.set(pin);
-  _count = -1;
-  _inputKey = 10;
 }
 
 void SyncroReader::setState(STATE state)

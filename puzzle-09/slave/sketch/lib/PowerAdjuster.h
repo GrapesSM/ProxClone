@@ -13,7 +13,7 @@ class PowerAdjuster
 {
   public:
     PowerAdjuster();
-    void setDefaultValues();
+    void init();
     void set(ESP32Encoder * encoder, Adafruit_7segment * matrix);
     void update();
     void display();
@@ -35,23 +35,23 @@ class PowerAdjuster
 
 PowerAdjuster::PowerAdjuster()
 {
+  init();
+}
+
+void PowerAdjuster::init()
+{
   _val = 0;
   _min = 600;
   _max = 700;
   _checkVal = -1;
   _submittedVal = 0;
   lastRefreshTime = 0;
+  if (_encoder) _encoder->setCount(_val);
 }
 
 int PowerAdjuster::getInputKey() 
 {
   return _submittedVal;
-}
-
-void PowerAdjuster::setDefaultValues()
-{
-  _val = 0;
-  _encoder->setCount(_val);
 }
 
 void PowerAdjuster::set(ESP32Encoder *encoder, Adafruit_7segment *matrix) 
