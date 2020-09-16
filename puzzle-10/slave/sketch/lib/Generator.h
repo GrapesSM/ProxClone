@@ -10,6 +10,7 @@ class Generator
 {
   public:
     Generator();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[]);
     void switchToRed(); 
     void switchToYellow();
@@ -24,7 +25,15 @@ class Generator
     STATE _state;
 };
 
-Generator::Generator() {}
+Generator::Generator() 
+{
+  init();
+}
+
+void Generator::init() 
+{
+  
+}
 
 void Generator::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[])
 {

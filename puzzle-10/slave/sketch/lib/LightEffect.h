@@ -10,6 +10,7 @@ class LightEffect
 {
   public:
     LightEffect();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);    
     void update();
     void display();
@@ -27,7 +28,13 @@ class LightEffect
     STATE _state;
 };
 
-LightEffect::LightEffect(){
+LightEffect::LightEffect()
+{
+  init();
+}
+
+void LightEffect::init() 
+{
   _current = 0;
 }
 

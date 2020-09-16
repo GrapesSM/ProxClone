@@ -49,6 +49,12 @@ namespace PrepStatus {
       c.state = DISABLE;
     }
 
+    if (p.registers[REG_MASTER_COMMAND] == CMD_RESET && 
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = RESET;
+    }
+
     if (p.registers[REG_MASTER_COMMAND] == CMD_START_TIMER &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       c.syncroReader.setState(START_TIMER);
@@ -107,6 +113,15 @@ namespace PrepStatus {
     // Serial.println(c.syncroReader.getInputKey());
     if (c.state == SETUP) {
       c.state = INITIALIZING;
+
+      c.powerSwitch.init();
+      c.batteryMatrix.init();
+      c.energySupp.init();
+      c.generator.init();
+      c.syncroReader.init();
+      c.speaker.init();
+      c.lightEffect.init();
+
       c.powerSwitch.setState(DISABLE);
       c.batteryMatrix.setState(DISABLE);
       c.energySupp.setState(DISABLE);
@@ -115,16 +130,12 @@ namespace PrepStatus {
       c.speaker.setState(DISABLE);
       c.lightEffect.setState(DISABLE);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.state = INITIALIZED;
+      c.state = DISABLE;
     }
   }
 
   void run(Components & c) 
   {
-    if (c.state == INITIALIZED) {
-      // c.state = ENABLE;
-    }
-    
     c.batteryMatrix.update();
     c.energySupp.update();
     c.generator.update();
@@ -132,11 +143,25 @@ namespace PrepStatus {
     c.powerSwitch.update();
     c.lightEffect.update();    
 
-    if (c.state == ENABLE) {
-      if (c.powerSwitch.getState() == DISABLE) {
-        c.powerSwitch.setState(ENABLE);
-      }
+    if (c.powerSwitch.getState() == DISABLE) {
+      c.powerSwitch.setState(ENABLE);
+    }
 
+    if (c.state == DISABLE) {
+      c.powerSwitch.setLightOff();
+      c.batteryMatrix.setState(DISABLE);
+      c.energySupp.setState(DISABLE);
+      c.generator.setState(DISABLE);
+      c.syncroReader.setState(DISABLE);
+      c.speaker.setState(DISABLE);
+      c.lightEffect.setState(DISABLE);
+    }
+
+    if (c.state == RESET) {
+      c.state = SETUP;
+    }
+
+    if (c.state == ENABLE) {
       if (c.powerSwitch.getState() == OFF) {
         c.batteryMatrix.setState(DISABLE);
         c.energySupp.setState(DISABLE);
@@ -225,16 +250,6 @@ namespace PrepStatus {
           c.generator.switchToGreen();
         }
       }
-    }
-
-    if (c.state == DISABLE) {
-      c.powerSwitch.setState(DISABLE);
-      c.batteryMatrix.setState(DISABLE);
-      c.energySupp.setState(DISABLE);
-      c.generator.setState(DISABLE);
-      c.syncroReader.setState(DISABLE);
-      c.speaker.setState(DISABLE);
-      c.lightEffect.setState(DISABLE);
     }
   }
 

@@ -10,6 +10,7 @@ class BatteryMatrix
 {
   public:
     BatteryMatrix();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[]);
     void switchToRed(); 
     void switchToYellow();
@@ -24,7 +25,15 @@ class BatteryMatrix
     STATE _state;
 };
 
-BatteryMatrix::BatteryMatrix() {}
+BatteryMatrix::BatteryMatrix() 
+{
+  init();
+}
+
+void BatteryMatrix::init()
+{
+  
+}
 
 void BatteryMatrix::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[])
 {

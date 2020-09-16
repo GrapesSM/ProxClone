@@ -10,6 +10,7 @@ class EnergySupp
 {
   public:
     EnergySupp();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[]);
     void switchToRed(); 
     void switchToYellow();
@@ -24,7 +25,15 @@ class EnergySupp
     STATE _state;
 };
 
-EnergySupp::EnergySupp() {}
+EnergySupp::EnergySupp() 
+{
+  init();
+}
+
+void EnergySupp::init()
+{
+  
+}
 
 void EnergySupp::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[])
 {
