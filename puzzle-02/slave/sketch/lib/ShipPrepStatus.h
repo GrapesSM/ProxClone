@@ -10,6 +10,7 @@ class ShipPrepStatus
 {
   public:
     ShipPrepStatus();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
     void update();
     void setRedLight(STATE state);
@@ -23,7 +24,15 @@ class ShipPrepStatus
     STATE _state;
 };
 
-ShipPrepStatus::ShipPrepStatus(){}
+ShipPrepStatus::ShipPrepStatus()
+{
+  init();
+}
+
+void ShipPrepStatus::init()
+{
+
+}
 
 void ShipPrepStatus::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[])
 {

@@ -104,7 +104,7 @@ def main():
             'keypad',
             ]:
             continue
-        slaveThreads.append(Thread(target = controllers[key_name].readAndWriteToSlave, args=(0.3, lambda : flagStopThreads), daemon = True))
+        slaveThreads.append(Thread(target = controllers[key_name].readAndWriteToSlave, args=(0.0, lambda : flagStopThreads), daemon = True))
 
 
     try:

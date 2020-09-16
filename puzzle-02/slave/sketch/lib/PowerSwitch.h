@@ -11,6 +11,7 @@ class PowerSwitch
 {
   public:
     PowerSwitch();
+    void init();
     void set(int pin1, int _pin2);
     void display();
     void update();
@@ -22,7 +23,15 @@ class PowerSwitch
     STATE _state;
 };
 
-PowerSwitch::PowerSwitch() {}
+PowerSwitch::PowerSwitch() 
+{
+  init();
+}
+
+void PowerSwitch::init()
+{
+
+}
 
 void PowerSwitch::set(int pin1, int pin2) {
   _dSwitch[0].set(pin1);

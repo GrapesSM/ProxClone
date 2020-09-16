@@ -10,6 +10,7 @@ class BlastDoorStatus
 {
   public:
     BlastDoorStatus();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
     void update();
     void setRedLight(STATE state);
@@ -23,7 +24,15 @@ class BlastDoorStatus
     STATE _state;
 };
 
-BlastDoorStatus::BlastDoorStatus(){}
+BlastDoorStatus::BlastDoorStatus()
+{
+  init();
+}
+
+void BlastDoorStatus::init()
+{
+  
+}
 
 void BlastDoorStatus::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[])
 {

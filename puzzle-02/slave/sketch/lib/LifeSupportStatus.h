@@ -10,6 +10,7 @@ class LifeSupportStatus
 {
   public:
     LifeSupportStatus();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
     void update();
     void setRedLight(STATE state);
@@ -23,7 +24,15 @@ class LifeSupportStatus
     STATE _state;
 };
 
-LifeSupportStatus::LifeSupportStatus(){}
+LifeSupportStatus::LifeSupportStatus()
+{
+  init();
+}
+
+void LifeSupportStatus::init()
+{
+  
+}
 
 void LifeSupportStatus::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[])
 {

@@ -25,107 +25,8 @@ class ProximaCommand(object):
         self._dsSyncroPoint = 0
         self._psSyncroPoint = 0
 
-    def run_test_cycle(self): 
-        time.sleep(1.5)
-
-        # Enable a puzzle if it is initialized
-        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_STATE] == STATE.INITIALIZED:
-            self._controllers['docked_ship'].addCommand_SP(COMMAND.CMD_ENABLE)
-        
-        # Enable a puzzle if it is initialized
-        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_STATE] == STATE.INITIALIZED:
-            self._controllers['docked_ship'].addCommand_ES(COMMAND.CMD_ENABLE)
-
-        # Enable a puzzle if it is initialized
-        if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.INITIALIZED:
-            self._controllers['prep_status'].addCommand(COMMAND.CMD_ENABLE)
-
-        # Check the BatteryMatrix solved state and set to PrepStatus
-        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_BATTERY_MATRIX_STATE] == STATE.SOLVED and \
-            self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_BATTERY_MATRIX_STATE] != STATE.SOLVED:
-            self._controllers['prep_status'].addCommand(COMMAND.CMD_SET_PS_BATTERY_MATRIX_SOLVED)
-
-        # Check the Generator solved state and set to PrepStatus
-        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_GENERATOR_STATE] == STATE.SOLVED and \
-            self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_GENERATOR_STATE] != STATE.SOLVED:
-            self._controllers['prep_status'].addCommand(COMMAND.CMD_SET_PS_GENERATOR_SOLVED)
-
-        # Check the PowerAdjusment solved state and set to PrepStatus
-        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_POWER_ADJUSTER_STATE] == STATE.SOLVED and \
-            self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_ENERGY_SUPP_STATE]  != STATE.SOLVED:
-            self._controllers['prep_status'].addCommand(COMMAND.CMD_SET_PS_ENERGY_SUPP_SOLVED)
-
-        #Check Docked Ship and Prep Status state and enable syncroKey if solved
-        if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_BATTERY_MATRIX_STATE]  == STATE.SOLVED  and \
-           self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_ENERGY_SUPP_STATE]  == STATE.SOLVED and \
-           self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_GENERATOR_STATE]  == STATE.SOLVED and \
-           self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_SYNCRO_READER_STATE] == STATE.DISABLE:
-            self._controllers['prep_status'].addCommand(COMMAND.CMD_ENABLE_PS_SYNCRO_READER)
-
-        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_BATTERY_MATRIX_STATE]  == STATE.SOLVED  and \
-           self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_GENERATOR_STATE]  == STATE.SOLVED and \
-           self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_POWER_ADJUSTER_STATE]  == STATE.SOLVED and \
-           self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_STATE] == STATE.DISABLE:
-            self._controllers['docked_ship'].addCommand_ES(COMMAND.CMD_ENABLE_DS_SYNCRO_READER)
-        
-        if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_SYNCRO_READER_INPUT_KEY] == 4 and \
-           self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_SYNCRO_READER_STATE] != STATE.SYNCRONIZED:
-            self._psSyncroPoint = time_now()
-            time.sleep(0.05)
-            
-        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_INPUT_KEY] == 4 and \
-           self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_STATE] != STATE.SYNCRONIZED:
-            self._dsSyncroPoint = time_now()
-
-        print(abs(self._dsSyncroPoint - self._psSyncroPoint))
-        if abs(self._dsSyncroPoint - self._psSyncroPoint) > 0 and abs(self._dsSyncroPoint - self._psSyncroPoint) < 2000:
-            self._controllers['prep_status'].addCommand(COMMAND.CMD_SET_PS_SYNCRO_READER_SYNCRONIZED)
-            self._controllers['docked_ship'].addCommand_ES(COMMAND.CMD_SET_DS_SYNCRO_READER_SYNCRONIZED)
-
-        if (self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_SYNCRO_READER_STATE] == STATE.ENABLE and \
-            self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_STATE] == STATE.ENABLE):
-            self._flag = True
-             
-        if (self._flag) or \
-           (self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_STATE] == STATE.DONE and \
-            self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_SYNCRO_READER_STATE] == STATE.DONE):
-            self._controllers['prep_status'].startTimer() 
-            time.sleep(0.0045)
-            self._controllers['docked_ship'].startTimer()
-            time.sleep(5)      
-
-
-        # if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_STATE] == STATE.DONE:
-        #     self._controllers['docked_ship'].addCommand_ES(COMMAND.CMD_ENABLE_DS_SYNCRO_READER)
-
-        # if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_SYNCRO_READER_STATE] == STATE.DONE and \
-        #     self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_STATE] == STATE.DONE:
-        #     if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_SYNCRO_READER_INPUT_KEY] == 3 and \
-        #         self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_STATE] == 3:
-        #             self._controllers['docked_ship'].addCommand(COMMAND.CMD_SET_DS_SYNCRO_READER_SOLVED)
-        #             self._controllers['prep_status'].addCommand(COMMAND.CMD_SET_PS_SYNCRO_READER_SOLVED)
-        #     elif self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_SYNCRO_READER_INPUT_KEY] == -1 and \
-        #         self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_STATE] == -1:
-        #             self._controllers['docked_ship'].addCommand(COMMAND.CMD_START_TIMER)
-        #             self._controllers['prep_status'].addCommand(COMMAND.CMD_START_TIMER)
-        #     else:
-        #         self._controllers['docked_ship'].addCommand(COMMAND.CMD_SET_DS_SYNCRO_READER_WRONG_SOLVED)
-        #         self._controllers['prep_status'].addCommand(COMMAND.CMD_SET_PS_SYNCRO_READER_WRONG_SOLVED)
-
-        # if self._controllers['status_board'].registers[SB_REGISTER_INDEX.REG_SLAVE_COUNTDOWN_VALUE] < 3590:
-        #     self._controllers['status_board'].setCountdownTime(3600)
-        #     self._controllers['status_board'].addCommand(COMMAND.CMD_RESET_COUNTDOWN_TIME)
-
-        # if self._controllers['lasergrid'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED:
-        #     self._controllers['status_board'].addCommand(COMMAND.CMD_SET_LASER_GRID_SOLVED)
-        
-        # self._controllers['status_board'].addCommand(COMMAND.CMD_SET_DOCKED_SHIP_SOLVED)
-        # self._controllers['status_board'].addCommand(COMMAND.CMD_SET_KEYPAD_SOLVED)
-        # self._controllers['status_board'].addCommand(COMMAND.CMD_SET_LIFE_SUPPORT_SOLVED)
-
-
     def run(self):
-        time.sleep(1.5)
+        time.sleep(1)
 
         if self._controllers['status_board'].registers[SB_REGISTER_INDEX.REG_SLAVE_GAME_POWER_SWITCH_STATE] == STATE.ON:
             self._gameStage = GAME_STAGE.START 
@@ -137,6 +38,7 @@ class ProximaCommand(object):
             self._gameStage = GAME_STAGE.PAUSE 
 
         if self._gameStage == GAME_STAGE.START:
+            self._controllers['status_board'].addCommand(COMMAND.CMD_ENABLE)
             self._controllers['power_control'].addCommand(COMMAND.CMD_ENABLE)
 
         if self._gameStage == GAME_STAGE.RESET:    
@@ -149,6 +51,7 @@ class ProximaCommand(object):
             self._controllers['prep_status'].addCommand(COMMAND.CMD_RESET)
             self._controllers['lasergrid'].addCommand(COMMAND.CMD_RESET)
             self._controllers['laserbar'].addCommand(COMMAND.CMD_RESET)
+            self._controllers['status_board'].addCommand(COMMAND.CMD_RESET)
         
         if self._gameStage == GAME_STAGE.PAUSE: 
             self._controllers['power_control'].addCommand(COMMAND.CMD_DISABLE)
@@ -160,47 +63,49 @@ class ProximaCommand(object):
             self._controllers['prep_status'].addCommand(COMMAND.CMD_DISABLE)
             self._controllers['lasergrid'].addCommand(COMMAND.CMD_DISABLE)
             self._controllers['laserbar'].addCommand(COMMAND.CMD_DISABLE)
+            self._controllers['status_board'].addCommand(COMMAND.CMD_DISABLE)
 
         if self._gameStage == GAME_STAGE.START \
-           and self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.ENABLE:
+           and self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.ENABLE \
+           and self._controllers['status_board'].registers[SB_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.ENABLE:
             self._gameStage = GAME_STAGE.ONGOING             
 
         if self._gameStage == GAME_STAGE.ONGOING:
             self._controlPowerControl()
 
-        if self._gameStage == GAME_STAGE.ONGOING:
-            self._controlDockedShip()
+        # if self._gameStage == GAME_STAGE.ONGOING:
+        #     self._controlDockedShip()
 
-        if self._gameStage == GAME_STAGE.ONGOING:
-            self._controlSafeomatic()
+        # if self._gameStage == GAME_STAGE.ONGOING:
+        #     self._controlSafeomatic()
 
-        if self._gameStage == GAME_STAGE.ONGOING:
-            self._controlLifeSupport()
+        # if self._gameStage == GAME_STAGE.ONGOING:
+        #     self._controlLifeSupport()
         
-        if self._gameStage == GAME_STAGE.ONGOING:
-            self._controlDatamatic()
+        # if self._gameStage == GAME_STAGE.ONGOING:
+        #     self._controlDatamatic()
         
-        if self._gameStage == GAME_STAGE.ONGOING:
-            self._controlLaserGridAndBar()
+        # if self._gameStage == GAME_STAGE.ONGOING:
+        #     self._controlLaserGridAndBar()
 
-        if self._gameStage == GAME_STAGE.ONGOING:
-            self._controlKeypad()
+        # if self._gameStage == GAME_STAGE.ONGOING:
+        #     self._controlKeypad()
         
-        if self._gameStage == GAME_STAGE.ONGOING:
-            self._controlStatusBoard()
+        # if self._gameStage == GAME_STAGE.ONGOING:
+        #     self._controlStatusBoard()
 
-        #Update Status Board
-        if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED:
-            self._controllers['status_board'].addCommand(COMMAND.CMD_SET_DOCKED_SHIP_SOLVED)
+        # #Update Status Board
+        # if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED:
+        #     self._controllers['status_board'].addCommand(COMMAND.CMD_SET_DOCKED_SHIP_SOLVED)
 
-        if self._controllers['lasergrid'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED:
-            self._controllers['status_board'].addCommand(COMMAND.CMD_SET_LASER_GRID_SOLVED)   
+        # if self._controllers['lasergrid'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED:
+        #     self._controllers['status_board'].addCommand(COMMAND.CMD_SET_LASER_GRID_SOLVED)   
 
-        if self._controllers['keypad'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED:
-            self._controllers['status_board'].addCommand(COMMAND.CMD_SET_KEYPAD_SOLVED)
+        # if self._controllers['keypad'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED:
+        #     self._controllers['status_board'].addCommand(COMMAND.CMD_SET_KEYPAD_SOLVED)
 
-        if self._controllers['life_support'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED:
-            self._controllers['status_board'].addCommand(COMMAND.CMD_SET_LIFE_SUPPORT_SOLVED)
+        # if self._controllers['life_support'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED:
+        #     self._controllers['status_board'].addCommand(COMMAND.CMD_SET_LIFE_SUPPORT_SOLVED)
 
 
     def checkAllSlaves(self, condition):
@@ -220,19 +125,6 @@ class ProximaCommand(object):
     def _controlPowerControl(self):
                         
         #Check if the battery level is full and then enable all other puzzles if they are initialized
-        if self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_BATTERY] == self._batteryLevelMax \
-            and self._batteryFull == False:
-            self._batteryFull = True
-            self._batteryEmpty = False
-            self._controllers['datamatic'].addCommand(COMMAND.CMD_ENABLE)
-            self._controllers['safeomatic'].addCommand(COMMAND.CMD_ENABLE)
-            self._controllers['life_support'].addCommand(COMMAND.CMD_ENABLE)
-            self._controllers['docked_ship'].addCommand_SP(COMMAND.CMD_ENABLE)
-            self._controllers['docked_ship'].addCommand_ES(COMMAND.CMD_ENABLE)
-            self._controllers['prep_status'].addCommand(COMMAND.CMD_ENABLE)
-            self._controllers['lasergrid'].addCommand(COMMAND.CMD_ENABLE)
-            self._controllers['laserbar'].addCommand(COMMAND.CMD_ENABLE)
-            self._controllers['keypad'].addCommand(COMMAND.CMD_ENABLE)
         
         if self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_BATTERY] == self._batteryLevelMin \
             and self._batteryFull:
@@ -249,6 +141,33 @@ class ProximaCommand(object):
             self._controllers['lasergrid'].addCommand(COMMAND.CMD_DISABLE)
             self._controllers['laserbar'].addCommand(COMMAND.CMD_DISABLE)
             self._controllers['keypad'].addCommand(COMMAND.CMD_DISABLE)
+        
+        if self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_LIGHT_EFFECT_STATE] == STATE.FAILURE:
+            self._batteryFull = False
+            self._controllers['datamatic'].addCommand(COMMAND.CMD_DISABLE)
+            self._controllers['safeomatic'].addCommand(COMMAND.CMD_DISABLE)
+            self._controllers['life_support'].addCommand(COMMAND.CMD_DISABLE)
+            self._controllers['docked_ship'].addCommand_SP(COMMAND.CMD_DISABLE)
+            self._controllers['docked_ship'].addCommand_ES(COMMAND.CMD_DISABLE)
+            self._controllers['prep_status'].addCommand(COMMAND.CMD_DISABLE)
+            self._controllers['lasergrid'].addCommand(COMMAND.CMD_DISABLE)
+            self._controllers['laserbar'].addCommand(COMMAND.CMD_DISABLE)
+            self._controllers['keypad'].addCommand(COMMAND.CMD_DISABLE)
+        else:
+            if self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_BATTERY] == self._batteryLevelMax \
+                and self._batteryFull == False:
+                self._batteryFull = True
+                self._batteryEmpty = False
+                self._controllers['datamatic'].addCommand(COMMAND.CMD_ENABLE)
+                self._controllers['safeomatic'].addCommand(COMMAND.CMD_ENABLE)
+                self._controllers['life_support'].addCommand(COMMAND.CMD_ENABLE)
+                self._controllers['docked_ship'].addCommand_SP(COMMAND.CMD_ENABLE)
+                self._controllers['docked_ship'].addCommand_ES(COMMAND.CMD_ENABLE)
+                self._controllers['prep_status'].addCommand(COMMAND.CMD_ENABLE)
+                self._controllers['lasergrid'].addCommand(COMMAND.CMD_ENABLE)
+                self._controllers['laserbar'].addCommand(COMMAND.CMD_ENABLE)
+                self._controllers['keypad'].addCommand(COMMAND.CMD_ENABLE)
+
 
         #Check the power state of the puzzles and calculate the demand
         demand = 0.0
@@ -269,7 +188,7 @@ class ProximaCommand(object):
             
         #Check the demand value and set to power control if changed
         demand = int(demand * 10)
-        if demand != int(self._controllers['power_control'].getDemand()):
+        if demand !=  self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_DEMAND]:
             self._controllers['power_control'].setDemand(demand)
             self._controllers['power_control'].addCommand(COMMAND.CMD_SET_DEMAND)
 

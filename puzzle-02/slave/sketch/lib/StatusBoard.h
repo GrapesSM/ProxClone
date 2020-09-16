@@ -50,12 +50,6 @@ namespace StatusBoard {
       c.state = RESET;
     }
 
-    if (p.registers[REG_MASTER_COMMAND] == CMD_PAUSE &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.state = PAUSE;
-    }
-
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_SOLVED &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
@@ -112,27 +106,42 @@ namespace StatusBoard {
 
     if (c.state == SETUP) {
       c.state = INITIALIZING;
+
+      c.shipPrepStatus.init();
+      c.lifeSupportStatus.init();
+      c.blastDoorStatus.init();
+      c.laserGridStatus.init();
+      c.countdown.init();
+
       c.shipPrepStatus.setState(DISABLE);
       c.lifeSupportStatus.setState(DISABLE);
       c.blastDoorStatus.setState(DISABLE);
       c.laserGridStatus.setState(DISABLE);
       c.countdown.setState(DISABLE);
-      c.state = INITIALIZED;
+      c.state = DISABLE;
     }
   }
 
   void run(Components & c) 
   {
-    if (c.state == INITIALIZED) {
-      c.state = ENABLE;
-    }
-
     c.powerSwitch.update();
     c.shipPrepStatus.update();
     c.lifeSupportStatus.update();
     c.blastDoorStatus.update();
     c.laserGridStatus.update();
     c.countdown.update();
+
+    if (c.state == DISABLE) {
+      c.shipPrepStatus.setState(DISABLE);
+      c.lifeSupportStatus.setState(DISABLE);
+      c.blastDoorStatus.setState(DISABLE);
+      c.laserGridStatus.setState(DISABLE);
+      c.countdown.setState(DISABLE);
+    }
+
+    if (c.state == RESET) {
+      c.state = SETUP;
+    }
 
     if (c.state == ENABLE) {
       if (c.shipPrepStatus.getState() == DISABLE) {
@@ -186,22 +195,6 @@ namespace StatusBoard {
       c.countdown.setState(ENABLE);
     }
 
-    if (c.state == DISABLE) {
-      c.shipPrepStatus.setState(DISABLE);
-      c.lifeSupportStatus.setState(DISABLE);
-      c.blastDoorStatus.setState(DISABLE);
-      c.laserGridStatus.setState(DISABLE);
-      c.countdown.setState(DISABLE);
-    }
-
-    if (c.state == RESET) {
-      c.state = SETUP;
-    }
-
-    if (c.state == PAUSE) {
-
-    }
-    
   }
 
   void show(Components & c)

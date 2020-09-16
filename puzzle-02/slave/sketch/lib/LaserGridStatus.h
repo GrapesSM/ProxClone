@@ -10,6 +10,7 @@ class LaserGridStatus
 {
   public:
     LaserGridStatus();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
     void update();
     void setRedLight(STATE state);
@@ -23,7 +24,15 @@ class LaserGridStatus
     STATE _state;
 };
 
-LaserGridStatus::LaserGridStatus(){}
+LaserGridStatus::LaserGridStatus()
+{
+  init();
+}
+
+void LaserGridStatus::init()
+{
+  
+}
 
 void LaserGridStatus::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[])
 {

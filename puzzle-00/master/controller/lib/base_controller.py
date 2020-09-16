@@ -9,6 +9,8 @@ from queue import *
 
 
 class BaseController:
+    _busy = False
+    
     def __init__(self, key_name, model, puzzle, master):
         self._model=model
         self._puzzle=puzzle
@@ -23,7 +25,6 @@ class BaseController:
             'point': 0,
             'interval': 5000 #milliseconds
         }
-        self._busy = False
 
     @property
     def registers(self):
@@ -67,8 +68,9 @@ class BaseController:
                 continue
 
             self._busy = True
+            
+            if delay > 0: time.sleep(delay) # seconds
 
-            time.sleep(delay) # seconds
             registers = None
             for _ in range(1):
                 try: 
@@ -83,14 +85,14 @@ class BaseController:
                 print(self.getKeyName() ,"Slave Registers (modified):  ", self.registers)
 
             if self.getCommand() != COMMAND.CMD_NONE:
-                # print("COMMAND: ", self.getCommand(), " to " , self.getKeyName())
                 for _ in range(1):
                     try: 
                         readAgain = True
-                        print(self.getKeyName(), self.getSlaveID(), "write")
+                        if (self.getSlaveID() == 2): 
+                            print("CMD:",self.getKeyName(), self.getSlaveID(), self.getCommand(), "write", self._commandQueue)
                         self._master.execute(self.getSlaveID(), cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=self.registers)
+                        self._command = COMMAND.CMD_NONE
                     except Exception as excpt:
-                        print(self.getKeyName(), end=" ")
                         LOGGER.debug("SystemDataCollector error: %s", str(excpt))
                 
                 if readAgain:

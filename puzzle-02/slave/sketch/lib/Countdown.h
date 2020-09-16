@@ -9,6 +9,7 @@ class Countdown
 {
   public:
     Countdown();
+    void init();
     void set(
       Adafruit_7segment *_matrix
     );
@@ -33,7 +34,13 @@ class Countdown
     } timer;
 };
 
-Countdown::Countdown(){
+Countdown::Countdown()
+{
+  init();
+}
+
+void Countdown::init()
+{
   maxTimeCount = 3600;
   timeCounter  = maxTimeCount;
 }

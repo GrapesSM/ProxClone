@@ -9,14 +9,21 @@ class PowerControlController(BaseController):
         super().__init__(key_name, model, puzzle, master)
         self._demand = 0
         self._lighEffectPatternNumber = 0
-        self._baterryMaxValue = 7
-        self._batteryChargingRate = 5
+        self._baterryMaxValue = 13
+        self._batteryChargingRate = 7
         self._failurePeriodValue = 3
 
     def update(self, registers):
-        
+        if  registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] == 0:
+            registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.DONE
+
+        if self.getCommand() == registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND]:
+            if registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] == STATE.DONE:
+                registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_NONE
+                self._command = COMMAND.CMD_NONE
+                self._commandStatus = STATUS.ST_CONFIRMED
+
         if self.getCommand() == COMMAND.CMD_SET_DEMAND and self.getCommandStatus() == STATUS.ST_CREATED:
-            print("Command================== ", self.getCommand())
             registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_SET_DEMAND
             registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
             registers[PC_REGISTER_INDEX.REG_SLAVE_DEMAND] = self._demand
@@ -57,14 +64,6 @@ class PowerControlController(BaseController):
             registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
             registers[PC_REGISTER_INDEX.REG_SLAVE_FAILURE_PERIOD_VALUE] = self._failurePeriodValue
 
-        if  registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] == 0:
-            registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.DONE
-
-        if self.getCommand() == registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND]:
-            if registers[PC_REGISTER_INDEX.REG_SLAVE_CONFIRM] == STATE.DONE:
-                registers[PC_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_NONE
-                self._command = COMMAND.CMD_NONE
-                self._commandStatus = STATUS.ST_CONFIRMED
             
         self.setRegisters(registers)
 
