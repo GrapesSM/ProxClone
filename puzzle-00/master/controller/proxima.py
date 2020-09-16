@@ -189,7 +189,6 @@ class ProximaCommand(object):
         if self._gameStage == GAME_STAGE.ONGOING:
             self._controlStatusBoard()
 
-
         #Update Status Board
         if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED:
             self._controllers['status_board'].addCommand(COMMAND.CMD_SET_DOCKED_SHIP_SOLVED)

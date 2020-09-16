@@ -40,13 +40,6 @@ namespace LaserGrid {
 
   void update(Puzzle & p, Components & c) 
   {
-    p.registers[REG_SLAVE_MILLIS] = millis();
-    p.registers[REG_SLAVE_STATE] = c.state;
-    p.registers[REG_SLAVE_POWER_SWITCH_STATE] = c.powerSwitch.getState();
-    p.registers[REG_SLAVE_KEY_READER_STATE] = c.keyReader.getState();
-    p.registers[REG_SLAVE_WAVE_ADJUSTER_STATE] = c.waveAdjuster.getState();
-    p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
-    
     if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE && 
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
@@ -59,32 +52,60 @@ namespace LaserGrid {
       c.state = DISABLE;
     }
 
+    if (p.registers[REG_MASTER_COMMAND] == CMD_RESET && 
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = RESET;
+    }
+
+    p.registers[REG_SLAVE_MILLIS] = millis();
+    p.registers[REG_SLAVE_STATE] = c.state;
+    p.registers[REG_SLAVE_POWER_SWITCH_STATE] = c.powerSwitch.getState();
+    p.registers[REG_SLAVE_KEY_READER_STATE] = c.keyReader.getState();
+    p.registers[REG_SLAVE_WAVE_ADJUSTER_STATE] = c.waveAdjuster.getState();
+    p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
+    
+
     if (c.state == SETUP) {
       c.state = INITIALIZING;
+
+      c.powerSwitch.init();
+      c.keyReader.init();
+      c.waveAdjuster.init();
+      c.speaker.init();
+
       c.powerSwitch.setState(DISABLE);
       c.keyReader.setState(DISABLE);
       c.waveAdjuster.setState(DISABLE); 
       c.speaker.setState(DISABLE);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.state = INITIALIZED;
+      c.state = DISABLE;
     }
   }
 
   void run(Components & c) 
   {  
-    if (c.state == INITIALIZED) {
-      c.state = ENABLE;
-    }
-
     c.powerSwitch.update();
     c.keyReader.update();
     c.waveAdjuster.update();
     c.speaker.update();
 
+    if (c.powerSwitch.getState() == DISABLE) {
+      c.powerSwitch.setState(ENABLE);
+    }
+
+    if (c.state == DISABLE) {
+      c.powerSwitch.setLightOff();
+      c.keyReader.setState(DISABLE);
+      c.waveAdjuster.setState(DISABLE); 
+      c.speaker.setState(DISABLE);
+    }
+
+    if (c.state == RESET) {
+      c.state = SETUP;
+    }
+
     if (c.state == ENABLE) {
-      if (c.powerSwitch.getState() == DISABLE) {
-        c.powerSwitch.setState(ENABLE);
-      }
       
       if (c.powerSwitch.getState() == OFF) { 
         c.keyReader.setState(DISABLE);
@@ -133,7 +154,6 @@ namespace LaserGrid {
       }
     }
     
-
     if (c.state == SOLVED) {
       if (c.powerSwitch.getState() == OFF) { 
         c.keyReader.setState(DISABLE);
@@ -150,13 +170,6 @@ namespace LaserGrid {
       }
     }
 
-    if (c.state == RESET) {
-
-    }
-
-    if (c.state == PAUSE) {
-
-    }
   }
 
   void show(Components & c)

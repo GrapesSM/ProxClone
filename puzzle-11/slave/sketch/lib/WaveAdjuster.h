@@ -12,6 +12,7 @@ class WaveAdjuster
 {
   public:
     WaveAdjuster();
+    void init();
     void set(int inputPin1, int inputPin2, int inputPin3, HardwareSerial * serial);
     void update();
     void display();
@@ -35,6 +36,11 @@ class WaveAdjuster
 };
 
 WaveAdjuster::WaveAdjuster() 
+{
+  init();
+}
+
+void WaveAdjuster::init()
 {
   i = 0; j = 0; k = 0;
   timer = 0;
