@@ -126,14 +126,14 @@ void runTaskFunction( void * parameters ) {
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Enable communication to master
-    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-    
     // Map puzzle's values with component's values
     LaserGrid::update(puzzle, lgComponents);
 
     // State changes
     LaserGrid::run(lgComponents);
+    
+    // Show changes
+    LaserGrid::show(lgComponents);
 
     vTaskDelay(10);
   } 
@@ -145,10 +145,7 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-
-    // Show changes
-    LaserGrid::show(lgComponents);
-
-    vTaskDelay(10);
+    // Enable communication to master
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 
 }

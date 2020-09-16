@@ -75,8 +75,7 @@ enum STATE {
 
 #define NUMBER_OF_SOUNDS 2
 enum {  // enumeration from 0, 1, 2 ...
-  SOUND_POWER_UP,
-  SOUND_POWER_DOWN
+  SOUND_DETECTED
 };
 
 enum REGISTER_INDEX {

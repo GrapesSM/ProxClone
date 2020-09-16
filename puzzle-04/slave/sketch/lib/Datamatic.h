@@ -28,7 +28,6 @@ namespace Datamatic {
 
   void update(Puzzle & p, Components & c)
   {
-
     if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE && 
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
@@ -45,48 +44,6 @@ namespace Datamatic {
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = RESET;
-    }
-
-    if (p.registers[REG_MASTER_COMMAND] == CMD_PAUSE &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.state = PAUSE;
-    }
-
-    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_LIGHT_EFFECT_PATTERN_NUMBER &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;   
-      c.lightEffect.setPatternNumber(p.registers[REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER]);
-    }
-
-    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_DATAMATIC_KEY_1 &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;
-      keyForCodeReader1 = String(p.registers[REG_SLAVE_KEY_1]);
-    }    
-
-    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_DATAMATIC_KEY_2 &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;
-      keyForCodeReader2 = String(p.registers[REG_SLAVE_KEY_2]);
-    }   
-
-    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_DATAMATIC_KEY_3 &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;
-      keyForCodeReader3 = String(p.registers[REG_SLAVE_KEY_3]);
-    }   
-
-    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_DATAMATIC_KEY_4 &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;
-      keyForCodeReader4 = String(p.registers[REG_SLAVE_KEY_4]);
-    }  
-
-    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_DATAMATIC_KEY_5 &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;
-      keyForCodeReader5 = String(p.registers[REG_SLAVE_KEY_5]);
     }  
 
     p.registers[REG_SLAVE_MILLIS] = millis();
@@ -97,36 +54,48 @@ namespace Datamatic {
     p.registers[REG_SLAVE_LIGHT_EFFECT_STATE] = c.lightEffect.getState();
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
     p.registers[REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER] = c.lightEffect.getPatternNumber();
-    //p.registers[REG_SLAVE_KEY_1] = int(keyForCodeReader1);
-    //p.registers[REG_SLAVE_KEY_2] = int(keyForCodeReader2);
-    //p.registers[REG_SLAVE_KEY_3] = int(keyForCodeReader3);
-    //p.registers[REG_SLAVE_KEY_4] = int(keyForCodeReader4);
-    //p.registers[REG_SLAVE_KEY_5] = int(keyForCodeReader5);
-
 
     if(c.state == SETUP) {
       c.state = INITIALIZING;
       p.registers[REG_SLAVE_CONFIRM] = DONE;
+
+      c.powerSwitch.init();
+      c.codeReader.init();
+      c.informationDisplay.init();
+      c.lightEffect.init();
+      c.speaker.init();
 
       c.powerSwitch.setState(DISABLE);
       c.codeReader.setState(DISABLE);
       c.informationDisplay.setState(DISABLE);
       c.lightEffect.setState(DISABLE);
       c.speaker.setState(DISABLE);
-      c.state = INITIALIZED;
+      c.state = DISABLE;
     }
   }
 
   void run(Components &c)
   {
-    if(c.state == INITIALIZED) {
-      c.state = ENABLE;
-    }
-    
     c.powerSwitch.update();
     c.codeReader.update();
     c.informationDisplay.update();
     c.lightEffect.update();
+
+    if (c.powerSwitch.getState() == DISABLE) {
+      c.powerSwitch.setState(ENABLE);
+    }
+
+    if (c.state == DISABLE) {
+      c.powerSwitch.setLightOff();
+      c.codeReader.setState(DISABLE);
+      c.informationDisplay.setState(DISABLE);
+      c.lightEffect.setState(DISABLE);
+      c.speaker.setState(DISABLE);
+    }
+
+    if (c.state == RESET) {
+      c.state = SETUP;
+    }
 
     if (c.state == ENABLE) {
       if (c.powerSwitch.getState() == DISABLE) {
@@ -171,21 +140,6 @@ namespace Datamatic {
       }
     }
 
-    if (c.state == DISABLE) {
-      c.powerSwitch.setState(DISABLE);
-      c.codeReader.setState(DISABLE);
-      c.informationDisplay.setState(DISABLE);
-      c.lightEffect.setState(DISABLE);
-      c.speaker.setState(DISABLE);
-    }
-
-    if (c.state == PAUSE) {
-      
-    }
-
-    if (c.state == RESET) {
-      c.state = SETUP;
-    }
   }
 
   void show(Components &c)
@@ -198,6 +152,8 @@ namespace Datamatic {
       c.powerSwitch.display();
       c.lightEffect.display();
     }
+
+    c.speaker.play();
   }
 }
 

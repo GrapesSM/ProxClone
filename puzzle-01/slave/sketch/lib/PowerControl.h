@@ -30,6 +30,7 @@ namespace PowerControl {
       unsigned long interval = 200;
     } showTimer;
     unsigned long failurePeriod = 45000;
+    float tempSupply = 0;
   } Components;
 
   void update(Puzzle & p, Components & c) 
@@ -52,40 +53,10 @@ namespace PowerControl {
       c.state = RESET;
     }
 
-    if (p.registers[REG_MASTER_COMMAND] == CMD_PAUSE &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.state = PAUSE;
-    }
-
-    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_LIGHT_EFFECT_PATTERN_NUMBER &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;   
-      c.lightEffect.setPatternNumber(p.registers[REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER]);
-    }
-
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_DEMAND &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;   
       c.powerAdjuster.setDemand(p.registers[REG_SLAVE_DEMAND] / 10.0);  
-    }
-
-    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_BATTERY_MAX_VALUE &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.battery.setMaxValue(p.registers[REG_SLAVE_BATTERY_MAX_VALUE]);
-    }
-
-    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_BATTERY_CHARGING_RATE &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.battery.setRate(p.registers[REG_SLAVE_BATTERY_CHARGING_RATE] / 10.0);
-    }
-
-    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_FAILURE_PERIOD_VALUE &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.failurePeriod = (p.registers[REG_SLAVE_FAILURE_PERIOD_VALUE]);
     }
     
     p.registers[REG_SLAVE_MILLIS] = millis();
@@ -102,6 +73,12 @@ namespace PowerControl {
     if (c.state == SETUP) {
       c.state = INITIALIZING;
       p.registers[REG_SLAVE_CONFIRM] = DONE;
+
+      c.powerLightIndicator.init();
+      c.battery.init();
+      c.powerAdjuster.init();
+      c.speaker.init();
+      c.lightEffect.init();
       
       c.powerLightIndicator.setState(DISABLE);
       
@@ -118,21 +95,29 @@ namespace PowerControl {
       
       c.lightEffect.setState(DISABLE);
       
-      c.state = INITIALIZED;
+      c.state = DISABLE;
     }
   }
 
   void run(Components & c)
   {
-    if (c.state == INITIALIZED) {
-      c.state = ENABLE;
-    }
-
     c.powerAdjuster.update();
     c.powerLightIndicator.update();
     c.battery.update();
     c.lightEffect.update();
     c.speaker.update();
+
+    if (c.state == DISABLE) {
+      c.powerLightIndicator.setState(DISABLE);
+      c.battery.setState(DISABLE);
+      c.powerAdjuster.setState(DISABLE);
+      c.lightEffect.setState(DISABLE);
+      c.speaker.setState(DISABLE);
+    }
+
+    if (c.state == RESET) {
+      c.state = SETUP;
+    }
 
     if (c.state == ENABLE) {
       if (c.powerAdjuster.getState() == DISABLE) {
@@ -158,7 +143,6 @@ namespace PowerControl {
 
         if ((c.timer.current - c.timer.start) > (c.failurePeriod / 3 * 3)) {
           c.powerLightIndicator.setState(FAILURE);
-          // c.state = FAILURE;
         } else if ((c.timer.current - c.timer.start) > (c.failurePeriod / 3 * 2)) {
           c.lightEffect.setState(FLASH);
           c.powerLightIndicator.setState(FLASH);
@@ -173,38 +157,19 @@ namespace PowerControl {
         c.battery.setState(ENABLE);
         c.timer.start = 0;
       }
-    }
 
-    if (c.state == FAILURE) {
-      c.powerLightIndicator.setState(DISABLE);
-      c.lightEffect.setState(FAILURE);
-      c.powerAdjuster.setState(DISABLE);
-      c.battery.setState(DISABLE);
-    }
-
-    if (c.state == DISABLE) {
-      c.powerLightIndicator.setState(DISABLE);
-      c.battery.setState(DISABLE);
-      c.powerAdjuster.setState(DISABLE);
-      c.lightEffect.setState(DISABLE);
-    }
-
-    if (c.state == RESET) {
-      c.state = SETUP;
-    }
-
-    if (c.state == PAUSE) {
-
+      if (c.powerLightIndicator.getState() == FAILURE) {
+        c.lightEffect.setState(FAILURE);
+      }
     }
   }
 
   void show(Components & c)
   {
     c.showTimer.current = millis();
-    float temp = 0;
     if ((c.showTimer.current - c.showTimer.showpoint) > c.showTimer.interval) {
-      if (temp != c.powerAdjuster.getSupply()) {
-        temp = c.powerAdjuster.getSupply();
+      if (c.tempSupply != c.powerAdjuster.getSupply()) {
+        c.tempSupply = c.powerAdjuster.getSupply();
         c.speaker.addToPlay(SOUND_POWER_ADJUST);
       }
 

@@ -12,60 +12,92 @@
     <div v-if="keyName === 'status_board'">
       <puzzle2 
         v-bind:id="id"
+        v-bind:name="name"
+        v-bind:key-name="keyName"
+        v-bind:state="state"
+        v-bind:state-names="stateNames"
         ></puzzle2>
     </div>
     <div v-if="keyName === 'datamatic'">
       <puzzle3 
         v-bind:id="id"
+        v-bind:name="name"
+        v-bind:key-name="keyName"
+        v-bind:state="state"
+        v-bind:state-names="stateNames"
         ></puzzle3>
     </div>
     <div v-if="keyName === 'safeomatic'">
       <puzzle4 
         v-bind:id="id"
+        v-bind:name="name"
+        v-bind:key-name="keyName"
+        v-bind:state="state"
+        v-bind:state-names="stateNames"
         ></puzzle4>
     </div>
     <div v-if="keyName === 'rcp'">
       <puzzle5 
         v-bind:id="id"
+        v-bind:name="name"
+        v-bind:key-name="keyName"
+        v-bind:state="state"
+        v-bind:state-names="stateNames"
         ></puzzle5>
     </div>
     <div v-if="keyName === 'life_support'">
       <puzzle6 
         v-bind:id="id"
+        v-bind:name="name"
+        v-bind:key-name="keyName"
+        v-bind:state="state"
+        v-bind:state-names="stateNames"
         ></puzzle6>
     </div>
     <div v-if="keyName === 'docked_ship'">
       <puzzle7 
         v-bind:id="id"
+        v-bind:name="name"
+        v-bind:key-name="keyName"
+        v-bind:state="state"
+        v-bind:state-names="stateNames"
         ></puzzle7>
     </div>
     <div v-if="keyName === 'prep_status'">
       <puzzle8 
         v-bind:id="id"
+        v-bind:name="name"
+        v-bind:key-name="keyName"
+        v-bind:state="state"
+        v-bind:state-names="stateNames"
         ></puzzle8>
     </div>
     <div v-if="keyName === 'lasergrid'">
       <puzzle9 
         v-bind:id="id"
+        v-bind:name="name"
+        v-bind:key-name="keyName"
+        v-bind:state="state"
+        v-bind:state-names="stateNames"
         ></puzzle9>
     </div>
     <div v-if="keyName === 'keypad'">
       <puzzle10 
         v-bind:id="id"
+        v-bind:name="name"
+        v-bind:key-name="keyName"
+        v-bind:state="state"
+        v-bind:state-names="stateNames"
         ></puzzle10>
     </div>
     <div v-if="keyName === 'laserbar'">
       <puzzle11 
         v-bind:id="id"
+        v-bind:name="name"
+        v-bind:key-name="keyName"
+        v-bind:state="state"
+        v-bind:state-names="stateNames"
         ></puzzle11>
-    </div>
-    <div v-if="keyName === 'puzzle_12'">
-      <puzzle12 
-        v-bind:id="id"
-        ></puzzle12>
-    </div>
-    <div v-if="keyName === 'puzzle_13'">
-      <puzzle13></puzzle13>
     </div>
   </div>
 </template>
@@ -82,8 +114,6 @@ import Puzzle8 from './Puzzle8.vue';
 import Puzzle9 from './Puzzle9.vue';
 import Puzzle10 from './Puzzle10.vue';
 import Puzzle11 from './Puzzle11.vue';
-import Puzzle12 from './Puzzle12.vue';
-import Puzzle13 from './Puzzle13.vue';
 
 export default {
   props: ['id', 'name', 'keyName', 'state', 'stateNames'],
@@ -98,9 +128,7 @@ export default {
     puzzle8: Puzzle8,
     puzzle9: Puzzle9,
     puzzle10: Puzzle10,
-    puzzle11: Puzzle11,
-    puzzle12: Puzzle12,
-    puzzle13: Puzzle13
+    puzzle11: Puzzle11
   }
 };
 </script>

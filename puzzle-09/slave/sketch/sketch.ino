@@ -116,7 +116,7 @@ void setup()
   xTaskCreatePinnedToCore(
     showTaskFunction,   /* Task function. */
     "ShowTask",     /* name of task. */
-    80000,       /* Stack size of task */
+    40000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
@@ -145,7 +145,7 @@ void setupShipPrepAux()
   spComponents.batteryMatrix.set(parts.strip, lightPinsForBatteryMatrix, &parts.mcp2, switchPinsForBatteryMatrix, labelsForBatteryMatrix);
   spComponents.generator.set(parts.strip, lightPinsForGenerator, &parts.mcp1, switchPinsForGenerator, labelsForGenerator);
   spComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitchOfShipPrep, PIN_SWITCH_2);
-  spComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
+  spComponents.speaker = esComponents.speaker; //.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
 }
 
 //Run Task Function: process changes of puzzle
@@ -154,16 +154,19 @@ void runTaskFunction( void * parameters ) {
   Serial.println(xPortGetCoreID());
 
   for(;;) {
-    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-
-    vTaskDelay(10);
-   
+    // Map puzzle's values to component's values
     EnergySupplemental::update(puzzle, esComponents);
     ShipPrepAux::update(puzzle, spComponents);
-    
+
+    // State changes
     EnergySupplemental::run(esComponents);
     ShipPrepAux::run(spComponents);
 
+    // Show changes
+    EnergySupplemental::show(esComponents);
+    ShipPrepAux::show(spComponents);
+    
+    vTaskDelay(10);
   }
 }
 
@@ -172,10 +175,8 @@ void showTaskFunction( void * parameters ){
   Serial.print("Show Task running on core ");
   Serial.println(xPortGetCoreID());
 
-  for(;;){    
-    // Show changes
-    EnergySupplemental::show(esComponents);
-    ShipPrepAux::show(spComponents);
-    vTaskDelay(10);
+  for(;;){  
+    // Enable communication to master  
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 
 }

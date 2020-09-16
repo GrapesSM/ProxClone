@@ -94,8 +94,8 @@ void setup()
   // Setup sound list
   parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
   parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
-   parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
-   parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
+  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
   
   setupDatamatic();
     // Setup Task functions
@@ -136,7 +136,7 @@ void setupDatamatic()
   dmComponents.codeReader.set(&parts.matrix, &parts.mcp1, buttonPins1, &parts.mcp2, buttonPins2, buttonLabels, PIN_INPUT_1, PIN_INPUT_2);
   dmComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
   dmComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
-  dmComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
+  dmComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
 }
 
 //Run Task Function: process changes of puzzle
@@ -145,14 +145,14 @@ void runTaskFunction( void * parameters ) {
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Enable communication to master
-    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-    
     Datamatic::update(puzzle, dmComponents);
 
     // Enable Datamatic
     Datamatic::run(dmComponents);
    
+    // Show changes
+    Datamatic::show(dmComponents);
+    
     vTaskDelay(10);
   }
 }
@@ -163,9 +163,7 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Show changes
-    Datamatic::show(dmComponents);
-
-    vTaskDelay(10);
+    // Enable communication to master
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 
 }

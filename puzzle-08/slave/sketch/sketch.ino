@@ -1,6 +1,7 @@
 #include "Constants.h"
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
+#include <Wire.h>
 #include <Adafruit_GFX.h>
 #include "Adafruit_LEDBackpack.h"
 #include "lib/LifeSupport.h"
@@ -32,6 +33,10 @@ TaskHandle_t showTask;
 void setup() 
 {
   Serial.begin(SERIAL_BAUDRATE);
+  while (!Serial);
+  
+  // Setup 7 segment LED
+  parts.matrix.begin(ADDR_SEVENSEGMENT);
 
   // Setup Modbus communication
   parts.slave = &slave;
@@ -44,9 +49,6 @@ void setup()
   parts.strip = &strip;
   parts.strip->Begin();
   parts.strip->Show();
-  
-  // Setup 7 segment LED
-  parts.matrix.begin(ADDR_SEVENSEGMENT);
   
   // Setup power switch
   pinMode(PIN_SWITCH_1, INPUT);
@@ -81,8 +83,6 @@ void setup()
     1,           /* priority of the task */
     &runTask,      /* Task handle to keep track of created task */
     0);          /* pin task to core 0 */                  
-
-//  delay(50);
   
   if(temp1) {
     Serial.println("Task created...");
@@ -98,8 +98,6 @@ void setup()
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
     1);
-
-//  delay(500);
 
   if(temp2) {
     Serial.println("Task created...");
@@ -127,10 +125,8 @@ void setupLifeSupport()
 void runTaskFunction( void * parameters ) {
   Serial.print("Run Task running on core ");
   Serial.println(xPortGetCoreID());
-
+  
   for(;;){
-    // Enable communication to master
-    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
     // Map puzzle's values to component's values
     LifeSupport::update(puzzle, lsComponents);
@@ -138,6 +134,9 @@ void runTaskFunction( void * parameters ) {
     // State changes
     LifeSupport::run(lsComponents);
     
+    // Show changes
+    LifeSupport::show(lsComponents);
+
     vTaskDelay(10);
   } 
 }
@@ -146,12 +145,9 @@ void runTaskFunction( void * parameters ) {
 void showTaskFunction( void * parameters ){
   Serial.print("Show Task running on core ");
   Serial.println(xPortGetCoreID());
-
+  
   for(;;){
-
-    // Show changes
-    LifeSupport::show(lsComponents);
-    
-    vTaskDelay(10);
+    // Enable communication to master
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 
 }

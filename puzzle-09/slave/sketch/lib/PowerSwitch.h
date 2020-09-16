@@ -6,7 +6,7 @@
 #define PowerSwitch_h
 
 #include <Arduino.h>
-#include <NeoPixelBus.h>
+#include "DebounceSwitch.h"
 
 class PowerSwitch
 {
@@ -26,12 +26,7 @@ class PowerSwitch
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
     int _lightPin;
-    int _pin;
-    int _reading;
-    int _switchState;
-    int _lastSwitchState;
-    unsigned long _lastDebounceTime = 0;
-    unsigned long _debounceDelay = 50;
+    DebounceSwitch _dSwitch;
     STATE _state;
 };
 
@@ -41,29 +36,12 @@ void PowerSwitch::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int l
 {
   _strip = strip;
   _lightPin = lightPin;
-  _pin = pin;
+  _dSwitch.set(pin);
 }
-
-void PowerSwitch::readSwitch()
-{
-  _reading = digitalRead(_pin);
-  if (_reading != _lastSwitchState) {
-    _lastDebounceTime = millis();
-  }
-
-  if ((millis() - _lastDebounceTime) > _debounceDelay) {
-    // if (_reading != _switchState) {
-      _switchState = _reading;
-    // }
-  }
-
-  _lastSwitchState = _reading;
-}
-
 
 bool PowerSwitch::isSwitchOn()
 {
-  return _switchState;
+  return _dSwitch.getState();
 }
 
 bool PowerSwitch::isSwitchOff()
@@ -88,7 +66,8 @@ void PowerSwitch::display()
 
 void PowerSwitch::update() 
 {
-  readSwitch();
+  _dSwitch.readSwitch();
+
   switch (_state)
   {
     case DISABLE:

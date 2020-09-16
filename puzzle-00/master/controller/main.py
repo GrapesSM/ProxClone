@@ -11,6 +11,7 @@ from modbus_tk.simulator_rpc_client import SimulatorRpcClient
 from modbus_tk.utils import WorkerThread
 import random
 import time
+from threading import Thread
 import serial
 import json
 
@@ -31,39 +32,39 @@ from lib.keypad_controller import KeypadController
 from lib.laserbar_controller import LaserbarController
 from proxima import ProximaCommand
 
-def createControllers():
+def createControllers(master):
     controllers = {}
     for key_name in cfg.puzzles.keys():
         if key_name == "power_control":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[key_name] = PowerControlController(key_name, model, cfg.puzzles[key_name])
+            controllers[key_name] = PowerControlController(key_name, model, cfg.puzzles[key_name], master)
         if key_name == "datamatic":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[key_name] =  DatamaticController(key_name, model, cfg.puzzles[key_name])
+            controllers[key_name] =  DatamaticController(key_name, model, cfg.puzzles[key_name], master)
         if key_name == "docked_ship":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[key_name] = DockedShipController(key_name, model, cfg.puzzles[key_name])
+            controllers[key_name] = DockedShipController(key_name, model, cfg.puzzles[key_name], master)
         if key_name == "prep_status":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[key_name] = PrepStatusController(key_name,model, cfg.puzzles[key_name])
+            controllers[key_name] = PrepStatusController(key_name,model, cfg.puzzles[key_name], master)
         if key_name == "lasergrid":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[key_name] = LaserGridController(key_name, model, cfg.puzzles[key_name])
+            controllers[key_name] = LaserGridController(key_name, model, cfg.puzzles[key_name], master)
         if key_name == "life_support":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[key_name] = LifeSupportController(key_name, model, cfg.puzzles[key_name])
+            controllers[key_name] = LifeSupportController(key_name, model, cfg.puzzles[key_name], master)
         if key_name == "safeomatic":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[key_name] = SafeomaticController(key_name, model, cfg.puzzles[key_name])
+            controllers[key_name] = SafeomaticController(key_name, model, cfg.puzzles[key_name], master)
         if key_name == "status_board":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[key_name] = StatusBoardController(key_name, model, cfg.puzzles[key_name])
+            controllers[key_name] = StatusBoardController(key_name, model, cfg.puzzles[key_name], master)
         if key_name == "keypad":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[key_name] = KeypadController(key_name, model, cfg.puzzles[key_name])
+            controllers[key_name] = KeypadController(key_name, model, cfg.puzzles[key_name], master)
         if key_name == "laserbar":
             model = Puzzle.get_or_none(key_name=key_name)
-            controllers[key_name] = LaserbarController(key_name, model, cfg.puzzles[key_name])
+            controllers[key_name] = LaserbarController(key_name, model, cfg.puzzles[key_name], master)
     return controllers
 
 def main():
@@ -81,16 +82,39 @@ def main():
         xonxoff=cfg.modbus['xonxoff']))
     master.set_timeout(cfg.modbus['timeout'])
     master.set_verbose(cfg.modbus['verbose'])
+    while not master:
+        print("Hello")
 
-    controllers = createControllers()
+    controllers = createControllers(master)
     proximaCommand = ProximaCommand(controllers, master)
-    system_monitor = WorkerThread(proximaCommand.run_test_cycle)
+    systemMonitor = WorkerThread(proximaCommand.run)
+    slaveThreads = list()
+    flagStopThreads = False
+    for key_name in controllers.keys():
+        if key_name not in [
+            'docked_ship',
+            'prep_status',
+            'power_control',
+            'status_board',
+            'datamatic',
+            'safeomatic',
+            'life_support',
+            'lasergrid',
+            'laserbar',
+            'keypad',
+            ]:
+            continue
+        slaveThreads.append(Thread(target = controllers[key_name].readAndWriteToSlave, args=(0.3, lambda : flagStopThreads), daemon = True))
+
 
     try:
         LOGGER.info("'quit' for closing the server")
 
         #start the system
-        system_monitor.start()
+        systemMonitor.start()
+
+        for thread in slaveThreads:
+            thread.start()
 
         #start the simulator! will block until quit command is received
         simulator.start()
@@ -100,10 +124,13 @@ def main():
         print(excpt)
 
     finally:
+        flagStopThreads = True
         #close the simulator
         simulator.close()
         #stop the data collect
-        system_monitor.stop()
+        systemMonitor.stop()
+
+
 
 if __name__ == "__main__":
     main()

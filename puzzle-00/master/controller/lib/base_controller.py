@@ -1,19 +1,30 @@
 #!/usr/bin/etc python3
+from modbus_tk.modbus import LOGGER
+import modbus_tk.defines as cst
+import time
+import json
 from .constants import STATE
 from .constants import STATE, COMMAND, REGISTER_INDEX, STATUS
 from queue import *
 
 
 class BaseController:
-    def __init__(self, key_name, model, puzzle):
+    def __init__(self, key_name, model, puzzle, master):
         self._model=model
         self._puzzle=puzzle
         self._key_name = key_name
         self._command = COMMAND.CMD_NONE
         self._commandQueue = []
         self._commandStatus = STATUS.ST_NONE
+        self._master = master
         self._forced = False
-    
+        self._timer = {
+            'current': 0,
+            'point': 0,
+            'interval': 5000 #milliseconds
+        }
+        self._busy = False
+
     @property
     def registers(self):
         return self._puzzle['registers']
@@ -47,6 +58,57 @@ class BaseController:
                 self._command = COMMAND.CMD_NONE
                 self._commandStatus = STATUS.ST_CREATED
 
+    def readAndWriteToSlave(self, delay, stop):
+        while True:
+            if stop():
+                break
+
+            if self._busy:
+                continue
+
+            self._busy = True
+
+            time.sleep(delay) # seconds
+            registers = None
+            for _ in range(1):
+                try: 
+                    registers = list(self._master.execute(self.getSlaveID(), cst.READ_HOLDING_REGISTERS, 0, self.getNumberOfRegisters()))
+                except Exception as excpt:
+                    print(self.getKeyName(), end=" ")
+                    LOGGER.debug("SystemDataCollector1 error: %s", str(excpt))
+
+            if registers:
+                print(self.getKeyName() ,"Slave Registers (received):  ", registers)
+                self.update(registers)
+                print(self.getKeyName() ,"Slave Registers (modified):  ", self.registers)
+
+            if self.getCommand() != COMMAND.CMD_NONE:
+                # print("COMMAND: ", self.getCommand(), " to " , self.getKeyName())
+                for _ in range(1):
+                    try: 
+                        readAgain = True
+                        print(self.getKeyName(), self.getSlaveID(), "write")
+                        self._master.execute(self.getSlaveID(), cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=self.registers)
+                    except Exception as excpt:
+                        print(self.getKeyName(), end=" ")
+                        LOGGER.debug("SystemDataCollector error: %s", str(excpt))
+                
+                if readAgain:
+                    registers = None
+                    for _ in range(1):
+                        try: 
+                            # registers = list(self._master.execute(self.getSlaveID(), cst.READ_HOLDING_REGISTERS, 0, self.getNumberOfRegisters()))
+                            registers = self.registers
+                            # print(self.getKeyName(), self.getSlaveID(), "read")
+                        except Exception as excpt:
+                            # print(self.getKeyName(), end=" ")
+                            LOGGER.debug("SystemDataCollector1 error: %s", str(excpt))
+                    if registers:
+                        # print(self.getKeyName() ,"Slave Registers (received):  ", registers)
+                        self.update(registers)
+                        # print(self.getKeyName() ,"Slave Registers (modified):  ", self.registers)
+            self.refreshCommand()
+            self._busy = False
 
 
     def getCommandStatus(self):
@@ -59,6 +121,12 @@ class BaseController:
     def setRegisters(self, registers):
         for i in range(len(self._puzzle['registers'])):
             self._puzzle['registers'][i] = registers[i]
+        
+        self._timer['current'] = int(round(time.time() * 1000))
+        if (self._timer['current'] - self._timer['point']) > self._timer['interval']:
+            self._timer['point'] = int(round(time.time() * 1000))
+            self._model.state = json.dumps(self._puzzle)
+            self._model.save()
 
     def getNumberOfRegisters(self):
         return len(self._puzzle['registers'])

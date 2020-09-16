@@ -47,12 +47,6 @@ namespace Safeomatic {
       c.state = RESET;
     }
 
-    if (p.registers[REG_MASTER_COMMAND] == CMD_PAUSE &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.state = PAUSE;
-    }
-
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_SOLVED &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
@@ -69,32 +63,47 @@ namespace Safeomatic {
 
     if (c.state == SETUP) {
       c.state = INITIALIZING;
+
+      c.powerSwitch.init();
+      c.combinationReader.init();
+      c.accessPanel.init();
+      c.door.init();
+      c.speaker.init();
+
       c.powerSwitch.setState(DISABLE);
       c.combinationReader.setState(DISABLE);
       c.accessPanel.setState(DISABLE);
       c.door.setState(DISABLE);
       c.speaker.setState(DISABLE);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.state = INITIALIZED;
+      c.state = DISABLE;
     }
   }
 
   void run(Components & c) 
-  {
-    if (c.state == INITIALIZED) {
-      c.state = ENABLE;
-    }
-    
+  {    
     c.powerSwitch.update();
     c.combinationReader.update();
     c.accessPanel.update();
     c.door.update();
+    
+    if (c.powerSwitch.getState() == DISABLE) {
+      c.powerSwitch.setState(ENABLE);
+    }
+
+    if (c.state == DISABLE) {
+      c.powerSwitch.setLightOff();
+      c.combinationReader.setState(DISABLE);
+      c.accessPanel.setState(DISABLE);
+      c.door.setState(DISABLE);
+      c.speaker.setState(DISABLE);
+    }
+
+    if (c.state == RESET) {
+      c.state = SETUP;
+    }
 
     if (c.state == ENABLE) {
-      if (c.powerSwitch.getState() == DISABLE) {
-        c.powerSwitch.setState(ENABLE);
-      }
-
       if (c.powerSwitch.getState() == OFF) {
         c.combinationReader.setState(DISABLE);
         c.accessPanel.setState(DISABLE);
@@ -140,23 +149,6 @@ namespace Safeomatic {
         c.speaker.setState(ENABLE);
       }
     }
-
-    if (c.state == DISABLE) {
-      c.powerSwitch.setState(DISABLE);
-      c.combinationReader.setState(DISABLE);
-      c.accessPanel.setState(DISABLE);
-      c.door.setState(DISABLE);
-      c.speaker.setState(DISABLE);
-    }
-
-    if (c.state == RESET) {
-      c.state = SETUP;
-    }
-
-    if (c.state == PAUSE) {
-
-    }
-
   }
 
   void show(Components & c)

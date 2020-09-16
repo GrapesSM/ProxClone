@@ -13,6 +13,7 @@ class InformationDisplay
 {
   public:
     InformationDisplay();
+    void init();
     void set(ESP32Encoder * encoder);
     void update();
     void display();
@@ -30,6 +31,11 @@ class InformationDisplay
 };
 
 InformationDisplay::InformationDisplay() {
+  init();
+}
+
+void InformationDisplay::init()
+{
   _val = 0;
   _min = 0;
   _max = 100;

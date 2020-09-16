@@ -5,8 +5,8 @@ from .helpers import time_now
 from enum import Enum
 
 class StatusBoardController(BaseController):
-    def __init__(self, key_name, model, puzzle):
-        super().__init__(key_name, model, puzzle)
+    def __init__(self, key_name, model, puzzle, master):
+        super().__init__(key_name, model, puzzle, master)
         self._countdownTime = 3600
 
     def setCountdownTime(self, value):

@@ -11,6 +11,7 @@ class Door
 {
   public:
     Door();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPin, int pin);
     void setClosed(bool);
     bool isClosed();
@@ -28,15 +29,22 @@ class Door
     bool _closed;
 };
 
-Door::Door() {}
+Door::Door() 
+{
+  init();
+}
+
+void Door::init()
+{
+  _closed = true;
+  _state = OFF;
+}
 
 void Door::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPin, int pin) 
 {
   _strip = strip;
   _lightPin = lightPin;
   _pin = pin;
-  _state = OFF;
-  _closed = true;
 }
 
 void Door::setClosed(bool value)

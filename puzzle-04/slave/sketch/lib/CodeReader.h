@@ -18,6 +18,7 @@ class CodeReader
 {
   public:
     CodeReader();
+    void init();
     void set(
       SevenSegment *matrix, 
       Adafruit_MCP23017 *mcp1,
@@ -63,6 +64,11 @@ class CodeReader
 };
 
 CodeReader::CodeReader() {
+  init();
+}
+
+void CodeReader::init()
+{
   _entered = false;
   _counter = 0;
   _transmitted = false;

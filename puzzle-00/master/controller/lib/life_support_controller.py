@@ -5,8 +5,8 @@ from .helpers import time_now
 from enum import Enum
 
 class LifeSupportController(BaseController):
-    def __init__(self, key_name, model, puzzle):
-        super().__init__(key_name, model, puzzle)
+    def __init__(self, key_name, model, puzzle, master):
+        super().__init__(key_name, model, puzzle, master)
         self._lighEffectPatternNumber = 0
 
     def update(self, registers):

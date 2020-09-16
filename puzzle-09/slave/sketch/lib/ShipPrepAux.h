@@ -51,6 +51,12 @@ namespace ShipPrepAux {
       c.state = PAUSE;
     }
 
+    if (p.registers[REG_MASTER_SP_COMMAND] == CMD_SET_SOLVED &&
+        p.registers[REG_SLAVE_SP_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_SP_CONFIRM] = DONE;
+      c.state = SOLVED;
+    }
+
     if (p.registers[REG_MASTER_SP_COMMAND] == CMD_SET_DS_BATTERY_MATRIX_SOLVED &&
         p.registers[REG_SLAVE_SP_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_SP_CONFIRM] = DONE;
@@ -84,7 +90,7 @@ namespace ShipPrepAux {
   void run(Components &c) 
   {
     if(c.state == INITIALIZED){
-      c.state = ENABLE;
+      // c.state = ENABLE;
     }
 
     c.powerSwitch.update();
@@ -172,7 +178,7 @@ namespace ShipPrepAux {
       // c.powerSwitch.display();
     }
 
-    c.speaker.play();
+    // c.speaker.play();
   }
 }
 

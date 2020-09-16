@@ -35,16 +35,23 @@ class PowerAdjuster
     float _maxSupply;
     int _channel;
     float _maxDemand;
+    int _lastDialValue;
     STATE _state;
 };
 
 PowerAdjuster::PowerAdjuster() 
+{
+  init();
+}
+
+void PowerAdjuster::init()
 {
   _supply = 0;
   _demand = 0;
   _channel = 0;
   _maxSupply = 0;
   _maxDemand = 0;
+  _lastDialValue = 0;
 }
 
 void PowerAdjuster::set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Adafruit_7segment * matrix2, int channel) 
@@ -53,11 +60,6 @@ void PowerAdjuster::set(ESP32Encoder * encoder, Adafruit_7segment * matrix1, Ada
   _matrix1 = matrix1;
   _matrix2 = matrix2;
   _channel = channel;
-}
-
-void PowerAdjuster::init()
-{
-  _state = INITIALIZED;
 }
 
 STATE PowerAdjuster::getState()
@@ -121,7 +123,10 @@ void PowerAdjuster::display()
     _matrix2->print(_demand);
   _matrix2->writeDisplay();
   
-  ledcWrite(_channel, map(_demand - _supply, -_maxDemand, _maxDemand, 0, 255));
+  if (_lastDialValue != map(_demand - _supply, -_maxDemand, _maxDemand, 0, 255)) {
+    _lastDialValue = map(_demand - _supply, -_maxDemand, _maxDemand, 0, 255);
+    ledcWrite(_channel, _lastDialValue);
+  }
 }
 
 void PowerAdjuster::setMaxSupply(float maxSupply)

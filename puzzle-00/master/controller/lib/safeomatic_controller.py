@@ -4,8 +4,8 @@ from .constants import STATE, COMMAND, SC_REGISTER_INDEX, STATUS
 from .helpers import time_now
 
 class SafeomaticController(BaseController):
-    def __init__(self, key_name, model, puzzle):
-        super().__init__(key_name, model, puzzle)
+    def __init__(self, key_name, model, puzzle, master):
+        super().__init__(key_name, model, puzzle, master)
 
     def update(self, registers):
         # controller register vs slave register

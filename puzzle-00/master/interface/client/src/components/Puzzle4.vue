@@ -19,7 +19,7 @@
           y="20"
           width="30"
           height="30"
-          fill="white"
+          v-bind:fill="['ENABLE', 'ON'].indexOf(stateNames[state.registers[6]]) != -1 ? 'white': 'gray'"
           stroke="black"
           stroke-width="1"
         />
@@ -38,7 +38,7 @@
           stroke-width="1"
         />
         <foreignObject x="90" y="190" width="100" height="150">
-          <input name="txtCode" type="text" value="CLOSED" />
+          <input name="txtCode" type="text" v-bind:value="stateNames[state.registers[9]]" />
         </foreignObject>
 
         <!-- Access Panel  -->
@@ -54,19 +54,19 @@
           stroke-width="1"
         />
         <foreignObject x="370" y="280" width="100" height="150">
-          <input name="txtCode" type="text" value="CLOSED" />
+          <input name="txtCode" type="text" v-bind:value="stateNames[state.registers[7]]" />
         </foreignObject>
 
         <!-- Connection Status -->
         <text x="750" y="300" style="fill: none; stroke: #000000;  font-size: 30px;">Connection:</text>
         <foreignObject x="940" y="280" width="200" height="150">
-          <input name="txtConnection" type="text" style="width:150px;" value="No Connection" />
+          <input name="txtConnection" type="text" style="width:150px;" v-bind:value="state.registers[3] > 0 ? 'Connected': 'No Connection'" />
         </foreignObject>
 
         <!-- Puzzle Status -->
         <text x="750" y="360" style="fill: none; stroke: #000000;  font-size: 30px;">Puzzle Status:</text>
         <foreignObject x="940" y="340" width="200" height="150">
-          <input name="txtStatus" type="text" style="width:150px;" value="No Data " />
+          <input name="txtStatus" type="text" style="width:150px;" v-bind:value="stateNames[state.registers[5]]" />
         </foreignObject>
       </svg>
     </form>
@@ -74,7 +74,35 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-  props: []
+  props: ['id', 'name', 'keyName', 'state', 'stateNames'],
+  data() {
+    return {
+      state: this.state
+    }
+  },
+  methods: {
+    getPuzzle() {
+      const path = "http://localhost:5000/puzzles/" + this.id;
+      axios
+        .get(path)
+        .then(res => {
+          this.state = res.data.puzzle.state;
+        })
+        .catch(error => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+    }
+  },
+  created() {
+    // this.getPuzzle();
+    
+    this.reloadPuzzle = setInterval(() => {
+      this.getPuzzle();
+    }, 3000);
+  }
 };
 </script>

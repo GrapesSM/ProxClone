@@ -114,15 +114,15 @@ void runTaskFunction( void * parameters ) {
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Enable communication to master
-    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-    
     // Map puzzle's values to component's values
     BlastDoorKeypad::update(puzzle, bdComponents);
 
     // State changes
     BlastDoorKeypad::run(bdComponents);
 
+    // Show changes
+    BlastDoorKeypad::show(bdComponents);
+    
     vTaskDelay(10);
   } 
 }
@@ -133,9 +133,7 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Show changes
-    BlastDoorKeypad::show(bdComponents);
-
-    vTaskDelay(10);
+    // Enable communication to master
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 
 }

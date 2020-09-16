@@ -11,6 +11,7 @@ class PowerLightIndicator
 {
   public:
     PowerLightIndicator();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin);
     void display();
     void update();
@@ -25,6 +26,11 @@ class PowerLightIndicator
 };
 
 PowerLightIndicator::PowerLightIndicator() 
+{
+  init();
+}
+
+void PowerLightIndicator::init()
 {
   _flashCount = 0;
   _flashToggle = false;

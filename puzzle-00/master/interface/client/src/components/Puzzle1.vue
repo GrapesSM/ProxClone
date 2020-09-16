@@ -158,9 +158,9 @@ export default {
   created() {
     // this.getPuzzle();
     
-    // this.reloadPuzzle = setInterval(() => {
-    //   this.getPuzzle();
-    // }, 10000);
+    this.reloadPuzzle = setInterval(() => {
+      this.getPuzzle();
+    }, 3000);
   }
 };
 </script>

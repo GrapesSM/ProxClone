@@ -1,4 +1,4 @@
-#define PIN_RX_1 9
+  #define PIN_RX_1 9
 #define PIN_TX_1 5
 #define PIN_RX_2 10
 #define PIN_TX_2 13
@@ -29,11 +29,11 @@
 
 #define PIN_OUTPUT_1 18
 #define PWM_OUTPUT_1_FREQUENCY 5000
-#define PWM_OUTPUT_1_CHANNEL 2 // 0, 1, 2, or 3
+#define PWM_OUTPUT_1_CHANNEL 0 // 0, 1, 2, or 3
 #define PWM_OUTPUT_1_RESOLUTION 8 // 8, 10, 12, or 15
 
 #define PWM_SPEAKER_FREQUENCY 1500
-#define PWM_SPEAKER_CHANNEL 0
+#define PWM_SPEAKER_CHANNEL 1
 #define PWM_SPEAKER_RESOLUTION 8
 #define PWM_SPEAKER_DUTYCYCLE 200
 

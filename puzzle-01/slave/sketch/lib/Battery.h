@@ -11,6 +11,7 @@ class Battery
 {
   public:
     Battery();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
     void setState(STATE state);
     void update();
@@ -39,6 +40,11 @@ class Battery
 };
 
 Battery::Battery()
+{
+  init();
+}
+
+void Battery::init()
 {
   _value = 0;
   _rate = 1.00;

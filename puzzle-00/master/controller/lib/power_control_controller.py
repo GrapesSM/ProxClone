@@ -5,8 +5,8 @@ from .helpers import time_now
 
 
 class PowerControlController(BaseController):
-    def __init__(self, key_name, model, puzzle):
-        super().__init__(key_name, model, puzzle)
+    def __init__(self, key_name, model, puzzle, master):
+        super().__init__(key_name, model, puzzle, master)
         self._demand = 0
         self._lighEffectPatternNumber = 0
         self._baterryMaxValue = 7

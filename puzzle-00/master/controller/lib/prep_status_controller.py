@@ -1,12 +1,15 @@
 #!/usr/bin/etc python3
+from modbus_tk.modbus import LOGGER
+import modbus_tk.defines as cst
 from .base_controller import BaseController
 from .constants import STATE, COMMAND, PS_REGISTER_INDEX, STATUS
 from .helpers import time_now
 from enum import Enum
+import time
 
 class PrepStatusController(BaseController):
-    def __init__(self, key_name, model, puzzle):
-        super().__init__(key_name, model, puzzle)
+    def __init__(self, key_name, model, puzzle, master):
+        super().__init__(key_name, model, puzzle, master)
         self._lighEffectPatternNumber = 0
 
     def update(self, registers):
@@ -48,16 +51,16 @@ class PrepStatusController(BaseController):
             registers[PS_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_SET_PS_GENERATOR_SOLVED
             registers[PS_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
 
-        if self.getCommand() == COMMAND.CMD_SET_PS_SYNCRO_KEY_SOLVED and self.getCommandStatus() == STATUS.ST_CREATED:
-            registers[PS_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_SET_PS_SYNCRO_KEY_SOLVED
+        if self.getCommand() == COMMAND.CMD_SET_PS_SYNCRO_READER_SYNCRONIZED and self.getCommandStatus() == STATUS.ST_CREATED:
+            registers[PS_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_SET_PS_SYNCRO_READER_SYNCRONIZED
             registers[PS_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
 
-        if self.getCommand() == COMMAND.CMD_SET_PS_SYNCRO_KEY_WRONG_SOLVED and self.getCommandStatus() == STATUS.ST_CREATED:
-            registers[PS_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_SET_PS_SYNCRO_KEY_WRONG_SOLVED
+        if self.getCommand() == COMMAND.CMD_SET_PS_SYNCRO_READER_WRONG_SOLVED and self.getCommandStatus() == STATUS.ST_CREATED:
+            registers[PS_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_SET_PS_SYNCRO_READER_WRONG_SOLVED
             registers[PS_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
 
-        if self.getCommand() == COMMAND.CMD_ENABLE_PS_SYNCRO_KEY and self.getCommandStatus() == STATUS.ST_CREATED:
-            registers[PS_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_ENABLE_PS_SYNCRO_KEY
+        if self.getCommand() == COMMAND.CMD_ENABLE_PS_SYNCRO_READER and self.getCommandStatus() == STATUS.ST_CREATED:
+            registers[PS_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_ENABLE_PS_SYNCRO_READER
             registers[PS_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE
 
         if self.getCommand() == COMMAND.CMD_START_TIMER and self.getCommandStatus() == STATUS.ST_CREATED:
@@ -71,3 +74,22 @@ class PrepStatusController(BaseController):
 
 
         self.setRegisters(registers)
+
+    def startTimer(self):
+        print("PREP_STATUS START TIMER")
+
+        registers = self.registers
+        registers[PS_REGISTER_INDEX.REG_MASTER_COMMAND] = 7
+        registers[PS_REGISTER_INDEX.REG_SLAVE_CONFIRM] = 0
+
+        print(registers)
+
+        for _ in range(1):
+            try: 
+                # readAgain = True
+                self._master.execute(10, cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=registers)
+                print(self.getKeyName(), self.getSlaveID(), "write")
+                # time.sleep(0.010)
+            except Exception as excpt:
+                print(self.getKeyName(), end=" ")
+                LOGGER.debug("SystemDataCollector error: %s", str(excpt))

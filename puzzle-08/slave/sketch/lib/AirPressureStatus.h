@@ -12,22 +12,31 @@ class AirPressureStatus
 {
   public:
     AirPressureStatus();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], Adafruit_7segment *_matrix);
     void update();
     void increaseBy(int value);
     void decreaseBy(int value);
     void display();
     void setState(STATE state);
+    int getValue();
     STATE getState();
   private:
     STATE _state;
     Adafruit_7segment * _matrix;
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int * _lightPins;
-    int _value;   
+    int _value;
+    int _prevValue;
 };
 
-AirPressureStatus::AirPressureStatus(){
+AirPressureStatus::AirPressureStatus()
+{
+  init();
+}
+
+void AirPressureStatus::init()  
+{
   _value = 0;
 }
 
@@ -90,6 +99,11 @@ STATE AirPressureStatus::getState()
   return _state;
 }
 
+int AirPressureStatus::getValue()
+{
+  return _value / CHANGE_VALUE;
+}
+
 void AirPressureStatus::display()
 {
   switch (_state)
@@ -99,6 +113,7 @@ void AirPressureStatus::display()
       _matrix->writeDisplay();
       break;
     
+    case ENABLE:
     default:
       _matrix->clear();
       _matrix->print(_value / CHANGE_VALUE);

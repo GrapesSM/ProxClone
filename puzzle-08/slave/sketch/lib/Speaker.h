@@ -11,6 +11,7 @@ class Speaker
 {
   public:
     Speaker();
+    void init();
     void set(
       int pin, 
       int enablePin, 
@@ -45,6 +46,11 @@ class Speaker
 };
 
 Speaker::Speaker() 
+{
+  init();
+}
+
+void Speaker::init()
 {
   _counter = 0;
   _numberOfSounds = 0;
@@ -127,14 +133,14 @@ void Speaker::update()
     case ENABLE:
       if (digitalRead(PIN_AMPLIFIER) == LOW) {
         digitalWrite(PIN_AMPLIFIER, HIGH);
-        delay(5);
+        vTaskDelay(5);
       }
       break;
     
     case DISABLE:
       if (digitalRead(PIN_AMPLIFIER) == HIGH) {
         digitalWrite(PIN_AMPLIFIER, LOW);
-        delay(5);
+        vTaskDelay(5);
       }
       break;
   }

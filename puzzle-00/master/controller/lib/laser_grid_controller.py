@@ -5,8 +5,8 @@ from .helpers import time_now
 from enum import Enum
 
 class LaserGridController(BaseController):
-    def __init__(self, key_name, model, puzzle):
-        super().__init__(key_name, model, puzzle)
+    def __init__(self, key_name, model, puzzle, master):
+        super().__init__(key_name, model, puzzle, master)
 
     def update(self, registers):
         # controller register vs slave register

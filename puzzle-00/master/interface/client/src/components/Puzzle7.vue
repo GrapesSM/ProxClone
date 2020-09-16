@@ -19,7 +19,7 @@
         <circle cx="90" cy="300" r="15" fill="white" stroke="black" />
         <circle cx="130" cy="300" r="15" fill="white" stroke="black" />
         <foreignObject x="180" y="320" width="200" height="150">
-          <input name="txtSyncro" type="text" value="No Data" />
+          <input name="txtSyncro" type="text" v-bind:value="state.registers[19]" />
         </foreignObject>
 
         <!-- Baterry Matrix -->
@@ -177,7 +177,7 @@
                     <rect x="210" y= "140" width="80" height="50" fill="white" stroke = "black" stroke-width="1"/>
         <text x="215" y= "175" style="fill: none; stroke: #000000;  font-size: 30px;">0000</text>-->
         <foreignObject x="250" y="180" width="200" height="150">
-          <input name="txtPower" type="text" value="0" s />
+          <input name="txtPower" type="text" v-bind:value="state.registers[3]" s />
         </foreignObject>
         <!-- Power Dial -->
         <circle cx="100" cy="170" r="50" fill="white" stroke="black" />
@@ -189,7 +189,7 @@
           y="20"
           width="30"
           height="30"
-          fill="white"
+          v-bind:fill="stateNames[state.registers[6]] == 'ON' ? 'white': 'gray'"
           stroke="black"
           stroke-width="1"
         />
@@ -201,7 +201,7 @@
           y="20"
           width="30"
           height="30"
-          fill="white"
+          v-bind:fill="stateNames[state.registers[15]] == 'ON' ? 'white': 'gray'"
           stroke="black"
           stroke-width="1"
         />
@@ -214,63 +214,52 @@
           style="fill: none; stroke: #000000;  font-size: 20px;"
         >ENERGY SUPLLEMENTAL</text>
 
-        <!-- Color Picker
-                    <foreignObject x="603" y="193" width="200" height="150">
-                        <input id="c1" type="color" value="#ffffff" onchange="changeColor(this.id)"/>
-                    </foreignObject>
-                    <foreignObject x="663" y="193" width="200" height="150">
-                        <input id="c2" type="color" value="#ffffff" onchange="changeColor(this.id)"/>
-                    </foreignObject>
-                    <foreignObject x="723" y="193" width="200" height="150">
-                        <input id="c3" type="color" value="#ffffff" onchange="changeColor(this.id)"/>
-                    </foreignObject>
-                    <foreignObject x="783" y="193" width="200" height="150">
-                        <input id="c4" type="color" value="#ffffff" onchange="changeColor(this.id)"/>
-                    </foreignObject>
-                    <foreignObject x="843" y="193" width="200" height="150">
-                        <input id="c5" type="color" value="#ffffff" onchange="changeColor(this.id)"/>
-                    </foreignObject>
-                    <foreignObject x="903" y="193" width="200" height="150">
-                        <input id="c6" type="color" value="#ffffff" onchange="changeColor(this.id)"/>
-                    </foreignObject>
-                    <foreignObject x="963" y="193" width="200" height="150">
-                        <input id="c7" type="color" value="#ffffff" onchange="changeColor(this.id)"/>
-                    </foreignObject>
-                    <foreignObject x="603" y="343" width="200" height="150">
-                        <input id="c8" type="color" value="#ffffff" onchange="changeColor(this.id)"/>
-                    </foreignObject>    
-                    <foreignObject x="663" y="343" width="200" height="150">
-                        <input id="c9" type="color" value="#ffffff" onchange="changeColor(this.id)"/>
-                    </foreignObject>
-                    <foreignObject x="723" y="343" width="200" height="150">
-                        <input id="c10" type="color" value="#ffffff" onchange="changeColor(this.id)"/>
-                    </foreignObject>
-                    <foreignObject x="783" y="343" width="200" height="150">
-                        <input id="c11" type="color" value="#ffffff" onchange="changeColor(this.id)"/>
-                    </foreignObject>
-                    <foreignObject x="843" y="343" width="200" height="150">
-                        <input id="c12" type="color" value="#ffffff" onchange="changeColor(this.id)"/>
-                    </foreignObject>
-                    <foreignObject x="903" y="343" width="200" height="150">
-                        <input id="c13" type="color" value="#ffffff" onchange="changeColor(this.id)"/>
-                    </foreignObject>
-                    <foreignObject x="963" y="343" width="200" height="150">
-                        <input id="c14" type="color" value="#ffffff" onchange="changeColor(this.id)"/>
-        </foreignObject>-->
-      </svg>
-      <!-- Connection Status -->
-      <text x="750" y="300" style="fill: none; stroke: #000000;  font-size: 30px;">Connection:</text>
-      <input name="txtConnection" style="width:150px;" type="text" value="No Connection" />
+        <!-- Connection Status -->
+        <text x="400" y="380" style="fill: none; stroke: #000000;  font-size: 30px;">Connection:</text>
+        <foreignObject x="570" y="355" width="200" height="150">
+          <input name="txtConnection" type="text" style="width:150px;" v-bind:value="state.registers[3] > 0 ? 'Connected': 'No Connection'" />
+        </foreignObject>
 
-      <!-- Puzzle Status -->
-      <text x="750" y="360" style="fill: none; stroke: #000000;  font-size: 30px;">Puzzle Status:</text>
-      <input name="txtStatus" style="width:150px;" type="text" value="No Data " />
+        <!-- Puzzle Status -->
+        <text x="750" y="380" style="fill: none; stroke: #000000;  font-size: 30px;">Puzzle Status:</text>
+        <foreignObject x="940" y="355" width="200" height="150">
+          <input name="txtStatus" type="text" style="width:150px;" v-bind:value="stateNames[state.registers[5]]" />
+        </foreignObject>
+      </svg>
     </form>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-  props: []
+  props: ['id', 'name', 'keyName', 'state', 'stateNames'],
+  data() {
+    return {
+      state: this.state
+    }
+  },
+  methods: {
+    getPuzzle() {
+      const path = "http://localhost:5000/puzzles/" + this.id;
+      axios
+        .get(path)
+        .then(res => {
+          this.state = res.data.puzzle.state;
+        })
+        .catch(error => {
+          // eslint-disable-next-line
+          console.error(error);
+        });
+    }
+  },
+  created() {
+    // this.getPuzzle();
+    
+    this.reloadPuzzle = setInterval(() => {
+      this.getPuzzle();
+    }, 3000);
+  }
 };
 </script>

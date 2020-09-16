@@ -5,12 +5,13 @@
 #define AccessPanel_h
 
 #include <Arduino.h>
-#include <NeoPixelBus.h>
+#include "DebounceSwitch.h"
 
 class AccessPanel
 {
   public:
     AccessPanel();
+    void init();
     void set(int keyPin, int solenoidPin);
     bool keyInserted();
     bool isClosed();
@@ -18,56 +19,40 @@ class AccessPanel
     void reset();
     void display();
     void update();
-    void readSwitch();
     void setState(STATE state);
     STATE getState();
   private:
-    int _keyPin;
+    DebounceSwitch _dSwitch;
     int _solenoidPin;
     bool _closed;
-    bool _keyInserted;
-    int _reading;
-    int _switchState;
-    int _lastSwitchState;
-    unsigned long _lastDebounceTime = 0;
-    unsigned long _debounceDelay = 50;
     STATE _state;
 };
 
-AccessPanel::AccessPanel() {}
+AccessPanel::AccessPanel() 
+{
+  init();
+}
+
+void AccessPanel::init()
+{
+  _closed = true;
+}
+
 
 void AccessPanel::set(int keyPin, int solenoidPin) 
 {
-  _keyPin = keyPin;
+  _dSwitch.set(keyPin);
   _solenoidPin = solenoidPin;
-  _closed = true;
-  _keyInserted = false;
-}
-
-void AccessPanel::readSwitch()
-{
-  _reading = digitalRead(_keyPin);
-  if (_reading != _lastSwitchState) {
-    _lastDebounceTime = millis();
-  }
-
-  if ((millis() - _lastDebounceTime) > _debounceDelay) {
-    // if (_reading != _switchState) {
-      _switchState = _reading;
-    // }
-  }
-
-  _lastSwitchState = _reading;
 }
 
 bool AccessPanel::keyInserted()
 {
-  return _switchState;
+  return _dSwitch.getState();
 }
 
 void AccessPanel::update()
 {
-  readSwitch();  
+  _dSwitch.readSwitch();  
   switch (_state)
   {
     case DISABLE:

@@ -1,86 +1,66 @@
 /*
-  AirSupplyPump.h - Library for playing sounds and voices.
+  AirSupplyPump.h - Library for _______.
 */
 #ifndef AirSupplyPump_h
 #define AirSupplyPump_h
 
 #include <Arduino.h>
+#include "DebounceSwitch.h"
 
 class AirSupplyPump
 {
   public:
     AirSupplyPump();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], int pin);
     void update();
-    void readSwitch();
-    bool isSwitch(int position);
     void setState(STATE state);
     STATE getState();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int * _lightPins;
-    int _pin;
-    int _reading;
+    DebounceSwitch _dSwitch;
     int _switchState;
     int _lastSwitchState;
-    unsigned long _lastDebounceTime = 0;
-    unsigned long _debounceDelay = 50;
     STATE _state;
 };
 
 AirSupplyPump::AirSupplyPump()
 {
+  init();
+}
 
+void AirSupplyPump::init()
+{
 }
 
 void AirSupplyPump::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], int pin)
 {
   _strip = strip;
   _lightPins = lightPins;
-  _pin = pin;
-}
-
-void AirSupplyPump::readSwitch()
-{
-  _reading = digitalRead(_pin);
-  if (_reading != _lastSwitchState) {
-    _lastDebounceTime = millis();
-  }
-
-  if ((millis() - _lastDebounceTime) > _debounceDelay) {
-    // if (_reading != _switchState) {
-      _switchState = _reading;
-    // }
-  }
-
-  _lastSwitchState = _reading;
+  _dSwitch.set(pin);
 }
 
 void AirSupplyPump::update()
 {
-  readSwitch();
+  _dSwitch.readSwitch();
   if (_state == DISABLE) {
     _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
     _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
     return;
   } 
   
-  if (isSwitch(LOW)) {
+  if (_dSwitch.isSwitch(LOW)) {
     _state = ON;
     _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
     _strip->SetPixelColor(_lightPins[1], RgbColor(255, 255, 255));
   }
 
-  if (isSwitch(HIGH)) {
+  if (_dSwitch.isSwitch(HIGH)) {
     _state = OFF;
     _strip->SetPixelColor(_lightPins[0], RgbColor(255, 255, 255));
     _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
   }
-}
-
-bool AirSupplyPump::isSwitch(int position) 
-{
-  return _switchState == position;
 }
 
 void AirSupplyPump::setState(STATE state)

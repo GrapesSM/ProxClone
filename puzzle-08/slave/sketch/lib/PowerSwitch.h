@@ -6,12 +6,13 @@
 #define PowerSwitch_h
 
 #include <Arduino.h>
-#include <NeoPixelBus.h>
+#include "DebounceSwitch.h"
 
 class PowerSwitch
 {
   public:
     PowerSwitch();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin, int pin);
     void setLightOn();
     void setLightOff();
@@ -19,56 +20,29 @@ class PowerSwitch
     void update();
     void setState(STATE state);
     STATE getState();
-    void readSwitch();
-    bool isSwitchOn();
-    bool isSwitchOff();
 
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * _strip;
     int _lightPin;
-    int _pin;
-    int _reading;
-    int _switchState;
-    int _lastSwitchState;
-    unsigned long _lastDebounceTime = 0;
-    unsigned long _debounceDelay = 50;
+    DebounceSwitch _dSwitch;
     STATE _state;
 };
 
-PowerSwitch::PowerSwitch() {}
+PowerSwitch::PowerSwitch() 
+{
+  init(); 
+}
+
+void PowerSwitch::init()
+{
+
+}
 
 void PowerSwitch::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin, int pin) 
 {
   _strip = strip;
   _lightPin = lightPin;
-  _pin = pin;
-}
-
-void PowerSwitch::readSwitch()
-{
-  _reading = digitalRead(_pin);
-  if (_reading != _lastSwitchState) {
-    _lastDebounceTime = millis();
-  }
-
-  if ((millis() - _lastDebounceTime) > _debounceDelay) {
-    // if (_reading != _switchState) {
-      _switchState = _reading;
-    // }
-  }
-
-  _lastSwitchState = _reading;
-}
-
-
-bool PowerSwitch::isSwitchOn()
-{
-  return _switchState;
-}
-
-bool PowerSwitch::isSwitchOff()
-{
-  return ! isSwitchOn();
+  _dSwitch.set(pin);
 }
 
 void PowerSwitch::setLightOn()
@@ -88,7 +62,7 @@ void PowerSwitch::display()
 
 void PowerSwitch::update() 
 {
-  readSwitch();
+  _dSwitch.readSwitch();
   switch (_state)
   {
     case DISABLE:
@@ -96,12 +70,12 @@ void PowerSwitch::update()
       break;
     
     default:
-      if (isSwitchOff()) {
+      if (_dSwitch.isSwitch(LOW)) {
         _state = OFF;
         setLightOff();
       }
 
-      if (isSwitchOn()) {
+      if (_dSwitch.isSwitch(HIGH)) {
         _state = ON;
         setLightOn();
       }

@@ -2,8 +2,7 @@
 #include "lib/ModbusRtu.h"
 #include "lib/LaserBar.h"
 #include "Adafruit_VL53L0X.h"
-#include "sounds/soundPowerUp.h"
-//#include "sounds/soundPowerDown.h"
+#include "sounds/soundDetected.h"
 
 
 Puzzle puzzle;
@@ -77,7 +76,7 @@ void setup()
   xTaskCreatePinnedToCore(
     showTaskFunction,   /* Task function. */
     "ShowTask",     /* name of task. */
-    100000,       /* Stack size of task */
+    60000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
@@ -94,7 +93,7 @@ void loop()
 void setupLaserBar()
 {
   lbComponents.detector.set(&parts.lox, PIN_OUTPUT_1);
-  lbComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
+  lbComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
 }
 
 //Run Task Function: process changes of puzzle
@@ -103,14 +102,14 @@ void runTaskFunction( void * parameters ) {
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Enable communication to master
-    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-    
     // Map puzzle's values to component's values
     LaserBar::update(puzzle, lbComponents);
   
     // State changes
     LaserBar::run(lbComponents);
+
+    // Show changes
+    LaserBar::show(lbComponents);
 
     vTaskDelay(10);
   } 
@@ -122,9 +121,7 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Show changes
-    LaserBar::show(lbComponents);
-
-    vTaskDelay(10);
+    // Enable communication to master
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 
 }

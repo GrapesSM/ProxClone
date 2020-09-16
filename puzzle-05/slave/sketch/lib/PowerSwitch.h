@@ -12,6 +12,7 @@ class PowerSwitch
 {
   public:
     PowerSwitch();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin, int pin);
     void setLightOn();
     void setLightOff();
@@ -35,7 +36,15 @@ class PowerSwitch
     STATE _state;
 };
 
-PowerSwitch::PowerSwitch() {}
+PowerSwitch::PowerSwitch() 
+{
+  init();
+}
+
+void PowerSwitch::init()
+{
+  
+}
 
 void PowerSwitch::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPin, int pin) 
 {

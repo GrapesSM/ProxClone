@@ -11,6 +11,7 @@ class CombinationReader
 {
   public:
     CombinationReader();
+    void init();
     void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[], ESP32Encoder * encoder);
     void setLightsRed();
     void setLightsYellow();
@@ -21,9 +22,6 @@ class CombinationReader
     void update();
     void reset();
     void display();
-    void disable();
-    void enable();
-    bool isDisabled();
     bool isSolved();
     void setState(STATE);
     STATE getState();
@@ -31,7 +29,6 @@ class CombinationReader
     ESP32Encoder *_encoder;
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
-    bool _disabled = true;
     bool _solved;
     bool _prepped;
     bool _clockwise;
@@ -40,9 +37,9 @@ class CombinationReader
     int _submittedVal;
     int _min;
     int _max;
-    int _increment = 0;
+    int _increment;
     int _numbers[3] = {23, 7, 34};
-    int _numbersSolved = 0;
+    int _numbersSolved;
     const unsigned long _waitTimeMillis = 100; // ms
 	  unsigned long lastRefreshTime;
     int overtravel;
@@ -50,6 +47,11 @@ class CombinationReader
 };
 
 CombinationReader::CombinationReader() 
+{
+  init();
+}
+
+void CombinationReader::init()
 {
   _val = 0;
   _previousVal = 0;
@@ -59,6 +61,9 @@ CombinationReader::CombinationReader()
   lastRefreshTime = 0;
   overtravel = 3;
   _prepped = false;
+  _solved = false;
+  _increment = 0;
+  _numbersSolved = 0;
 }
 
 void CombinationReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[], ESP32Encoder *encoder) 
@@ -162,7 +167,7 @@ void CombinationReader::checkNumber()
 
         if (!_clockwise) {
           if (_submittedVal-_previousVal > 4){
-            _encoder-> setCount(100);
+            _encoder->setCount(100);
           }
         }
     }
@@ -175,10 +180,12 @@ void CombinationReader::update()
   switch (_state)
   {
     case DISABLE:
+      _encoder->pauseCount();
       setLightsOff();
       break;
     
     case ENABLE:
+      _encoder->resumeCount();
       _val = _encoder->getCount();
       if (_val >= _max) {
         _val = _max;
@@ -212,31 +219,6 @@ void CombinationReader::reset()
   _solved = false;
   _encoder->setCount(100);
   setLightsRed();
-}
-
-void CombinationReader::disable() 
-{
-  _disabled = true;
-  _solved = false;
-  _prepped = false;
-  setLightsOff();
-  _encoder->pauseCount();
-}
-
-void CombinationReader::enable() 
-{
-  _disabled = false;
-  _solved = false;
-  _prepped = false;
-  _numbersSolved = 0;
-  _encoder->resumeCount();
-  setLightsRed();
-  _encoder->setCount(100);
-}
-
-bool CombinationReader::isDisabled()
-{
-  return _disabled;
 }
 
 void CombinationReader::display() 

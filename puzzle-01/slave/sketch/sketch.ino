@@ -5,8 +5,6 @@
 #include "Adafruit_LEDBackpack.h"
 #include <ESP32Encoder.h>
 #include "lib/PowerControl.h"
-#include "sounds/soundPowerUp.h"
-#include "sounds/soundPowerDown.h"
 #include "sounds/soundPowerAdjust.h"
 
 Puzzle puzzle;
@@ -40,7 +38,7 @@ void setup()
 
   // Setup Modbus communication
   parts.slave = &slave;
-  parts.slave->begin( SERIAL_BAUDRATE, PIN_RX_1, PIN_TX_1 );
+  parts.slave->begin( SERIAL_BAUDRATE, PIN_RX_2, PIN_TX_2 );
   #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
     clock_prescale_set(clock_div_1);
   #endif
@@ -105,7 +103,7 @@ void setup()
   xTaskCreatePinnedToCore(
     showTaskFunction,   /* Task function. */
     "ShowTask",     /* name of task. */
-    60000,       /* Stack size of task */
+    40000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
@@ -115,10 +113,7 @@ void setup()
   pcComponents.state = SETUP;
 }
 
-void loop() 
-{ 
-
-}
+void loop() {}
 
 void setupPowerControl()
 {
@@ -126,7 +121,7 @@ void setupPowerControl()
   pcComponents.powerLightIndicator.set(parts.strip, lightPinForPowerLightIndicator);
   pcComponents.battery.set(parts.strip, lightPinsForBarIndicator);
   pcComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
-  pcComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds);
+  pcComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
 }
 
 //Run Task Function: process changes of puzzle
@@ -135,14 +130,15 @@ void runTaskFunction( void * parameters ) {
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Enable communication to master
-    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
     // Map puzzle's values with component's values
     PowerControl::update(puzzle, pcComponents);
 
     // State changes
     PowerControl::run(pcComponents);
+
+    // Show changes
+    PowerControl::show(pcComponents);
 
     vTaskDelay(10);
   }
@@ -154,9 +150,7 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Show changes
-    PowerControl::show(pcComponents);
-
-    vTaskDelay(10);
+    // Enable communication to master
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 
 }

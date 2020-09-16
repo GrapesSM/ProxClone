@@ -51,17 +51,17 @@ namespace PrepStatus {
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_START_TIMER &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
-          c.syncroReader.setState(START_TIMER);
-          p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.syncroReader.setState(START_TIMER);
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_SOLVED &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      c.syncroReader.setState(SOLVED);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
+      c.state = SOLVED;
     }
 
-    if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE_PS_SYNCRO_KEY &&
+    if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE_PS_SYNCRO_READER &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       c.syncroReader.setState(ENABLE);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
@@ -85,6 +85,12 @@ namespace PrepStatus {
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       c.generatorFlag = true;
       c.generator.setState(SOLVED);
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_PS_SYNCRO_READER_SYNCRONIZED &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      c.syncroReader.setState(SYNCRONIZED);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
     
@@ -116,7 +122,7 @@ namespace PrepStatus {
   void run(Components & c) 
   {
     if (c.state == INITIALIZED) {
-      c.state = ENABLE;
+      // c.state = ENABLE;
     }
     
     c.batteryMatrix.update();
@@ -164,8 +170,7 @@ namespace PrepStatus {
         }
       }
 
-
-      if(
+      if (
         c.batteryMatrix.getState() == SOLVED &&
         c.energySupp.getState() == SOLVED &&
         c.generator.getState() == SOLVED
@@ -174,10 +179,7 @@ namespace PrepStatus {
         c.batteryMatrix.switchToGreen();
         c.energySupp.switchToGreen();
         c.generator.switchToGreen();
-        if (c.syncroReader.getState() == DISABLE) {
-          c.syncroReader.setState(ENABLE);
-        }
-      } 
+      }
 
       if (
         c.batteryMatrix.getState() == SOLVED &&
@@ -185,12 +187,44 @@ namespace PrepStatus {
         c.generator.getState() == SOLVED &&
         c.syncroReader.getState() == SYNCRONIZED
       ) {
-        c.state = SOLVED; 
+        c.state = SOLVED;
       }
     }  
 
     if (c.state == SOLVED) {
-      Serial.println("SOLVED");
+      if (c.powerSwitch.getState() == OFF) {
+        c.batteryMatrix.setState(DISABLE);
+        c.energySupp.setState(DISABLE);
+        c.generator.setState(DISABLE);
+        c.syncroReader.setState(DISABLE);
+        c.lightEffect.setState(DISABLE);
+        if (c.speaker.getNumber() != SOUND_POWER_DOWN) {
+          c.speaker.addToPlay(SOUND_POWER_DOWN);
+        }
+      } 
+
+      if (c.powerSwitch.getState() == ON) {
+        c.batteryMatrix.setState(SOLVED);
+        c.energySupp.setState(SOLVED);
+        c.generator.setState(SOLVED);
+        c.syncroReader.setState(SYNCRONIZED);
+        c.lightEffect.setState(SOLVED);
+        
+        if (c.speaker.getNumber() == SOUND_POWER_DOWN) {
+          c.speaker.addToPlay(SOUND_POWER_UP);
+        }
+
+        if (
+          c.batteryMatrix.getState() == SOLVED &&
+          c.energySupp.getState() == SOLVED &&
+          c.generator.getState() == SOLVED
+        )
+        {
+          c.batteryMatrix.switchToGreen();
+          c.energySupp.switchToGreen();
+          c.generator.switchToGreen();
+        }
+      }
     }
 
     if (c.state == DISABLE) {

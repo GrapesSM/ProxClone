@@ -7,8 +7,8 @@ from enum import Enum
 
 class DatamaticController(BaseController):
     
-    def __init__(self, key_name,model, puzzle):
-        super().__init__(key_name, model, puzzle)
+    def __init__(self, key_name,model, puzzle, master):
+        super().__init__(key_name, model, puzzle, master)
         self._lighEffectPatternNumber = 0
         self._datamaticKey1 = 12345
         self._datamaticKey2 = 23456

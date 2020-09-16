@@ -10,8 +10,7 @@ class LightEffect
 {
   public:
     LightEffect();
-    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
-    void init();
+    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);    
     void update();
     void display();
     void setState(STATE state);
@@ -20,6 +19,11 @@ class LightEffect
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
     int _current;
+    struct Timer {
+      unsigned long current = 0;
+      unsigned long point = 0;
+      unsigned long interval = 400;
+    } timer;
     STATE _state;
 };
 
@@ -45,6 +49,17 @@ STATE LightEffect::getState()
 
 void LightEffect::update()
 {
+  timer.current = millis();
+  if ((timer.current - timer.point) < timer.interval) {
+    return;
+  }
+
+  timer.point = millis();
+
+  _current++;
+  if (_current == NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT) {
+    _current = 0;
+  }
   int next;
   switch (_state)
   {
@@ -69,6 +84,18 @@ void LightEffect::update()
       _strip->SetPixelColor(_lightPins[_current], RgbColor(0, 0, 0));
       _strip->SetPixelColor(_lightPins[next], RgbColor(255, 0, 0));
       break;
+    
+    case SOLVED:
+      for (int i = 0; i < NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT; i++) {
+        _strip->SetPixelColor(_lightPins[i], RgbColor(0, 255, 0));
+      }
+      break;
+    
+    case FAILURE:
+      for(int i = 0; i <NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT; i++ ){
+        _strip->SetPixelColor(_lightPins[i], RgbColor(127, 0, 0));
+      }
+      break;
     default:
       break;
   }
@@ -76,11 +103,7 @@ void LightEffect::update()
 
 void LightEffect::display()
 {
-  _current++;
-  if (_current == NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT) {
-    _current = 0;
-  }
+  _strip->Show();
 }
-
 
 #endif

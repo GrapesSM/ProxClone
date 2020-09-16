@@ -80,7 +80,7 @@ void setup()
   xTaskCreatePinnedToCore(
     showTaskFunction,   /* Task function. */
     "ShowTask",     /* name of task. */
-    100000,       /* Stack size of task */
+    80000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
@@ -112,15 +112,15 @@ void runTaskFunction( void * parameters ) {
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // puzzle.timer = millis();  
-    // Enable communication to master
-    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-
+    // Map puzzle's values with component's values
     PrepStatus::update(puzzle, psComponents);
 
     // Enable Energy Supplemental
     PrepStatus::run(psComponents);
 
+    // Show changes
+    PrepStatus::show(psComponents);
+    
     vTaskDelay(10);
   } 
 }
@@ -131,9 +131,7 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Show changes
-    PrepStatus::show(psComponents);
-
-    vTaskDelay(10);
+    // Enable communication to master
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 
 }

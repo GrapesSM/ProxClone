@@ -5,25 +5,21 @@
 #define LightEffect_h
 
 #include <Arduino.h>
-#include <NeoPixelBus.h>
 
 class LightEffect
 {
   public:
     LightEffect();
-    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);
     void init();
+    void set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[]);    
     void update();
     void display();
     void setState(STATE state);
-    void setPatternNumber(int number);
-    int getPatternNumber();
     STATE getState();
   private:
     NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *_strip;
     int *_lightPins;
     int _current;
-    int _patternNumber;
     struct Timer {
       unsigned long current = 0;
       unsigned long point = 0;
@@ -32,9 +28,14 @@ class LightEffect
     STATE _state;
 };
 
-LightEffect::LightEffect(){
+LightEffect::LightEffect()
+{
+  init();
+}
+
+void LightEffect::init()
+{
   _current = 0;
-  _patternNumber = 0;
 }
 
 void LightEffect::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> *strip, int lightPins[])
@@ -107,21 +108,9 @@ void LightEffect::update()
   }
 }
 
-void LightEffect::setPatternNumber(int number)
-{
-  _patternNumber = number;
-}
-
 void LightEffect::display()
 {
   _strip->Show();
 }
-
-
-int LightEffect::getPatternNumber()
-{
-  return _patternNumber;
-}
-
 
 #endif

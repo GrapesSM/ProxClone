@@ -48,22 +48,10 @@ namespace LifeSupport {
       c.state = RESET;
     }
 
-    if (p.registers[REG_MASTER_COMMAND] == CMD_PAUSE &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.state = PAUSE;
-    }
-
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_SOLVED &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = SOLVED;
-    }
-
-    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_LIGHT_EFFECT_PATTERN_NUMBER &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;   
-      c.lightEffect.setPatternNumber(p.registers[REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER]);
     }
 
     p.registers[REG_SLAVE_MILLIS] = millis();
@@ -74,11 +62,17 @@ namespace LifeSupport {
     p.registers[REG_SLAVE_AIR_SUPPLY_PUMP_STATE] = c.airSupplyPump.getState();
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
     p.registers[REG_SLAVE_LIGHT_EFFECT_STATE] = c.lightEffect.getState();
-    p.registers[REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER] = c.lightEffect.getPatternNumber();
-
+    p.registers[REG_SLAVE_AIR_PRESSURE_STATUS_VALUE] = c.airPressureStatus.getValue();
 
     if (c.state == SETUP) {
       c.state = INITIALIZING;
+      
+      c.airPressureStatus.init();
+      c.externalVent.init();
+      c.lightEffect.init();
+      c.airSupplyPump.init();
+      c.powerSwitch.init();
+      
       c.powerSwitch.setState(DISABLE);
       c.externalVent.setState(DISABLE);
       c.airPressureStatus.setState(DISABLE);
@@ -86,28 +80,37 @@ namespace LifeSupport {
       c.speaker.setState(DISABLE);
       c.lightEffect.setState(DISABLE);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.state = INITIALIZED;
+      c.state = DISABLE;
     }
   }
 
   void run(Components & c) 
   {
-    if (c.state == INITIALIZED) {
-      c.state = ENABLE;
-    }
-
     c.powerSwitch.update();
     c.externalVent.update();
     c.airSupplyPump.update();
     c.airPressureStatus.update();
     c.lightEffect.update();
     c.speaker.update();
+
+    if (c.powerSwitch.getState() == DISABLE) {
+      c.powerSwitch.setState(ENABLE);
+    }
+
+    if (c.state == DISABLE) {
+      c.powerSwitch.setLightOff();
+      c.externalVent.setState(DISABLE);
+      c.airPressureStatus.setState(DISABLE);
+      c.airSupplyPump.setState(DISABLE);
+      c.speaker.setState(DISABLE);
+      c.lightEffect.setState(DISABLE);
+    }
+
+    if (c.state == RESET) {
+      c.state = SETUP;
+    }    
     
     if (c.state == ENABLE) {
-      if (c.powerSwitch.getState() == DISABLE) {
-        c.powerSwitch.setState(ENABLE);
-      }
-
       if (c.powerSwitch.getState() == OFF) {
         c.externalVent.setState(DISABLE);
         c.airPressureStatus.setState(DISABLE);
@@ -169,24 +172,6 @@ namespace LifeSupport {
         c.lightEffect.setState(SOLVED);
       }
     }
-
-    if (c.state == DISABLE) {
-      c.powerSwitch.setState(DISABLE);
-      c.externalVent.setState(DISABLE);
-      c.airPressureStatus.setState(DISABLE);
-      c.airSupplyPump.setState(DISABLE);
-      c.speaker.setState(DISABLE);
-      c.lightEffect.setState(DISABLE);
-    }
-
-    if (c.state == RESET) {
-      c.state = SETUP;
-    }
-
-    if (c.state == PAUSE) {
-
-    }
-    
   }
 
   void show(Components & c)
@@ -196,10 +181,10 @@ namespace LifeSupport {
       c.showTimer.showpoint = millis();
 
       // Code here runs every interval (i.e. 200ms)
+      c.airPressureStatus.display();
     }
 
     c.lightEffect.display();
-    c.airPressureStatus.display();
     c.powerSwitch.display();
     c.speaker.play();
   }

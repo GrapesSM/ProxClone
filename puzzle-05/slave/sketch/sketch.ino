@@ -117,15 +117,15 @@ void runTaskFunction( void * parameters ) {
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Enable communication to master
-    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-
     // Map puzzle's values to component's values
     Safeomatic::update(puzzle, smComponents);
 
     // State changes
     Safeomatic::run(smComponents);
 
+    // Show changes
+    Safeomatic::show(smComponents);
+    
     vTaskDelay(10);
   } 
 }
@@ -136,9 +136,7 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Show changes
-    Safeomatic::show(smComponents);
-
-    vTaskDelay(10);
+    // Enable communication to master
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 
 }
