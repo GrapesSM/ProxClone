@@ -8,6 +8,7 @@ class Detector
 {
   public:
     Detector();
+    void init();
     void set(Adafruit_VL53L0X* lox, int pin);
     void update();
     void display();
@@ -19,7 +20,15 @@ class Detector
     STATE _state;
 };
 
-Detector::Detector(){}
+Detector::Detector()
+{
+  init();
+}
+
+void Detector::init()
+{
+
+}
 
 void Detector::set(Adafruit_VL53L0X* lox, int pin)
 {
@@ -45,11 +54,10 @@ void Detector::update()
   VL53L0X_RangingMeasurementData_t measure;
   _lox->rangingTest(&measure, false); // pass in 'true' to get debug data printout!
 
-  if (measure.RangeStatus != 4) {  // phase failures have incorrect data
-    // Serial.println(measure.RangeMilliMeter);
+  if (measure.RangeStatus != 4 && measure.RangeMilliMeter < 2100) {  // phase failures have incorrect data
     _state = DETECTED;
   } else {
-    _state = OUT_OF_RANGE;
+    _state = ENABLE;
   }
     
   delay(100);

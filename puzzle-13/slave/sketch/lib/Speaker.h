@@ -11,6 +11,7 @@ class Speaker
 {
   public:
     Speaker();
+    void init();
     void set(
       int pin, 
       int enablePin, 
@@ -45,6 +46,11 @@ class Speaker
 };
 
 Speaker::Speaker() 
+{
+  init();
+}
+
+void Speaker::init()
 {
   _counter = 0;
   _numberOfSounds = 0;
@@ -145,6 +151,7 @@ void Speaker::play()
   if (_queue.isEmpty()) {      
     return;
   }
+
   _state = ENABLE;
   update();
   play(_queue.dequeue());    

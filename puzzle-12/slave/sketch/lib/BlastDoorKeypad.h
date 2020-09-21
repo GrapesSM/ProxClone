@@ -32,11 +32,7 @@ namespace BlastDoorKeypad {
       c.state = DISABLE;
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
-    if (p.registers[REG_MASTER_COMMAND] == CMD_PAUSE &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      c.state = PAUSE;
-      p.registers[REG_SLAVE_CONFIRM] = DONE;
-    }
+    
     if (p.registers[REG_MASTER_COMMAND] == CMD_RESET &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       c.state = RESET;
@@ -50,19 +46,28 @@ namespace BlastDoorKeypad {
 
     if (c.state == SETUP) {
       c.state = INITIALIZING;
+
+      c.codeReader.init();
+      c.speaker.init();
+
       c.codeReader.setState(DISABLE);
       c.speaker.setState(DISABLE);
-      c.state = INITIALIZED;
+      c.state = DISABLE;
     }
   }
 
   void run(Components &c)
   {
-    if (c.state == INITIALIZED) {
-      c.state = ENABLE;
-    }
-
     c.codeReader.update();
+    
+    if (c.state == DISABLE) {
+      c.codeReader.setState(DISABLE);
+      c.speaker.setState(DISABLE);
+    }
+    
+    if (c.state == RESET) {
+      c.state = SETUP;
+    }    
     
     if (c.state == ENABLE) {
       if (c.codeReader.getState() == DISABLE) {
@@ -93,18 +98,6 @@ namespace BlastDoorKeypad {
 
     if (c.state == SOLVED) {
       // Serial.println("SOLVED");
-    }
-
-    if (c.state == DISABLE) {
-      c.codeReader.setState(DISABLE);
-      c.speaker.setState(DISABLE);
-    }
-
-    if (c.state == RESET) {
-      c.state = SETUP;
-    }    
-
-    if (c.state == PAUSE) {
     }
   }
 

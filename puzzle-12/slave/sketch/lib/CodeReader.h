@@ -9,6 +9,7 @@ class CodeReader
 {
   public:
     CodeReader();
+    void init();
     void set(
       KEYPAD *keypad,
       int pin
@@ -26,6 +27,11 @@ class CodeReader
 };
 
 CodeReader::CodeReader(){
+  init();
+}
+
+void CodeReader::init()
+{
   _input = "";
 }
 

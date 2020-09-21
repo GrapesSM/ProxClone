@@ -73,26 +73,34 @@ class ProximaCommand(object):
         if self._gameStage == GAME_STAGE.ONGOING:
             self._controlPowerControl()
 
-        # if self._gameStage == GAME_STAGE.ONGOING:
-        #     self._controlDockedShip()
+        if self._gameStage == GAME_STAGE.ONGOING \
+           and self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_STATE] == STATE.ENABLE \
+           and self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_STATE] == STATE.ENABLE:
+            self._controlDockedShip()
 
-        # if self._gameStage == GAME_STAGE.ONGOING:
-        #     self._controlSafeomatic()
+        if self._gameStage == GAME_STAGE.ONGOING \
+           and self._controllers['safeomatic'].registers[SM_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.ENABLE:
+            self._controlSafeomatic()
 
-        # if self._gameStage == GAME_STAGE.ONGOING:
-        #     self._controlLifeSupport()
+        if self._gameStage == GAME_STAGE.ONGOING \
+           and self._controllers['life_support'].registers[LS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.ENABLE:
+            self._controlLifeSupport()
         
-        # if self._gameStage == GAME_STAGE.ONGOING:
-        #     self._controlDatamatic()
+        if self._gameStage == GAME_STAGE.ONGOING \
+           and self._controllers['datamatic'].registers[DM_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.ENABLE:
+            self._controlDatamatic()
         
-        # if self._gameStage == GAME_STAGE.ONGOING:
-        #     self._controlLaserGridAndBar()
+        if self._gameStage == GAME_STAGE.ONGOING \
+           and self._controllers['lasergrid'].registers[LG_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.ENABLE:
+            self._controlLaserGridAndBar()
 
-        # if self._gameStage == GAME_STAGE.ONGOING:
-        #     self._controlKeypad()
+        if self._gameStage == GAME_STAGE.ONGOING \
+           and self._controllers['keypad'].registers[KP_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.ENABLE:
+            self._controlKeypad()
         
-        # if self._gameStage == GAME_STAGE.ONGOING:
-        #     self._controlStatusBoard()
+        if self._gameStage == GAME_STAGE.ONGOING \
+           and self._controllers['status_board'].registers[SB_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.ENABLE:
+            self._controlStatusBoard()
 
         # #Update Status Board
         # if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED:
@@ -208,18 +216,6 @@ class ProximaCommand(object):
         print("Control StatusBoard")
 
     def _controlDockedShip(self):
-        # Enable a puzzle if it is initialized
-        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_STATE] == STATE.INITIALIZED:
-            self._controllers['docked_ship'].addCommand_SP(COMMAND.CMD_ENABLE)
-        
-        # Enable a puzzle if it is initialized
-        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_STATE] == STATE.INITIALIZED:
-            self._controllers['docked_ship'].addCommand_ES(COMMAND.CMD_ENABLE)
-
-        # Enable a puzzle if it is initialized
-        if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.INITIALIZED:
-            self._controllers['prep_status'].addCommand(COMMAND.CMD_ENABLE)
-
         # Check the BatteryMatrix solved state and set to PrepStatus
         if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_BATTERY_MATRIX_STATE] == STATE.SOLVED and \
             self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_BATTERY_MATRIX_STATE] != STATE.SOLVED:
