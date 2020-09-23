@@ -82,16 +82,16 @@ enum STATE {
 extern int lightPinFor____ = 0;
 
 #define NUMBER_OF_LIGHTS_FOR_SHIP_PREP_STATUS 2
-extern int lightPinsForShipPrepStatus[] = {7, 0};
+extern int lightPinsForShipPrepStatus[] = {4, 3};
 
 #define NUMBER_OF_LIGHTS_FOR_LIFE_SUPPORT 2
-extern int lightPinsForLifeSupportStatus[] = {6, 1};
+extern int lightPinsForLifeSupportStatus[] = {5, 2};
 
 #define NUMBER_OF_LIGHTS_FOR_BLAST_DOOR 2
-extern int lightPinsForBlastDoorStatus[] = {5, 2};
+extern int lightPinsForBlastDoorStatus[] = {6, 1};
 
 #define NUMBER_OF_LIGHTS_FOR_LASER_GRID 2
-extern int lightPinsForLaserGridStatus[] = {4, 3};
+extern int lightPinsForLaserGridStatus[] = {7, 0};
 
 enum REGISTER_INDEX {
   REG_MASTER_MILLIS = 0,

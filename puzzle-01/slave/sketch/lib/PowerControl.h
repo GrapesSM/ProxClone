@@ -83,7 +83,7 @@ namespace PowerControl {
       c.powerLightIndicator.setState(DISABLE);
       
       c.battery.setState(DISABLE);
-      c.battery.setRate(7.00);
+      c.battery.setRate(12.00);
       c.battery.setMaxValue(13.00);
 
       c.powerAdjuster.setState(DISABLE);

@@ -97,14 +97,14 @@ def main():
             'power_control',
             'status_board',
             'datamatic',
-            'safeomatic',
+            # 'safeomatic',
             'life_support',
             'lasergrid',
             'laserbar',
             'keypad',
             ]:
             continue
-        slaveThreads.append(Thread(target = controllers[key_name].readAndWriteToSlave, args=(0.0, lambda : flagStopThreads), daemon = True))
+        slaveThreads.append(Thread(target = controllers[key_name].readAndWriteToSlave, args=(0.01, lambda : flagStopThreads), daemon = True))
 
 
     try:

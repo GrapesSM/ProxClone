@@ -181,9 +181,9 @@ namespace LifeSupport {
       c.showTimer.showpoint = millis();
 
       // Code here runs every interval (i.e. 200ms)
-      c.airPressureStatus.display();
     }
 
+    c.airPressureStatus.display();
     c.lightEffect.display();
     c.powerSwitch.display();
     c.speaker.play();

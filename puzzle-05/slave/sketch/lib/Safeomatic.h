@@ -76,7 +76,7 @@ namespace Safeomatic {
       c.door.setState(DISABLE);
       c.speaker.setState(DISABLE);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.state = DISABLE;
+      c.state = ENABLE;
     }
   }
 

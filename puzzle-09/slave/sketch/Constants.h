@@ -132,14 +132,14 @@ extern int lightPinsForBatteryMatrix[] = {11, 12, 13, 14, 15, 16, 17};
 #define NUMBER_OF_SWITCHES_1 7
 extern int switchPinsForBatteryMatrix[] = {7, 6, 5, 4, 3, 2, 1};
 extern int labelsForBatteryMatrix[] = {1, 2, 3, 4, 5, 6, 7};
-extern int keyForBatteryMatrix = 46725;
+extern int keyForBatteryMatrix = 21754;
 
 #define NUMBER_OF_LIGHTS_FOR_GENERATOR 7
 extern int lightPinsForGenerator[] = {4, 5, 6, 7, 8, 9, 10};
 #define NUMBER_OF_SWITCHES_2 7
 extern int switchPinsForGenerator[] = {7, 6, 5, 4, 3, 2, 1};
 extern int labelsForGenerator[] = {1, 2, 3, 4, 5, 6, 7};
-extern int keyForGenerator = 46725;
+extern int keyForGenerator = 46275;
 
 extern int lightPinForPowerSwitchOfShipPrep = 18;
 

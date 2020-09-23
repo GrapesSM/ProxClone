@@ -68,49 +68,52 @@ class BaseController:
                 continue
 
             self._busy = True
-            
-            if delay > 0: time.sleep(delay) # seconds
 
             registers = None
             for _ in range(1):
                 try: 
                     registers = list(self._master.execute(self.getSlaveID(), cst.READ_HOLDING_REGISTERS, 0, self.getNumberOfRegisters()))
+                    if delay > 0: 
+                        time.sleep(delay)
                 except Exception as excpt:
-                    print(self.getKeyName(), end=" ")
+                    _ = ""
                     LOGGER.debug("SystemDataCollector1 error: %s", str(excpt))
 
             if registers:
-                print(self.getKeyName() ,"Slave Registers (received):  ", registers)
+                # print(self.getKeyName() ,"Slave Registers (received):  ", registers)
                 self.update(registers)
-                print(self.getKeyName() ,"Slave Registers (modified):  ", self.registers)
+                # print(self.getKeyName() ,"Slave Registers (modified):  ", self.registers)
 
             if self.getCommand() != COMMAND.CMD_NONE:
+                readAgain = False
                 for _ in range(1):
                     try: 
                         readAgain = True
-                        if (self.getSlaveID() == 2): 
-                            print("CMD:",self.getKeyName(), self.getSlaveID(), self.getCommand(), "write", self._commandQueue)
                         self._master.execute(self.getSlaveID(), cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=self.registers)
+                        if delay > 0: 
+                            time.sleep(delay)
                         self._command = COMMAND.CMD_NONE
                     except Exception as excpt:
+                        _ = ""
                         LOGGER.debug("SystemDataCollector error: %s", str(excpt))
                 
-                if readAgain:
-                    registers = None
-                    for _ in range(1):
-                        try: 
-                            # registers = list(self._master.execute(self.getSlaveID(), cst.READ_HOLDING_REGISTERS, 0, self.getNumberOfRegisters()))
-                            registers = self.registers
-                            # print(self.getKeyName(), self.getSlaveID(), "read")
-                        except Exception as excpt:
-                            # print(self.getKeyName(), end=" ")
-                            LOGGER.debug("SystemDataCollector1 error: %s", str(excpt))
-                    if registers:
-                        # print(self.getKeyName() ,"Slave Registers (received):  ", registers)
-                        self.update(registers)
-                        # print(self.getKeyName() ,"Slave Registers (modified):  ", self.registers)
-            self.refreshCommand()
+                # if readAgain:
+                #     registers = None
+                #     for _ in range(1):
+                #         try:
+                #             registers = list(self._master.execute(self.getSlaveID(), cst.READ_HOLDING_REGISTERS, 0, self.getNumberOfRegisters()))
+                #             if delay > 0: 
+                #                 time.sleep(delay)
+                #             registers = self.registers
+                #         except Exception as excpt:
+                #             _ = ""
+                #             # LOGGER.debug("SystemDataCollector1 error: %s", str(excpt))
+                #     if registers:
+                #         print(self.getKeyName() ,"Slave Registers (received):  ", registers)
+                #         self.update(registers)
+                #         print(self.getKeyName() ,"Slave Registers (modified):  ", self.registers)
             self._busy = False
+            self.refreshCommand()
 
 
     def getCommandStatus(self):

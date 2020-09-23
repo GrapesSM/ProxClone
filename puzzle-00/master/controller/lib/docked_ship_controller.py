@@ -159,20 +159,21 @@ class DockedShipController(BaseController):
                 self._commandStatus_SP = STATUS.ST_CREATED
     
     def startTimer(self):
-        print("DOCKED_SHIP START TIMER")    
+        # print("DOCKED_SHIP START TIMER")    
 
         registers = self.registers
         registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = 7
         registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = 0  
 
-        print(registers)      
+        # print(registers)      
         
         for _ in range(1):
             try: 
                 # readAgain = True
                 self._master.execute(self.getSlaveID(), cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=registers)
-                print(self.getKeyName(), self.getSlaveID(), "write")
+                # print(self.getKeyName(), self.getSlaveID(), "write")
                 # time.sleep(0.001)
             except Exception as excpt:
-                print(self.getKeyName(), end=" ")
-                LOGGER.debug("SystemDataCollector error: %s", str(excpt))
+                # print(self.getKeyName(), end=" ")
+                _ = ""
+                # LOGGER.debug("SystemDataCollector error: %s", str(excpt))
