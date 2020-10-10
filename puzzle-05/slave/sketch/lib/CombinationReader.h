@@ -75,21 +75,21 @@ void CombinationReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip
 
 void CombinationReader::setLightsRed()
 {
-  _strip->SetPixelColor(_lightPins[0], RgbColor(127, 0, 0));
-  _strip->SetPixelColor(_lightPins[1], RgbColor(127, 0, 0));
-  _strip->SetPixelColor(_lightPins[2], RgbColor(127, 0, 0));
+  _strip->SetPixelColor(_lightPins[0], RgbColor(255, 0, 0));
+  _strip->SetPixelColor(_lightPins[1], RgbColor(255, 0, 0));
+  _strip->SetPixelColor(_lightPins[2], RgbColor(255, 0, 0));
 }
 
 void CombinationReader::setLightsYellow()
 {
-  _strip->SetPixelColor(_lightPins[0], RgbColor(64, 64, 0));
-  _strip->SetPixelColor(_lightPins[1], RgbColor(64, 64, 0));
-  _strip->SetPixelColor(_lightPins[2], RgbColor(64, 64, 0));
+  _strip->SetPixelColor(_lightPins[0], RgbColor(255, 170, 0));
+  _strip->SetPixelColor(_lightPins[1], RgbColor(255, 170, 0));
+  _strip->SetPixelColor(_lightPins[2], RgbColor(255, 170, 0));
 }
 
 void CombinationReader::setLightGreen(int light)
 {
-  _strip->SetPixelColor(light, RgbColor(0, 127, 0));
+  _strip->SetPixelColor(light, RgbColor(0, 255, 0));
 }
 
 void CombinationReader::setLightsOff()

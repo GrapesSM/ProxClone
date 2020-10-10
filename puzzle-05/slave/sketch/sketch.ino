@@ -34,7 +34,7 @@ void setup()
 
   // Setup Modbus communication
   parts.slave = &slave;
-  parts.slave->begin( SERIAL_BAUDRATE, PIN_RX_1, PIN_TX_1 );
+  parts.slave->begin( SERIAL_BAUDRATE, PIN_RX_2, PIN_TX_2 );
   #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
     clock_prescale_set(clock_div_1);
   #endif

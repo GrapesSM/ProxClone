@@ -70,7 +70,7 @@ void ShipPrepStatus::setRedLight(STATE state)
   switch (state)
   {
     case ON:
-      _strip->SetPixelColor(_lightPins[0], RgbColor(255,255,255));
+      _strip->SetPixelColor(_lightPins[0], RgbColor(255,0,0));
       break;
   
     case OFF:
@@ -85,7 +85,7 @@ void ShipPrepStatus::setGreenLight(STATE state)
   switch (state)
   {
     case ON:
-      _strip->SetPixelColor(_lightPins[1], RgbColor(255,255,255));
+      _strip->SetPixelColor(_lightPins[1], RgbColor(0,255,0));
       break;
   
     case OFF:

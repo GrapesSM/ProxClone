@@ -57,8 +57,12 @@ namespace PrepStatus {
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_START_TIMER &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      c.syncroReader.setState(START_TIMER);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
+      if (p.registers[REG_MASTER_BODY] > 0) {
+        vTaskDelay(p.registers[REG_MASTER_BODY]);
+        p.registers[REG_MASTER_BODY] = 0;
+      }
+      c.syncroReader.startTimer();
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_SOLVED &&
@@ -110,7 +114,7 @@ namespace PrepStatus {
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
     p.registers[REG_SLAVE_LIGHT_EFFECT_STATE] = c.lightEffect.getState();
     p.registers[REG_SLAVE_SYNCRO_READER_INPUT_KEY] = c.syncroReader.getInputKey();
-    // Serial.println(c.syncroReader.getInputKey());
+    
     if (c.state == SETUP) {
       c.state = INITIALIZING;
 

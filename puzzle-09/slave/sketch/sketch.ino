@@ -24,7 +24,7 @@ struct Parts {
   unsigned int listOfLengthOfSounds[NUMBER_OF_SOUNDS];
 } parts;
 
-Modbus slave(puzzle.address, 1, PIN_485_EN);
+Modbus slave(puzzle.address, 2, PIN_485_EN);
 NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> strip(LED_COUNT, PIN_NEOPIXEL);
 
 EnergySupplemental::Components esComponents;
@@ -45,10 +45,10 @@ void setup()
 
   // Setup Modbus communication
   parts.slave = &slave;
-  parts.slave->begin( SERIAL_BAUDRATE, PIN_RX_1, PIN_TX_1 );
-  #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
-    clock_prescale_set(clock_div_1);
-  #endif
+  parts.slave->begin( SERIAL_BAUDRATE, PIN_RX_2, PIN_TX_2 );
+//  #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000)
+//    clock_prescale_set(clock_div_1);
+//  #endif
 
   // Setup NeoPixelBus for all lights
   parts.strip = &strip;
@@ -150,8 +150,8 @@ void setupShipPrepAux()
 
 //Run Task Function: process changes of puzzle
 void runTaskFunction( void * parameters ) {
-  Serial.print("Run Task running on core ");
-  Serial.println(xPortGetCoreID());
+//  Serial.print("Run Task running on core ");
+//  Serial.println(xPortGetCoreID());
 
   for(;;) {
     // Map puzzle's values to component's values
@@ -172,8 +172,8 @@ void runTaskFunction( void * parameters ) {
 
 //Show Task Fucntion: shows changes of puzzle
 void showTaskFunction( void * parameters ){
-  Serial.print("Show Task running on core ");
-  Serial.println(xPortGetCoreID());
+//  Serial.print("Show Task running on core ");
+//  Serial.println(xPortGetCoreID());
 
   for(;;){  
     // Enable communication to master  

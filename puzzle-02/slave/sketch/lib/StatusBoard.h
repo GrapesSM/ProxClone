@@ -83,12 +83,9 @@ namespace StatusBoard {
     if (p.registers[REG_MASTER_COMMAND] == CMD_RESET_COUNTDOWN_TIME &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
-      Serial.print(p.registers[REG_MASTER_COMMAND]);
-      Serial.print(" ");
-      Serial.println(p.registers[REG_SLAVE_CONFIRM]);
-      if (p.registers[REG_SLAVE_COUNTDOWN] > 0) {
-        // p.registers[REG_SLAVE_COUNTDOWN] = 0;
-        c.countdown.setmaxTimeCount(p.registers[REG_SLAVE_COUNTDOWN]);
+      if (p.registers[REG_MASTER_BODY] > 0) {
+        c.countdown.setmaxTimeCount(p.registers[REG_MASTER_BODY]);
+        p.registers[REG_MASTER_BODY] = 0;
       }
       c.countdown.resetTime();
     }

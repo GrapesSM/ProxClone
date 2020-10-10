@@ -82,101 +82,42 @@ void InformationDisplay::display() {
       Serial2.write(0xff);
       Serial2.write(0xff);
       break;
-
     case 1:
-      if ((_val/10)%2 == 1) {
-        Serial2.print("p0.pic=1");
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        break;
-      } else {
-        Serial2.print("p0.pic=2");
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        break;
-      }
+      Serial2.print("p0.pic=2");
+      Serial2.write(0xff);
+      Serial2.write(0xff);
+      Serial2.write(0xff);
+      break;
     case 2:
-      if ((_val/10)%3 == 2) {
-        Serial2.print("p0.pic=3");
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        break;
-      } else if ((_val/10)%3 == 1) {
-        Serial2.print("p0.pic=4");
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        break;
-      } else {
-        Serial2.print("p0.pic=5");
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        break;        
-      }
+      Serial2.print("p0.pic=3");
+      Serial2.write(0xff);
+      Serial2.write(0xff);
+      Serial2.write(0xff);
+      break;
     case 3:
-      if ((_val/10)%3 == 2) {
-        Serial2.print("p0.pic=1");
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        break;
-      } else if ((_val/10)%3 == 1) {
-        Serial2.print("p0.pic=4");
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        break;
-      } else {
-        Serial2.print("p0.pic=2");
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        break;        
-      }
+      Serial2.print("p0.pic=4");
+      Serial2.write(0xff);
+      Serial2.write(0xff);
+      Serial2.write(0xff);
+      break;
     case 4:
-      if ((_val/10)%3 == 2) {
-        Serial2.print("p0.pic=2");
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        break;
-      } else if ((_val/10)%3 == 1) {
-        Serial2.print("p0.pic=5");
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        break;
-      } else {
-        Serial2.print("p0.pic=3");
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        break;        
-      }
+      Serial2.print("p0.pic=6");
+      Serial2.write(0xff);
+      Serial2.write(0xff);
+      Serial2.write(0xff);
+      break;
     case 5:
-      if ((_val/10)%3 == 2) {
-        Serial2.print("p0.pic=5");
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        break;
-      } else if ((_val/10)%3 == 1) {
-        Serial2.print("p0.pic=4");
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        break;
-      } else {
-        Serial2.print("p0.pic=3");
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        Serial2.write(0xff);
-        break;        
-      }
+      Serial2.print("p0.pic=1");
+      Serial2.write(0xff);
+      Serial2.write(0xff);
+      Serial2.write(0xff);
+      break;
+    case 6:
+      Serial2.print("p0.pic=5");
+      Serial2.write(0xff);
+      Serial2.write(0xff);
+      Serial2.write(0xff);
+      break;        
   }
 }
 

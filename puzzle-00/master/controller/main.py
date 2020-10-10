@@ -83,7 +83,8 @@ def main():
     master.set_timeout(cfg.modbus['timeout'])
     master.set_verbose(cfg.modbus['verbose'])
     while not master:
-        print("Hello")
+        print("Modbus: connecting")
+    print("Modbus: connected")
 
     controllers = createControllers(master)
     proximaCommand = ProximaCommand(controllers, master)
@@ -97,14 +98,14 @@ def main():
             'power_control',
             'status_board',
             'datamatic',
-            # 'safeomatic',
+            'safeomatic',
             'life_support',
             'lasergrid',
             'laserbar',
             'keypad',
             ]:
             continue
-        slaveThreads.append(Thread(target = controllers[key_name].readAndWriteToSlave, args=(0.01, lambda : flagStopThreads), daemon = True))
+        slaveThreads.append(Thread(target = controllers[key_name].readAndWriteToSlave, args=(0.05, lambda : flagStopThreads), daemon = True))
 
 
     try:
@@ -129,8 +130,6 @@ def main():
         simulator.close()
         #stop the data collect
         systemMonitor.stop()
-
-
 
 if __name__ == "__main__":
     main()

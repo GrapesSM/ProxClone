@@ -86,11 +86,12 @@ extern int buttonPins2[] = {7, 6, 5, 4, 3};
 
 extern char buttonLabels[] = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
 
-extern String keyForCodeReader1 = "12345";
-extern String keyForCodeReader2 = "23456";
-extern String keyForCodeReader3 = "34567";
-extern String keyForCodeReader4 = "45678";
-extern String keyForCodeReader5 = "56789";
+extern String keyForCodeReader1 = "16309";
+extern String keyForCodeReader2 = "45673";
+extern String keyForCodeReader3 = "73856";
+extern String keyForCodeReader4 = "38549";
+extern String keyForCodeReader5 = "85479";
+extern String keyForCodeReader6 = "24356";
 
 
 #define NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT 18
@@ -103,9 +104,9 @@ enum {  // enumeration from 0, 1, 2 ...
 };
 
 enum REGISTER_INDEX {
-  REG_MASTER_MILLIS = 0,
+  REG_MASTER_FORCE = 0,
   REG_MASTER_COMMAND = 1,
-  REG_MASTER_FORCE = 2,
+  REG_MASTER_BODY = 2,
   REG_SLAVE_MILLIS = 3,
   REG_SLAVE_CONFIRM = 4,
   REG_SLAVE_STATE = 5,
@@ -113,13 +114,7 @@ enum REGISTER_INDEX {
   REG_SLAVE_CODE_READER_STATE = 7,
   REG_SLAVE_INFORMATION_DISPLAY_STATE = 8,
   REG_SLAVE_LIGHT_EFFECT_STATE = 9,
-  REG_SLAVE_SPEAKER_STATE = 10,
-  REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER = 11,
-  REG_SLAVE_KEY_1 = 12,
-  REG_SLAVE_KEY_2 = 13,
-  REG_SLAVE_KEY_3 = 14,
-  REG_SLAVE_KEY_4 = 15,
-  REG_SLAVE_KEY_5 = 16
+  REG_SLAVE_SPEAKER_STATE = 10
 };
 
 enum COMMAND {

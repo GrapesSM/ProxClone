@@ -60,12 +60,12 @@ void AirPressureStatus::update()
     default:
       if ((_value / CHANGE_VALUE) == AIR_PRESSURE) {
         _state = BALANCED;
-        _strip->SetPixelColor(_lightPins[0], RgbColor(255, 255, 255));
+        _strip->SetPixelColor(_lightPins[0], RgbColor(0, 255, 0));
         _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
       } else {
         _state = UNBALANCED;
         _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
-        _strip->SetPixelColor(_lightPins[1], RgbColor(255, 255, 255));
+        _strip->SetPixelColor(_lightPins[1], RgbColor(255, 0, 0));
       }
       break;
   }  

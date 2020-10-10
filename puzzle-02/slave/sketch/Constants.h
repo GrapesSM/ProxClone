@@ -94,9 +94,9 @@ extern int lightPinsForBlastDoorStatus[] = {6, 1};
 extern int lightPinsForLaserGridStatus[] = {7, 0};
 
 enum REGISTER_INDEX {
-  REG_MASTER_MILLIS = 0,
+  REG_MASTER_FORCE = 0,
   REG_MASTER_COMMAND = 1,
-  REG_MASTER_FORCE = 2,
+  REG_MASTER_BODY = 2,
   REG_SLAVE_MILLIS = 3,
   REG_SLAVE_CONFIRM = 4,
   REG_SLAVE_STATE = 5,

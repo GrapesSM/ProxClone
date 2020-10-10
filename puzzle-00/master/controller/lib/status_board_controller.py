@@ -46,7 +46,7 @@ class StatusBoardController(BaseController):
         
         if self.getCommand() == COMMAND.CMD_RESET_COUNTDOWN_TIME and self.getCommandStatus() == STATUS.ST_CREATED:
             registers[SB_REGISTER_INDEX.REG_MASTER_COMMAND] = COMMAND.CMD_RESET_COUNTDOWN_TIME
-            registers[SB_REGISTER_INDEX.REG_SLAVE_COUNTDOWN] = self._countdownTime
+            registers[SB_REGISTER_INDEX.REG_MASTER_BODY] = self._countdownTime
             registers[SB_REGISTER_INDEX.REG_SLAVE_CONFIRM] = STATE.ACTIVE            
             
         self.setRegisters(registers)

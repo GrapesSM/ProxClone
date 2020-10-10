@@ -345,11 +345,11 @@ void Modbus::begin(long u32speed, uint8_t rx, uint8_t tx)
         break;
 //#endif
 
-#if defined(UBRR2H)
+// #if defined(UBRR2H)
     case 2:
         port = &Serial2;
         break;
-#endif
+// #endif
 
 #if defined(UBRR3H)
     case 3:

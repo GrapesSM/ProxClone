@@ -123,9 +123,14 @@ void PowerAdjuster::display()
     _matrix2->print(_demand);
   _matrix2->writeDisplay();
   
-  if (_lastDialValue != map(_demand - _supply, -_maxDemand, _maxDemand, 0, 255)) {
-    _lastDialValue = map(_demand - _supply, -_maxDemand, _maxDemand, 0, 255);
-    ledcWrite(_channel, _lastDialValue);
+  if (_demand > _supply) {
+    ledcWrite(_channel, 255);
+  }
+  else if (_demand < _supply) {
+    ledcWrite(_channel, 0);
+  }
+  else if (_demand == _supply) {
+    ledcWrite(_channel, 128);
   }
 }
 

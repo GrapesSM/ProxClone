@@ -53,12 +53,12 @@ void AirSupplyPump::update()
   if (_dSwitch.isSwitch(LOW)) {
     _state = ON;
     _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
-    _strip->SetPixelColor(_lightPins[1], RgbColor(255, 255, 255));
+    _strip->SetPixelColor(_lightPins[1], RgbColor(0, 255, 0));
   }
 
   if (_dSwitch.isSwitch(HIGH)) {
     _state = OFF;
-    _strip->SetPixelColor(_lightPins[0], RgbColor(255, 255, 255));
+    _strip->SetPixelColor(_lightPins[0], RgbColor(255, 0, 0));
     _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
   }
 }

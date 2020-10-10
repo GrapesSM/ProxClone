@@ -1,4 +1,4 @@
-  #define PIN_RX_1 9
+#define PIN_RX_1 9
 #define PIN_TX_1 5
 #define PIN_RX_2 10
 #define PIN_TX_2 13
@@ -90,9 +90,12 @@ extern int lightPinForPinIndicator = 8;
 #define NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT 18
 extern int lightPinsForLightEffect[] = {9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26};
 
-#define NUMBER_OF_SOUNDS 2
+#define NUMBER_OF_SOUNDS 4
 enum {  // enumeration from 0, 1, 2 ...
-  SOUND_POWER_ADJUST
+  SOUND_POWER_ADJUST,
+  SOUND_POWER_UP,
+  SOUND_POWER_DOWN,
+  SOUND_POSITION_CRITICAL
 };
 
 enum REGISTER_INDEX {

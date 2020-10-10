@@ -12,15 +12,10 @@ class DockedShipController(BaseController):
         super().__init__(key_name, model, puzzle, master)
         self._command_ES = COMMAND.CMD_NONE
         self._commandStatus_ES = STATUS.ST_NONE
+        self._commandQueue_ES = []
         self._command_SP = COMMAND.CMD_NONE
         self._commandStatus_SP = COMMAND.CMD_NONE
-        self._commandQueue_ES = []
         self._commandQueue_SP = []
-        self._powerAdjusterKey = 650
-        self._baterryMatrixKey = 12345
-        self._generatorKey = 12345
-        self._startTimerCmdWritten = False
-
 
     def update(self, registers):
         # controller register vs slave register
@@ -78,10 +73,7 @@ class DockedShipController(BaseController):
             registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = COMMAND.CMD_START_TIMER
             registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = STATE.ACTIVE
 
-
-
-
-
+        ##################################################################
 
         if self.getCommand_SP() == COMMAND.CMD_ENABLE and self.getCommandStatus_SP() == STATUS.ST_CREATED:
             registers[DS_REGISTER_INDEX.REG_MASTER_SP_COMMAND] = COMMAND.CMD_ENABLE
@@ -114,10 +106,92 @@ class DockedShipController(BaseController):
 
         self.setRegisters(registers)
 
-    def getCommand(self):
-        if (self._command_ES == COMMAND.CMD_NONE and self._command_SP == COMMAND.CMD_NONE):
-            return COMMAND.CMD_NONE
-        return self._command_ES if self._command_ES != COMMAND.CMD_NONE else self._command_SP
+    def readAndWriteToSlave(self, delay, stop):
+        while True:
+            if stop():
+                break
+
+            if self.busy:
+                continue
+
+            registers = None
+            try:
+                self.busy = True 
+                registers = list(self._master.execute(self.getSlaveID(), cst.READ_HOLDING_REGISTERS, 0, self.getNumberOfRegisters()))
+                if delay > 0:
+                    time.sleep(delay)
+                self.busy = False
+            except Exception as excpt:
+                self.busy = False
+
+            if registers:
+                self.update(registers)
+
+            if self.getCommand_SP() != COMMAND.CMD_NONE:
+                readAgain = False
+                try: 
+                    readAgain = True
+                    self.busy = True
+                    self._master.execute(self.getSlaveID(), cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=self.registers[0:5])
+                    if delay > 0:
+                        time.sleep(delay)
+                    self.busy = False
+                    self._command = COMMAND.CMD_NONE
+                except Exception as excpt:
+                    self.busy = False
+                    # LOGGER.debug("SystemDataCollector error: %s", str(excpt))
+                
+                if readAgain:
+                    registers = None
+                    try:
+                        self.busy = True
+                        registers = list(self._master.execute(self.getSlaveID(), cst.READ_HOLDING_REGISTERS, 0, self.getNumberOfRegisters()))
+                        if delay > 0: 
+                            time.sleep(delay)
+                        self.busy = False
+                        registers = self.registers
+                    except Exception as excpt:
+                        self.busy = False
+                        # LOGGER.debug("SystemDataCollector1 error: %s", str(excpt))
+                    if registers:
+                        # print(self.getKeyName() ,"Slave Registers (received):  ", registers)
+                        self.update(registers)
+                        # print(self.getKeyName() ,"Slave Registers (modified):  ", self.registers)
+            
+            if self.getCommand_ES() != COMMAND.CMD_NONE:
+                readAgain = False
+                try: 
+                    self.busy = True
+                    self._master.execute(self.getSlaveID(), cst.WRITE_MULTIPLE_REGISTERS, 10, output_value=self.registers[10:14])
+                    readAgain = True
+                    if delay > 0:
+                        time.sleep(delay)
+                    self.busy = False
+                    self._command = COMMAND.CMD_NONE
+                except Exception as excpt:
+                    self.busy = False
+                    # LOGGER.debug("SystemDataCollector error: %s", str(excpt))
+                
+                if readAgain:
+                    registers = None
+                    try:
+                        self.busy = True
+                        registers = list(self._master.execute(self.getSlaveID(), cst.READ_HOLDING_REGISTERS, 0, self.getNumberOfRegisters()))
+                        if delay > 0: 
+                            time.sleep(delay)
+                        self.busy = False
+                        registers = self.registers
+                    except Exception as excpt:
+                        self.busy = False
+                        # LOGGER.debug("SystemDataCollector1 error: %s", str(excpt))
+
+                    if registers:
+                        print(self.getKeyName() ,"Slave Registers (received):  ", registers)
+                        self.update(registers)
+                        print(self.getKeyName() ,"Slave Registers (modified):  ", self.registers)
+
+            self.busy = False
+            self.refreshCommand()
 
     def getCommand_ES(self):
         return self._command_ES
@@ -157,23 +231,3 @@ class DockedShipController(BaseController):
             if len(self._commandQueue_SP) != 0:
                 self._command_SP = self._commandQueue_SP.pop(0)
                 self._commandStatus_SP = STATUS.ST_CREATED
-    
-    def startTimer(self):
-        # print("DOCKED_SHIP START TIMER")    
-
-        registers = self.registers
-        registers[DS_REGISTER_INDEX.REG_MASTER_ES_COMMAND] = 7
-        registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = 0  
-
-        # print(registers)      
-        
-        for _ in range(1):
-            try: 
-                # readAgain = True
-                self._master.execute(self.getSlaveID(), cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=registers)
-                # print(self.getKeyName(), self.getSlaveID(), "write")
-                # time.sleep(0.001)
-            except Exception as excpt:
-                # print(self.getKeyName(), end=" ")
-                _ = ""
-                # LOGGER.debug("SystemDataCollector error: %s", str(excpt))

@@ -10,7 +10,6 @@ import time
 class PrepStatusController(BaseController):
     def __init__(self, key_name, model, puzzle, master):
         super().__init__(key_name, model, puzzle, master)
-        self._lighEffectPatternNumber = 0
 
     def update(self, registers):
         # controller register vs slave register
@@ -74,23 +73,3 @@ class PrepStatusController(BaseController):
 
 
         self.setRegisters(registers)
-
-    def startTimer(self):
-        # print("PREP_STATUS START TIMER")
-
-        registers = self.registers
-        registers[PS_REGISTER_INDEX.REG_MASTER_COMMAND] = 7
-        registers[PS_REGISTER_INDEX.REG_SLAVE_CONFIRM] = 0
-
-        # print(registers)
-
-        for _ in range(1):
-            try: 
-                # readAgain = True
-                self._master.execute(10, cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=registers)
-                # print(self.getKeyName(), self.getSlaveID(), "write")
-                # time.sleep(0.010)
-            except Exception as excpt:
-                # print(self.getKeyName(), end=" ")
-                _ = ""
-                # LOGGER.debug("SystemDataCollector error: %s", str(excpt))

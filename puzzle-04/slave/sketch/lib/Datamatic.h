@@ -53,7 +53,6 @@ namespace Datamatic {
     p.registers[REG_SLAVE_INFORMATION_DISPLAY_STATE] = c.informationDisplay.getState();
     p.registers[REG_SLAVE_LIGHT_EFFECT_STATE] = c.lightEffect.getState();
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
-    p.registers[REG_SLAVE_LIGHT_EFFECT_PATTERN_NUMBER] = c.lightEffect.getPatternNumber();
 
     if(c.state == SETUP) {
       c.state = INITIALIZING;
@@ -70,7 +69,7 @@ namespace Datamatic {
       c.informationDisplay.setState(DISABLE);
       c.lightEffect.setState(DISABLE);
       c.speaker.setState(DISABLE);
-      c.state = DISABLE;
+      c.state = ENABLE;
     }
   }
 
@@ -135,6 +134,9 @@ namespace Datamatic {
       else if (c.codeReader.getTransmittedKey() == keyForCodeReader5) {
         c.informationDisplay.setCurrentSeries(5);
       }
+      else if (c.codeReader.getTransmittedKey() == keyForCodeReader6) {
+        c.informationDisplay.setCurrentSeries(6);
+      }
       else{
         c.informationDisplay.setCurrentSeries(0);
       }
@@ -148,11 +150,11 @@ namespace Datamatic {
     if ((c.showTimer.current - c.showTimer.showpoint) > c.showTimer.interval) {
       c.showTimer.showpoint = millis();
       c.informationDisplay.display();
-      c.codeReader.display();
       c.powerSwitch.display();
       c.lightEffect.display();
     }
 
+    c.codeReader.display();
     c.speaker.play();
   }
 }

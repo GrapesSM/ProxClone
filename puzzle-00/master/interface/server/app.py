@@ -34,38 +34,6 @@ CORS(app, resources={r'/*': {'origins': '*'}})
 def ping_pong():
     return jsonify('pong!')
 
-@app.route('/books', methods=['GET', 'POST'])
-def all_books():
-    response_object = {'status': 'success'}
-    if request.method == 'POST':
-        post_data = request.get_json()
-        book = Book(title=post_data.get['title'], author=post_data['author'], read=post_data.get('read'))
-        book.save()
-        response_object['message'] = 'Book added!'
-    else:
-        books = []
-        for book in Book.select().dicts():
-            books.append(book)
-        response_object['books'] = books
-    return jsonify(response_object)
-
-
-@app.route('/books/<book_id>', methods=['PUT', 'DELETE'])
-def single_book(book_id):
-    response_object = {'status': 'success'}
-    if request.method == 'PUT':
-        post_data = request.get_json()
-        book = Book.get_by_id(book_id)
-        book.title = post_data.get('title')
-        book.author = post_data.get('author')
-        book.read = post_data.get('read')
-        book.save()
-        response_object['message'] = 'Book updated!'
-    if request.method == 'DELETE':
-        Book.delete_by_id(book_id)
-        response_object['message'] = 'Book removed!'
-    return jsonify(response_object)
-
 @app.route('/puzzles', methods=['GET', 'POST'])
 def all_puzzles():
     response_object = {'status': 'success'}
@@ -98,6 +66,16 @@ def get_puzzle(id):
         puzzle['state'] = json.loads(puzzle['state'])
         response_object['puzzle'] = puzzle
         response_object['state_names'] = conv2JFE(STATE.__dict__)
+    return jsonify(response_object)
+
+
+@app.route('/puzzles/<int:id>', methods=['PUT'])
+def update_puzzle(id):
+    response_object = {'status': 'success'}
+    puzzle = Puzzle.get(id)
+    Puzzle.update(changed_state=request.data, changed=True)\
+        .where(Puzzle.id == puzzle.id)\
+        .execute()
     return jsonify(response_object)
 
 if __name__ == '__main__':

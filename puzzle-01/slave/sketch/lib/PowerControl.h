@@ -55,8 +55,16 @@ namespace PowerControl {
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_DEMAND &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      c.powerAdjuster.setDemand(p.registers[REG_MASTER_BODY] / 10.0);  
       p.registers[REG_SLAVE_CONFIRM] = DONE;   
-      c.powerAdjuster.setDemand(p.registers[REG_SLAVE_DEMAND] / 10.0);  
+      p.registers[REG_MASTER_BODY] = 0;
+    }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_BATTERY_CHARGING_RATE &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {      
+      c.battery.setRate(p.registers[REG_MASTER_BODY] / 10.0);
+      p.registers[REG_SLAVE_CONFIRM] = DONE;   
+      p.registers[REG_MASTER_BODY] = 0;
     }
     
     p.registers[REG_SLAVE_MILLIS] = millis();
@@ -95,7 +103,7 @@ namespace PowerControl {
       
       c.lightEffect.setState(DISABLE);
       
-      c.state = DISABLE;
+      c.state = ENABLE;
     }
   }
 
@@ -124,6 +132,7 @@ namespace PowerControl {
         c.powerAdjuster.setState(ENABLE);
       }
       if (c.powerLightIndicator.getState() == DISABLE) {
+        c.speaker.addToPlay(SOUND_POWER_UP);
         c.powerLightIndicator.setState(ENABLE);
       }
       if (c.battery.getState() == DISABLE) {
@@ -143,11 +152,15 @@ namespace PowerControl {
 
         if ((c.timer.current - c.timer.start) > (c.failurePeriod / 3 * 3)) {
           c.powerLightIndicator.setState(FAILURE);
+          if (c.speaker.getNumber() != SOUND_POWER_DOWN) 
+            c.speaker.addToPlay(SOUND_POWER_DOWN);
         } else if ((c.timer.current - c.timer.start) > (c.failurePeriod / 3 * 2)) {
           c.lightEffect.setState(FLASH);
           c.powerLightIndicator.setState(FLASH);
         } else if ((c.timer.current - c.timer.start) > (c.failurePeriod / 3 * 1)) {
           c.powerLightIndicator.setState(FLASH);
+          if (c.speaker.getNumber() != SOUND_POSITION_CRITICAL) 
+            c.speaker.addToPlay(SOUND_POSITION_CRITICAL);
         } 
       }
 
@@ -168,19 +181,21 @@ namespace PowerControl {
   {
     c.showTimer.current = millis();
     if ((c.showTimer.current - c.showTimer.showpoint) > c.showTimer.interval) {
+      c.showTimer.showpoint = millis();
+      
       if (c.tempSupply != c.powerAdjuster.getSupply()) {
         c.tempSupply = c.powerAdjuster.getSupply();
         c.speaker.addToPlay(SOUND_POWER_ADJUST);
+        Serial.println("SOUND_POWER_ADJUST");
       }
 
       c.powerAdjuster.display();
       c.powerLightIndicator.display();
       c.lightEffect.display();
       c.battery.display();
-      c.showTimer.showpoint = millis();
     }
 
-    c.speaker.play();
+    // c.speaker.play();
   }
 }
 

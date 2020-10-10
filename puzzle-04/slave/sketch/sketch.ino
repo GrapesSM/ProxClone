@@ -62,6 +62,7 @@ void setup()
   
   // Setup 7 segment LED
   parts.matrix.begin(ADDR_SEVENSEGMENT);
+  parts.matrix.setBrightness(14);
   parts.matrix.setNumberOfDigits(5);
   
   // Setup power switch

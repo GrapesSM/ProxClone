@@ -65,11 +65,18 @@ void Detector::update()
 
 void Detector::display()
 {
-  if (_state == DISABLE) {
+  switch (_state)
+  {
+  case DISABLE:
     digitalWrite(_pin, LOW);
-    return;
-  }
+    break;
 
-  digitalWrite(_pin, HIGH);
+  case ENABLE:
+    digitalWrite(_pin, HIGH);
+    break;
+  
+  default:
+    break;
+  }
 }
 #endif

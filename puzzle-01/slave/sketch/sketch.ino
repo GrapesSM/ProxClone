@@ -5,7 +5,6 @@
 #include "Adafruit_LEDBackpack.h"
 #include <ESP32Encoder.h>
 #include "lib/PowerControl.h"
-#include "sounds/soundPowerAdjust.h"
 
 Puzzle puzzle;
 
@@ -15,8 +14,6 @@ struct Parts {
   ESP32Encoder encoder;
   Adafruit_7segment matrix1 = Adafruit_7segment(); 
   Adafruit_7segment matrix2 = Adafruit_7segment();
-  unsigned char* listOfSounds[NUMBER_OF_SOUNDS];
-  unsigned int listOfLengthOfSounds[NUMBER_OF_SOUNDS];
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
@@ -77,16 +74,9 @@ void setup()
   ledcAttachPin(PIN_OUTPUT_1, PWM_OUTPUT_1_CHANNEL);
 
   // Setup speaker pins
-  pinMode(PIN_SPEAKER, OUTPUT);
-  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
-  ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
-  pinMode(PIN_AMPLIFIER, OUTPUT);
-  digitalWrite(PIN_AMPLIFIER, HIGH);
-
-  // Setup sound list
-  parts.listOfSounds[SOUND_POWER_ADJUST] = soundPowerAdjust;
-  parts.listOfLengthOfSounds[SOUND_POWER_ADJUST] = sizeof(soundPowerAdjust)/sizeof(soundPowerAdjust[0]);
-
+//  pinMode(PIN_AMPLIFIER, OUTPUT);
+//  digitalWrite(PIN_AMPLIFIER, HIGH);
+  
   setupPowerControl();
   // Setup Task functions
   xTaskCreatePinnedToCore(
@@ -121,7 +111,7 @@ void setupPowerControl()
   pcComponents.powerLightIndicator.set(parts.strip, lightPinForPowerLightIndicator);
   pcComponents.battery.set(parts.strip, lightPinsForBarIndicator);
   pcComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
-  pcComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
+//  pcComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, parts.files);
 }
 
 //Run Task Function: process changes of puzzle

@@ -24,7 +24,7 @@
 #define ADDR_SEVENSEGMENT 0x71
 #define ADDR_SLAVE 9
 
-#define SERIAL_BAUDRATE 38400
+#define SERIAL_BAUDRATE 19200
 #define LED_COUNT 19
 #define COLOR_SATURATION 128
 
@@ -76,10 +76,10 @@ enum STATE {
 };
 
 enum REGISTER_INDEX {
-  REG_MASTER_MILLIS = 0,
+  REG_MASTER_FORCE = 0,
   
   REG_MASTER_SP_COMMAND = 1,
-  REG_MASTER_SP_FORCE = 2,
+  REG_MASTER_SP_BODY = 2,
   REG_SLAVE_SP_MILLIS = 3,
   REG_SLAVE_SP_CONFIRM = 4,
   REG_SLAVE_SP_STATE = 5,
@@ -89,7 +89,7 @@ enum REGISTER_INDEX {
   REG_SLAVE_SP_SPEAKER_STATE = 9,
   
   REG_MASTER_ES_COMMAND = 10,
-  REG_MASTER_ES_FORCE = 11,
+  REG_MASTER_ES_BODY = 11,
   REG_SLAVE_ES_MILLIS = 12,
   REG_SLAVE_ES_CONFIRM = 13,
   REG_SLAVE_ES_STATE = 14,
@@ -132,7 +132,7 @@ extern int lightPinsForBatteryMatrix[] = {11, 12, 13, 14, 15, 16, 17};
 #define NUMBER_OF_SWITCHES_1 7
 extern int switchPinsForBatteryMatrix[] = {7, 6, 5, 4, 3, 2, 1};
 extern int labelsForBatteryMatrix[] = {1, 2, 3, 4, 5, 6, 7};
-extern int keyForBatteryMatrix = 21754;
+extern int keyForBatteryMatrix = 41527;
 
 #define NUMBER_OF_LIGHTS_FOR_GENERATOR 7
 extern int lightPinsForGenerator[] = {4, 5, 6, 7, 8, 9, 10};

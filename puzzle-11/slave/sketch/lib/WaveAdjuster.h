@@ -155,6 +155,14 @@ void WaveAdjuster::display()
       k = 0;
     }  
   }
+
+  if (_state == SOLVED) {
+    _serial->print("page 2");
+    _serial->write(0xff);
+    _serial->write(0xff);
+    _serial->write(0xff);
+    _waveScreenSwitch = false;
+  }
 }
 
 int WaveAdjuster::getInputValue(int number)

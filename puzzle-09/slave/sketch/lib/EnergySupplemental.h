@@ -55,10 +55,15 @@ namespace EnergySupplemental {
       p.registers[REG_SLAVE_ES_CONFIRM] = DONE;
       c.state = SOLVED;
     }
+
     if (p.registers[REG_MASTER_ES_COMMAND] == CMD_START_TIMER &&
         p.registers[REG_SLAVE_ES_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_ES_CONFIRM] = DONE;
-      c.syncroReader.setState(START_TIMER);
+      if (p.registers[REG_MASTER_ES_BODY] > 0) {
+        vTaskDelay(p.registers[REG_MASTER_ES_BODY]);
+        p.registers[REG_MASTER_ES_BODY] = 0;
+      }
+      c.syncroReader.startTimer();
     }
 
     if (p.registers[REG_MASTER_ES_COMMAND] == CMD_SET_DS_SYNCRO_READER_SYNCRONIZED &&
@@ -78,12 +83,6 @@ namespace EnergySupplemental {
       p.registers[REG_SLAVE_ES_CONFIRM] = DONE;
       c.syncroReader.setState(ENABLE);
     }
-
-    // if (p.registers[REG_MASTER_ES_COMMAND] == CMD_SET_DS_POWER_ADJUSTER_KEY &&
-    //     p.registers[REG_SLAVE_ES_CONFIRM] != DONE) {
-    //   p.registers[REG_SLAVE_ES_CONFIRM] = DONE;
-    //   keyForPowerAdjuster = (p.registers[REG_SLAVE_KEY]);
-    // } 
     
     p.registers[REG_SLAVE_ES_MILLIS] = millis();
     p.registers[REG_SLAVE_ES_STATE] = c.state;
@@ -92,7 +91,6 @@ namespace EnergySupplemental {
     p.registers[REG_SLAVE_ES_SYNCRO_READER_STATE] = c.syncroReader.getState();
     p.registers[REG_SLAVE_ES_SPEAKER_STATE] = c.speaker.getState();
     p.registers[REG_SLAVE_ES_SYNCRO_READER_INPUT_KEY] = c.syncroReader.getInputKey();
-    // p.registers[REG_SLAVE_KEY] = int(keyForCodeReader1);
 
     if (c.state == SETUP) {
       c.state = INITIALIZING;
