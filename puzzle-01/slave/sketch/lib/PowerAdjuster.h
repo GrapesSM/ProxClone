@@ -5,9 +5,6 @@
 #define PowerAdjuster_h
 
 #include <Arduino.h>
-#include <ESP32Encoder.h>
-#include <Adafruit_GFX.h>
-#include "Adafruit_LEDBackpack.h"
 
 class PowerAdjuster
 {

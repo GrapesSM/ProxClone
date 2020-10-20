@@ -116,7 +116,7 @@ void AirPressureStatus::display()
     case ENABLE:
     default:
       _matrix->clear();
-      _matrix->print(_value / CHANGE_VALUE);
+      _matrix->print(getValue(), DEC);
       _matrix->writeDisplay();
       break;
   }

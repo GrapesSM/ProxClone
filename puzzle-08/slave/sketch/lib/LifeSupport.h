@@ -80,7 +80,7 @@ namespace LifeSupport {
       c.speaker.setState(DISABLE);
       c.lightEffect.setState(DISABLE);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.state = ENABLE;
+      c.state = DISABLE;
     }
   }
 
@@ -115,9 +115,6 @@ namespace LifeSupport {
         c.externalVent.setState(DISABLE);
         c.airPressureStatus.setState(DISABLE);
         c.airSupplyPump.setState(DISABLE);
-        if (c.speaker.getNumber() != SOUND_POWER_DOWN) {
-          c.speaker.addToPlay(SOUND_POWER_DOWN);
-        }
         c.lightEffect.setState(DISABLE);
       }
       
@@ -130,9 +127,6 @@ namespace LifeSupport {
         }
         if (c.airPressureStatus.getState() == DISABLE) {
           c.airPressureStatus.setState(ENABLE);
-        }
-        if (c.speaker.getNumber() != SOUND_POWER_UP) {
-          c.speaker.addToPlay(SOUND_POWER_UP);
         }
         if (c.lightEffect.getState() == DISABLE) {
           c.lightEffect.setState(ENABLE);
@@ -181,9 +175,9 @@ namespace LifeSupport {
       c.showTimer.showpoint = millis();
 
       // Code here runs every interval (i.e. 200ms)
+      c.airPressureStatus.display();
     }
 
-    c.airPressureStatus.display();
     c.lightEffect.display();
     c.powerSwitch.display();
     c.speaker.play();

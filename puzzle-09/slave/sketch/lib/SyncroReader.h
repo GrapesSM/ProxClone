@@ -91,23 +91,7 @@ void SyncroReader::update()
 
   _dSyncroKey.readSwitch();
 
-  if (_state == FLASH){
-    if (_dSyncroKey.isSwitch(HIGH)) {
-      _strip->SetPixelColor(_lightPins[0], RgbColor(127, 0, 0));
-      _strip->SetPixelColor(_lightPins[1], RgbColor(127, 0, 0));
-      _strip->SetPixelColor(_lightPins[2], RgbColor(127, 0, 0));
-    } else {
-      _state = DONE;
-      _inputKey = -1;
-    }
-  }
-}
-
-void SyncroReader::startTimer() {
-  _timer.start = millis();
-  _timer.lastRefreshTime = _timer.start;
-  _state = COUNTING;
-  while (_state != DONE) {
+  while (_state == COUNTING) {
     _dSyncroKey.readSwitch();
     if (_dSyncroKey.isSwitch(HIGH)) {
       if (_inputKey == 10) {
@@ -131,39 +115,56 @@ void SyncroReader::startTimer() {
     
     switch (_count)
     {
-    case 1:
-      _strip->SetPixelColor(_lightPins[0], RgbColor(127, 127, 127));
-      _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
-      _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
-      break;
-    case 2:
-      _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
-      _strip->SetPixelColor(_lightPins[1], RgbColor(127, 127, 127));
-      _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
-      break;
-    case 3:
-      _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
-      _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
-      _strip->SetPixelColor(_lightPins[2], RgbColor(127, 127, 127));
-      break;
-    case 4:
-      _strip->SetPixelColor(_lightPins[0], RgbColor(127, 127, 127));
-      _strip->SetPixelColor(_lightPins[1], RgbColor(127, 127, 127));
-      _strip->SetPixelColor(_lightPins[2], RgbColor(127, 127, 127));
-      break;
-    case 5:
-      _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
-      _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
-      _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
-      break;
-    case 0:
-      _count = -1;
-      _state = DONE;
-      break;
-    default:
-      break;
+      case 1:
+        _strip->SetPixelColor(_lightPins[0], RgbColor(127, 127, 127));
+        _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
+        _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
+        break;
+      case 2:
+        _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
+        _strip->SetPixelColor(_lightPins[1], RgbColor(127, 127, 127));
+        _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
+        break;
+      case 3:
+        _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
+        _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
+        _strip->SetPixelColor(_lightPins[2], RgbColor(127, 127, 127));
+        break;
+      case 4:
+        _strip->SetPixelColor(_lightPins[0], RgbColor(127, 127, 127));
+        _strip->SetPixelColor(_lightPins[1], RgbColor(127, 127, 127));
+        _strip->SetPixelColor(_lightPins[2], RgbColor(127, 127, 127));
+        break;
+      case 5:
+        _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
+        _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
+        _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
+        break;
+      case 0:
+        _count = -1;
+        _state = DONE;
+        break;
+      default:
+        break;
     }
   }
+
+  if (_state == FLASH){
+    if (_dSyncroKey.isSwitch(HIGH)) {
+      _strip->SetPixelColor(_lightPins[0], RgbColor(127, 0, 0));
+      _strip->SetPixelColor(_lightPins[1], RgbColor(127, 0, 0));
+      _strip->SetPixelColor(_lightPins[2], RgbColor(127, 0, 0));
+    } else {
+      _state = DONE;
+      _inputKey = -1;
+    }
+  }
+}
+
+void SyncroReader::startTimer() {
+  _timer.start = millis();
+  _timer.lastRefreshTime = _timer.start;
+  _state = COUNTING;
 }
 
 void SyncroReader::display()

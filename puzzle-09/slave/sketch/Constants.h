@@ -146,7 +146,7 @@ extern int lightPinForPowerSwitchOfShipPrep = 18;
 extern int keyForPowerAdjuster = 656;
 
 #define NUMBER_OF_SOUNDS 3
-enum {  // enumeration from 0, 1, 2 ...
+enum {  // enumeration fro   m 0, 1, 2 ...
   SOUND_POWER_DOWN,
   SOUND_POWER_UP,
   SOUND_KEY_INSERT

@@ -7,7 +7,6 @@
 #define TXD2 13
 
 #include <Arduino.h>
-#include <ESP32Encoder.h>
 
 class InformationDisplay
 {

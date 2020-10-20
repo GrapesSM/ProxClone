@@ -87,17 +87,18 @@ void BatteryMatrix::readSwitches()
 }
 
 int BatteryMatrix::getInputKey() {
-  int input = 0;
-  int max = 0;
-  for (int i = 0; i < NUMBER_OF_SWITCHES_1; i++) {
-    if(max < _order[i]){max = _order[i];}
-  }
-  for (int i = 0; i < NUMBER_OF_SWITCHES_1; i++) {
-    if(_order[_labels[i]] != 0){
-      input +=  pow(10,(max-_order[_labels[i]])) * _labels[i]  ;
+  String input = "";
+    
+  for (int i = 0, k = 1; i < NUMBER_OF_SWITCHES_1; i++) {
+    for (int j = 0; j < NUMBER_OF_SWITCHES_1; j++) {
+      if (k == _order[_labels[j]]) {
+        input += _labels[j];
+        k++;
+      }
     }
   }
-  return input;
+
+  return input.toInt();
 }
 
 void BatteryMatrix::update()

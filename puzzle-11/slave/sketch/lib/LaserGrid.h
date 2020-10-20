@@ -64,7 +64,6 @@ namespace LaserGrid {
     p.registers[REG_SLAVE_KEY_READER_STATE] = c.keyReader.getState();
     p.registers[REG_SLAVE_WAVE_ADJUSTER_STATE] = c.waveAdjuster.getState();
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
-    
 
     if (c.state == SETUP) {
       c.state = INITIALIZING;
@@ -79,7 +78,7 @@ namespace LaserGrid {
       c.waveAdjuster.setState(DISABLE); 
       c.speaker.setState(DISABLE);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.state = ENABLE;
+      c.state = DISABLE;
     }
   }
 
@@ -110,31 +109,22 @@ namespace LaserGrid {
       if (c.powerSwitch.getState() == OFF) { 
         c.keyReader.setState(DISABLE);
         c.waveAdjuster.setState(DISABLE);
-        if (c.speaker.getNumber() != SOUND_POWER_DOWN) {
-          // c.speaker.addToPlay(SOUND_POWER_DOWN);
-        }
       }
 
       if (c.powerSwitch.getState() == ON) {
         if (c.keyReader.getState() == DISABLE)
           c.keyReader.setState(ENABLE);
-        if (c.speaker.getNumber() == SOUND_POWER_DOWN) {
-          // c.speaker.addToPlay(SOUND_POWER_UP);
-        }
 
         if (c.keyReader.getKeyState(0) && c.keyInserted[0] == false) {
           c.keyInserted[0] = true;
-          // c.speaker.addToPlay(SOUND_KEY_INSERT);
         }
 
         if (c.keyReader.getKeyState(1) && c.keyInserted[1] == false) {
           c.keyInserted[1] = true;
-          // c.speaker.addToPlay(SOUND_KEY_INSERT);
         }
 
         if (c.keyReader.getKeyState(2) && c.keyInserted[2] == false) {
           c.keyInserted[2] = true;
-          // c.speaker.addToPlay(SOUND_KEY_INSERT);
         }
 
         if (! c.keyReader.getKeyState(0)) c.keyInserted[0] = false;
@@ -158,15 +148,10 @@ namespace LaserGrid {
       if (c.powerSwitch.getState() == OFF) { 
         c.keyReader.setState(DISABLE);
         c.waveAdjuster.setState(DISABLE);
-        if (c.speaker.getNumber() != SOUND_POWER_DOWN) {
-          // c.speaker.addToPlay(SOUND_POWER_DOWN);
-        }
       }
 
       if (c.powerSwitch.getState() == ON) {
-        if (c.speaker.getNumber() == SOUND_POWER_DOWN) {
-          // c.speaker.addToPlay(SOUND_POWER_UP);
-        }
+        
       }
     }
 

@@ -2,19 +2,12 @@
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
 #include "lib/LaserGrid.h"
-#include "sounds/soundPowerUp.h"
-#include "sounds/soundPowerDown.h"
-#include "sounds/soundKeyInsert.h"
-#include "sounds/soundWaveAdjust.h"
 
 Puzzle puzzle;
 
 struct Parts {
   Modbus * slave;
   NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip;
-  unsigned char* listOfSounds[NUMBER_OF_SOUNDS];
-  unsigned int listOfLengthOfSounds[NUMBER_OF_SOUNDS];
-
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
@@ -66,20 +59,9 @@ void setup()
   pinMode(PIN_RELAY_1, OUTPUT);
 
   // Setup speaker pins
-  pinMode(PIN_SPEAKER, OUTPUT);
-  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
-  ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
-  pinMode(PIN_AMPLIFIER, OUTPUT);
-  digitalWrite(PIN_AMPLIFIER, HIGH);
-
-  parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
-  parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
-  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
-  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
-  parts.listOfSounds[SOUND_KEY_INSERT] = soundKeyInsert;
-  parts.listOfLengthOfSounds[SOUND_KEY_INSERT] = sizeof(soundKeyInsert)/sizeof(soundKeyInsert[0]);
-  parts.listOfSounds[SOUND_WAVE_ADJUST] = soundWaveAdjust;
-  parts.listOfLengthOfSounds[SOUND_WAVE_ADJUST] = sizeof(soundWaveAdjust)/sizeof(soundWaveAdjust[0]);
+//  pinMode(PIN_SPEAKER, OUTPUT);
+//  pinMode(PIN_AMPLIFIER, OUTPUT);
+//  digitalWrite(PIN_AMPLIFIER, HIGH);
 
   setupLaserGrid();
 
@@ -117,7 +99,7 @@ void setupLaserGrid()
   lgComponents.waveAdjuster.set(PIN_ANALOG_INPUT_1, PIN_ANALOG_INPUT_2, PIN_ANALOG_INPUT_3, &Serial2);
   lgComponents.keyReader.set(PIN_INPUT_1, PIN_INPUT_2, PIN_INPUT_3, PIN_RELAY_1);
   lgComponents.powerSwitch.set(parts.strip, PIN_LIGHT_FOR_POWER_SWITCH, PIN_SWITCH_1);
-  lgComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
+  lgComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER);
 }
 
 //Run Task Function: process changes of puzzle
@@ -139,7 +121,7 @@ void runTaskFunction( void * parameters ) {
   } 
 }
 
-//Show Task Fucntion: shows changes of puzzle
+//Show Task Function: shows changes of puzzle
 void showTaskFunction( void * parameters ){
   Serial.print("Show Task running on core ");
   Serial.println(xPortGetCoreID());

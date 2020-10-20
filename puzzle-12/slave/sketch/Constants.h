@@ -7,7 +7,7 @@
 #define PIN_485_EN 15
 #define PIN_INPUT_1 4
 #define PIN_INPUT_2 33
-#define PIN_INPUT_3 18
+#define PIN_OUTPUT_1 18
 #define PIN_NEOPIXEL 26
 #define PIN_SPEAKER 25
 #define PIN_RELAY_1 23
@@ -24,7 +24,7 @@
 #define ADDR_SEVENSEGMENT 0x72
 #define ADDR_SLAVE 12
 
-#define SERIAL_BAUDRATE 38400
+#define SERIAL_BAUDRATE 19200
 #define LED_COUNT 1
 #define COLOR_SATURATION 128
 
@@ -101,7 +101,8 @@ enum COMMAND {
   CMD_ENABLE = 1,
   CMD_DISABLE = 2,
   CMD_RESET = 3,
-  CMD_PAUSE = 4
+  CMD_PAUSE = 4,
+  CMD_SET_KEYPAD_OUTPUT_1 = 81
 };
 
 typedef struct {

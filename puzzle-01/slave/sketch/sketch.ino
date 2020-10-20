@@ -111,7 +111,7 @@ void setupPowerControl()
   pcComponents.powerLightIndicator.set(parts.strip, lightPinForPowerLightIndicator);
   pcComponents.battery.set(parts.strip, lightPinsForBarIndicator);
   pcComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
-//  pcComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, parts.files);
+  pcComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER);
 }
 
 //Run Task Function: process changes of puzzle
@@ -120,7 +120,6 @@ void runTaskFunction( void * parameters ) {
   Serial.println(xPortGetCoreID());
 
   for(;;){
-
     // Map puzzle's values with component's values
     PowerControl::update(puzzle, pcComponents);
 

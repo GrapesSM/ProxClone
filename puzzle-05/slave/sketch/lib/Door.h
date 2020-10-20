@@ -5,7 +5,6 @@
 #define Door_h
 
 #include <Arduino.h>
-#include <NeoPixelBus.h>
 
 class Door
 {

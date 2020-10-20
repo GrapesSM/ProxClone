@@ -7,9 +7,6 @@
 #include <ESP32Encoder.h>
 #include "lib/EnergySupplemental.h"
 #include "lib/ShipPrepAux.h"
-#include "sounds/soundPowerUp.h"
-#include "sounds/soundPowerDown.h"
-#include "sounds/soundKeyInsert.h"
 
 Puzzle puzzle;
 
@@ -20,8 +17,6 @@ struct Parts {
   Adafruit_MCP23017 mcp2;
   ESP32Encoder encoder;
   Adafruit_7segment matrix = Adafruit_7segment();
-  unsigned char* listOfSounds[NUMBER_OF_SOUNDS];
-  unsigned int listOfLengthOfSounds[NUMBER_OF_SOUNDS];
 } parts;
 
 Modbus slave(puzzle.address, 2, PIN_485_EN);
@@ -84,19 +79,9 @@ void setup()
   }
 
   // Setup speaker pins
-  pinMode(PIN_SPEAKER, OUTPUT);
-  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
-  ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
-  pinMode(PIN_AMPLIFIER, OUTPUT);
-  digitalWrite(PIN_AMPLIFIER, LOW);
-
-  // Setup sound list
-  parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
-  parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
-  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
-  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
-  parts.listOfSounds[SOUND_KEY_INSERT] = soundKeyInsert;
-  parts.listOfLengthOfSounds[SOUND_KEY_INSERT] = sizeof(soundKeyInsert)/sizeof(soundKeyInsert[0]);
+//  pinMode(PIN_SPEAKER, OUTPUT);
+//  pinMode(PIN_AMPLIFIER, OUTPUT);
+//  digitalWrite(PIN_AMPLIFIER, LOW);
 
   setupEnergySupplemental();
   setupShipPrepAux();
@@ -137,7 +122,7 @@ void setupEnergySupplemental()
   esComponents.powerAdjuster.set(&parts.encoder, &parts.matrix);
   esComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader, PIN_INPUT_1);
   esComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitchOfEnergySupplemental, PIN_SWITCH_1);
-  esComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
+  esComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER);
 }
 
 void setupShipPrepAux()
@@ -145,13 +130,13 @@ void setupShipPrepAux()
   spComponents.batteryMatrix.set(parts.strip, lightPinsForBatteryMatrix, &parts.mcp2, switchPinsForBatteryMatrix, labelsForBatteryMatrix);
   spComponents.generator.set(parts.strip, lightPinsForGenerator, &parts.mcp1, switchPinsForGenerator, labelsForGenerator);
   spComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitchOfShipPrep, PIN_SWITCH_2);
-  spComponents.speaker = esComponents.speaker; //.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
+  spComponents.speaker = esComponents.speaker;
 }
 
 //Run Task Function: process changes of puzzle
 void runTaskFunction( void * parameters ) {
-//  Serial.print("Run Task running on core ");
-//  Serial.println(xPortGetCoreID());
+  Serial.print("Run Task running on core ");
+  Serial.println(xPortGetCoreID());
 
   for(;;) {
     // Map puzzle's values to component's values
@@ -172,8 +157,8 @@ void runTaskFunction( void * parameters ) {
 
 //Show Task Fucntion: shows changes of puzzle
 void showTaskFunction( void * parameters ){
-//  Serial.print("Show Task running on core ");
-//  Serial.println(xPortGetCoreID());
+  Serial.print("Show Task running on core ");
+  Serial.println(xPortGetCoreID());
 
   for(;;){  
     // Enable communication to master  

@@ -28,7 +28,7 @@ namespace PrepStatus {
       unsigned long current = 0;
       unsigned long showpoint = 0;
       unsigned long interval = 200;
-    } showTimer;
+    } showTimer, showTimer1;
     boolean batteryMatrixFlag = false;
     boolean energySuppFlag = false;
     boolean generatorFlag = false;
@@ -73,7 +73,7 @@ namespace PrepStatus {
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE_PS_SYNCRO_READER &&
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      c.syncroReader.setState(ENABLE);
+      c.syncroReader.setState(DONE);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
 
@@ -117,6 +117,8 @@ namespace PrepStatus {
     
     if (c.state == SETUP) {
       c.state = INITIALIZING;
+
+      c.showTimer1.interval = 50;
 
       c.powerSwitch.init();
       c.batteryMatrix.init();
@@ -172,9 +174,6 @@ namespace PrepStatus {
         c.generator.setState(DISABLE);
         c.syncroReader.setState(DISABLE);
         c.lightEffect.setState(DISABLE);
-        if (c.speaker.getNumber() != SOUND_POWER_DOWN) {
-          c.speaker.addToPlay(SOUND_POWER_DOWN);
-        }
       } 
 
       if (c.powerSwitch.getState() == ON) {
@@ -184,19 +183,8 @@ namespace PrepStatus {
           c.energySupp.setState(ENABLE);
         if (c.generator.getState() == DISABLE) 
           c.generator.setState(ENABLE);
-        if (c.speaker.getNumber() == SOUND_POWER_DOWN) {
-          c.speaker.addToPlay(SOUND_POWER_UP);
-        }
         if (c.lightEffect.getState() == DISABLE) 
           c.lightEffect.setState(ENABLE);
-        
-        if (c.syncroReader.getSyncroKeyState() && c.speaker.getNumber() != SOUND_KEY_INSERT) {
-          c.speaker.addToPlay(SOUND_KEY_INSERT);
-        }
-
-        if (! c.syncroReader.getSyncroKeyState() && c.speaker.getNumber() == SOUND_KEY_INSERT) {
-          c.speaker.setNumber(SOUND_POWER_UP);
-        }
       }
 
       if (
@@ -227,9 +215,6 @@ namespace PrepStatus {
         c.generator.setState(DISABLE);
         c.syncroReader.setState(DISABLE);
         c.lightEffect.setState(DISABLE);
-        if (c.speaker.getNumber() != SOUND_POWER_DOWN) {
-          c.speaker.addToPlay(SOUND_POWER_DOWN);
-        }
       } 
 
       if (c.powerSwitch.getState() == ON) {
@@ -238,10 +223,6 @@ namespace PrepStatus {
         c.generator.setState(SOLVED);
         c.syncroReader.setState(SYNCRONIZED);
         c.lightEffect.setState(SOLVED);
-        
-        if (c.speaker.getNumber() == SOUND_POWER_DOWN) {
-          c.speaker.addToPlay(SOUND_POWER_UP);
-        }
 
         if (
           c.batteryMatrix.getState() == SOLVED &&
@@ -263,9 +244,15 @@ namespace PrepStatus {
     if ((c.showTimer.current - c.showTimer.showpoint) > c.showTimer.interval) {
       c.showTimer.showpoint = millis();
     
-      c.powerSwitch.display();
       c.lightEffect.display();
       c.syncroReader.display();
+    }
+    
+    c.showTimer1.current = millis();
+    if ((c.showTimer1.current - c.showTimer1.showpoint) > c.showTimer1.interval) {
+      c.showTimer1.showpoint = millis();
+
+      c.powerSwitch.display();
     }
 
     c.speaker.play();

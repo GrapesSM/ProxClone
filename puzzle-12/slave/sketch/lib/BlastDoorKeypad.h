@@ -4,12 +4,14 @@
 #include <Arduino.h>
 #include "CodeReader.h"
 #include "Speaker.h"
+#include "BlastDoorOutput.h"
 
 namespace BlastDoorKeypad {
   typedef struct
   {
     CodeReader codeReader;
     Speaker speaker;
+    BlastDoorOutput blastDoorOutput;
     STATE state;
     struct ShowTimer {
       unsigned long current = 0;
@@ -39,6 +41,19 @@ namespace BlastDoorKeypad {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
 
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_KEYPAD_OUTPUT_1 && 
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+      
+      if (p.registers[REG_MASTER_BODY] == 1) {
+        c.blastDoorOutput.setOutput(HIGH);
+      } else {
+        c.blastDoorOutput.setOutput(LOW);
+      }
+      p.registers[REG_MASTER_BODY] = 0;
+    }
+    
+
     p.registers[REG_SLAVE_MILLIS] = millis();
     p.registers[REG_SLAVE_STATE] = c.state;
     p.registers[REG_SLAVE_CODE_READER_STATE] = c.codeReader.getState();
@@ -52,6 +67,8 @@ namespace BlastDoorKeypad {
 
       c.codeReader.setState(DISABLE);
       c.speaker.setState(DISABLE);
+
+      c.blastDoorOutput.setOutput(LOW);
       c.state = DISABLE;
     }
   }

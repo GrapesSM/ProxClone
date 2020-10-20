@@ -5,7 +5,6 @@
 #define Battery_h
 
 #include <Arduino.h>
-#include <NeoPixelBus.h>
 
 class Battery
 {

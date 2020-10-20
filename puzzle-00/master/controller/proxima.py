@@ -71,7 +71,7 @@ class ProximaCommand(object):
                 self._controllers['status_board'].write(COMMAND.CMD_DISABLE)
 
             if self._gameStage == GAME_STAGE.START and \
-               self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.ENABLE\
+               self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.ENABLE:
                 self._gameStage = GAME_STAGE.ONGOING             
 
             if self._gameStage == GAME_STAGE.ONGOING:
@@ -160,9 +160,9 @@ class ProximaCommand(object):
             demand += 1.5
         if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_POWER_SWITCH_STATE] == STATE.ON:
             demand += 1.5
-        if self._controllers['life_support'].registers[PS_REGISTER_INDEX.REG_SLAVE_POWER_SWITCH_STATE] == STATE.ON:
+        if self._controllers['life_support'].registers[LS_REGISTER_INDEX.REG_SLAVE_POWER_SWITCH_STATE] == STATE.ON:
             demand += 2.5
-        if self._controllers['safeomatic'].registers[PS_REGISTER_INDEX.REG_SLAVE_POWER_SWITCH_STATE] == STATE.ON:
+        if self._controllers['safeomatic'].registers[SM_REGISTER_INDEX.REG_SLAVE_POWER_SWITCH_STATE] == STATE.ON:
             demand += 1
             
         #Check the demand value and set to power control if changed
@@ -244,25 +244,17 @@ class ProximaCommand(object):
         
         if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_SYNCRO_READER_INPUT_KEY] == 4 and \
             self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_SYNCRO_READER_STATE] != STATE.SYNCRONIZED:
-            self._psSyncroPoint = time_now()
-            
-        if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_INPUT_KEY] == 4 and \
-            self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_STATE] != STATE.SYNCRONIZED:
-            self._dsSyncroPoint = time_now()
-        
-        if abs(self._dsSyncroPoint - self._psSyncroPoint) > 0 and abs(self._dsSyncroPoint - self._psSyncroPoint) < 1500:
-            self._controllers['prep_status'].write(COMMAND.CMD_SET_PS_SYNCRO_READER_SYNCRONIZED)
-            self._controllers['docked_ship'].write_ES(COMMAND.CMD_SET_DS_SYNCRO_READER_SYNCRONIZED)
+            self._psSyncroPoint = time_now()    
+            if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_INPUT_KEY] == 4 and \
+                self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_STATE] != STATE.SYNCRONIZED:
+                self._dsSyncroPoint = time_now()
+                if abs(self._dsSyncroPoint - self._psSyncroPoint) >= 0 and abs(self._dsSyncroPoint - self._psSyncroPoint) < 5000:
+                    self._controllers['prep_status'].write(COMMAND.CMD_SET_PS_SYNCRO_READER_SYNCRONIZED)
+                    self._controllers['docked_ship'].write_ES(COMMAND.CMD_SET_DS_SYNCRO_READER_SYNCRONIZED)
 
-        if (self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_SYNCRO_READER_STATE] == STATE.ENABLE and \
-            self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_STATE] == STATE.ENABLE):
-            self._flag = True
-
-        if (self._flag or \
-            self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_STATE] == STATE.DONE and \
+        if (self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_STATE] == STATE.DONE and \
             self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_SYNCRO_READER_STATE] == STATE.DONE):
-            self._flag = False
-            self._controllers['docked_ship'].write(COMMAND.CMD_START_TIMER, 60)
+            self._controllers['docked_ship'].write_ES(COMMAND.CMD_START_TIMER, 400)
             self._controllers['prep_status'].write(COMMAND.CMD_START_TIMER, 0)
   
 

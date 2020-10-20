@@ -5,7 +5,6 @@
 #define CombinationReader_h
 
 #include <Arduino.h>
-#include <ESP32Encoder.h>
 
 class CombinationReader
 {

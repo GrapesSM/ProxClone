@@ -5,8 +5,6 @@
 #include <Adafruit_GFX.h>
 #include "Adafruit_LEDBackpack.h"
 #include "lib/LifeSupport.h"
-#include "sounds/soundPowerUp.h"
-#include "sounds/soundPowerDown.h"
 
 Puzzle puzzle;
 
@@ -14,8 +12,6 @@ struct Parts {
   Modbus * slave;
   NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip;
   Adafruit_7segment matrix = Adafruit_7segment(); 
-  unsigned char* listOfSounds[NUMBER_OF_SOUNDS];
-  unsigned int listOfLengthOfSounds[NUMBER_OF_SOUNDS];
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
@@ -37,6 +33,7 @@ void setup()
   
   // Setup 7 segment LED
   parts.matrix.begin(ADDR_SEVENSEGMENT);
+  parts.matrix.setBrightness(15);
 
   // Setup Modbus communication
   parts.slave = &slave;
@@ -60,22 +57,14 @@ void setup()
   pinMode(PIN_INPUT_2, INPUT);
 
   // Setup speaker pins
-  pinMode(PIN_SPEAKER, OUTPUT);
-  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
-  ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
-  pinMode(PIN_AMPLIFIER, OUTPUT);
-  digitalWrite(PIN_AMPLIFIER, HIGH);
-
-  // Setup sound list
-  parts.listOfSounds[SOUND_POWER_UP] = soundPowerUp;
-  parts.listOfLengthOfSounds[SOUND_POWER_UP] = sizeof(soundPowerUp)/sizeof(soundPowerUp[0]);
-  parts.listOfSounds[SOUND_POWER_DOWN] = soundPowerDown;
-  parts.listOfLengthOfSounds[SOUND_POWER_DOWN] = sizeof(soundPowerDown)/sizeof(soundPowerDown[0]);
+//  pinMode(PIN_SPEAKER, OUTPUT);
+//  pinMode(PIN_AMPLIFIER, OUTPUT);
+//  digitalWrite(PIN_AMPLIFIER, HIGH);
 
   setupLifeSupport();
     // Setup Task functions
 
-  int temp1 = xTaskCreatePinnedToCore(
+  xTaskCreatePinnedToCore(
     runTaskFunction,   /* Task function. */
     "RunTask",     /* name of task. */
     100000,       /* Stack size of task */
@@ -84,13 +73,7 @@ void setup()
     &runTask,      /* Task handle to keep track of created task */
     0);          /* pin task to core 0 */                  
   
-  if(temp1) {
-    Serial.println("Task created...");
-  } else {
-    Serial.printf("Couldn't create task %i", temp1);
-  }
-  
-  int temp2 = xTaskCreatePinnedToCore(
+  xTaskCreatePinnedToCore(
     showTaskFunction,   /* Task function. */
     "ShowTask",     /* name of task. */
     60000,       /* Stack size of task */
@@ -98,18 +81,11 @@ void setup()
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
     1);
-
-  if(temp2) {
-    Serial.println("Task created...");
-  } else {
-    Serial.printf("Couldn't create task %i", temp2);
-  }
-    
+  
   lsComponents.state = SETUP;
 }
 
-void loop() { vTaskDelete(NULL); }
-//void loop() { vTaskDelay(100); }
+void loop() { }
 
 void setupLifeSupport()
 {
@@ -117,7 +93,7 @@ void setupLifeSupport()
   lsComponents.externalVent.set(parts.strip, lightPinsForExternalVent, PIN_INPUT_1);
   lsComponents.airSupplyPump.set(parts.strip, lightPinsForAirSupplyPump, PIN_INPUT_2);
   lsComponents.airPressureStatus.set(parts.strip, lightPinsForAirPressureStatus, &parts.matrix);
-  lsComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
+  lsComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER);
   lsComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
 }
 

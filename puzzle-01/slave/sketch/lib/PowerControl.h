@@ -77,6 +77,7 @@ namespace PowerControl {
     p.registers[REG_SLAVE_BATTERY] = c.battery.getValue();
     p.registers[REG_SLAVE_BATTERY_MAX_VALUE] = c.battery.getMaxValue();
     p.registers[REG_SLAVE_SUPPLY] = c.powerAdjuster.getSupply();
+    p.registers[REG_SLAVE_DEMAND] = c.powerAdjuster.getDemand();
 
     if (c.state == SETUP) {
       c.state = INITIALIZING;
@@ -103,7 +104,7 @@ namespace PowerControl {
       
       c.lightEffect.setState(DISABLE);
       
-      c.state = ENABLE;
+      c.state = DISABLE;
     }
   }
 
@@ -132,7 +133,6 @@ namespace PowerControl {
         c.powerAdjuster.setState(ENABLE);
       }
       if (c.powerLightIndicator.getState() == DISABLE) {
-        c.speaker.addToPlay(SOUND_POWER_UP);
         c.powerLightIndicator.setState(ENABLE);
       }
       if (c.battery.getState() == DISABLE) {
@@ -152,15 +152,11 @@ namespace PowerControl {
 
         if ((c.timer.current - c.timer.start) > (c.failurePeriod / 3 * 3)) {
           c.powerLightIndicator.setState(FAILURE);
-          if (c.speaker.getNumber() != SOUND_POWER_DOWN) 
-            c.speaker.addToPlay(SOUND_POWER_DOWN);
         } else if ((c.timer.current - c.timer.start) > (c.failurePeriod / 3 * 2)) {
           c.lightEffect.setState(FLASH);
           c.powerLightIndicator.setState(FLASH);
         } else if ((c.timer.current - c.timer.start) > (c.failurePeriod / 3 * 1)) {
           c.powerLightIndicator.setState(FLASH);
-          if (c.speaker.getNumber() != SOUND_POSITION_CRITICAL) 
-            c.speaker.addToPlay(SOUND_POSITION_CRITICAL);
         } 
       }
 
@@ -185,8 +181,7 @@ namespace PowerControl {
       
       if (c.tempSupply != c.powerAdjuster.getSupply()) {
         c.tempSupply = c.powerAdjuster.getSupply();
-        c.speaker.addToPlay(SOUND_POWER_ADJUST);
-        Serial.println("SOUND_POWER_ADJUST");
+        
       }
 
       c.powerAdjuster.display();
@@ -195,7 +190,7 @@ namespace PowerControl {
       c.battery.display();
     }
 
-    // c.speaker.play();
+    c.speaker.play();
   }
 }
 

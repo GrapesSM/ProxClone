@@ -21,7 +21,7 @@ class DockedShipController(BaseController):
             registers[DS_REGISTER_INDEX.REG_SLAVE_ES_CONFIRM] = 0
             if delay > 0: 
                 time.sleep(delay)
-            self._master.execute(self.getSlaveID(), cst.WRITE_MULTIPLE_REGISTERS, 11, output_value=self.registers[10:13])
+            self._master.execute(self.getSlaveID(), cst.WRITE_MULTIPLE_REGISTERS, 10, output_value=registers[10:14])
             ok = True
         except Exception as excpt:
             self._failedCommand_ES = [command, body]
@@ -39,7 +39,7 @@ class DockedShipController(BaseController):
             registers[DS_REGISTER_INDEX.REG_SLAVE_SP_CONFIRM] = 0
             if delay > 0: 
                 time.sleep(delay)
-            self._master.execute(self.getSlaveID(), cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=self.registers[0:5])
+            self._master.execute(self.getSlaveID(), cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=registers[0:5])
             ok = True
         except Exception as excpt:
             self._failedCommand_SP = [command, body]

@@ -5,8 +5,6 @@
 #define CodeReader_h
 
 #include <Arduino.h>
-#include <Adafruit_MCP23017.h>
-#include "SevenSegment.h"
 #include "DebounceSwitch.h"
 
 enum MODE {

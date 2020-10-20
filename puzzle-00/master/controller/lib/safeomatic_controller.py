@@ -1,6 +1,6 @@
 #!/usr/bin/etc python3
 from .base_controller import BaseController
-from .constants import STATE, COMMAND, SC_REGISTER_INDEX, STATUS
+from .constants import STATE, COMMAND, SM_REGISTER_INDEX, STATUS
 from .helpers import time_now
 
 class SafeomaticController(BaseController):

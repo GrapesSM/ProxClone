@@ -61,6 +61,10 @@ void setup()
   ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
   pinMode(PIN_AMPLIFIER, OUTPUT);
 
+  // Output Setup
+  pinMode(PIN_OUTPUT_1, OUTPUT);
+  digitalWrite(PIN_OUTPUT_1, LOW);
+
   parts.listOfSounds[SOUND_WRONG] = soundWrong;
   parts.listOfLengthOfSounds[SOUND_WRONG] = sizeof(soundWrong)/sizeof(soundWrong[0]);
   parts.listOfSounds[SOUND_ENTERED] = soundEntered;
@@ -106,6 +110,7 @@ void setupBlastDoorKeypad()
 {
   bdComponents.codeReader.set(&parts.keypad, PIN_INPUT_1);
   bdComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 5, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
+  bdComponents.blastDoorOutput.set(PIN_OUTPUT_1);
 }
 
 //Run Task Function: process changes of puzzle
@@ -127,7 +132,7 @@ void runTaskFunction( void * parameters ) {
   } 
 }
 
-//Show Task Fucntion: shows changes of puzzle
+//Show Task Function: shows changes of puzzle
 void showTaskFunction( void * parameters ){
   Serial.print("Show Task running on core ");
   Serial.println(xPortGetCoreID());

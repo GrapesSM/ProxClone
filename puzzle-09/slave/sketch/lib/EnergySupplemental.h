@@ -20,8 +20,8 @@ namespace EnergySupplemental {
     struct ShowTimer {
       unsigned long current = 0;
       unsigned long showpoint = 0;
-      unsigned long interval = 200;
-    } showTimer;
+      unsigned long interval;
+    } showTimer, showTimer1;
   } Components;
 
   void update(Puzzle & p, Components & c)
@@ -81,7 +81,7 @@ namespace EnergySupplemental {
     if (p.registers[REG_MASTER_ES_COMMAND] == CMD_ENABLE_DS_SYNCRO_READER &&
         p.registers[REG_SLAVE_ES_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_ES_CONFIRM] = DONE;
-      c.syncroReader.setState(ENABLE);
+      c.syncroReader.setState(DONE);
     }
     
     p.registers[REG_SLAVE_ES_MILLIS] = millis();
@@ -105,6 +105,10 @@ namespace EnergySupplemental {
       c.syncroReader.setState(DISABLE);
       c.speaker.setState(DISABLE);
       p.registers[REG_SLAVE_ES_CONFIRM] = DONE;
+
+      c.showTimer.interval = 200;
+      c.showTimer1.interval = 50;
+
       c.state = DISABLE;
     }
   }
@@ -135,18 +139,12 @@ namespace EnergySupplemental {
       if (c.powerSwitch.getState() == OFF) {
         c.powerAdjuster.setState(DISABLE);
         c.syncroReader.setState(DISABLE);
-        if (c.speaker.getNumber() != SOUND_POWER_DOWN) {
-          c.speaker.addToPlay(SOUND_POWER_DOWN);
-        }
       } 
 
       if (c.powerSwitch.getState() == ON)
       {
         if (c.powerAdjuster.getState() == DISABLE) 
           c.powerAdjuster.setState(ENABLE);
-        if (c.speaker.getNumber() == SOUND_POWER_DOWN) {
-          c.speaker.addToPlay(SOUND_POWER_UP);
-        }
       }
 
       if (c.powerAdjuster.getInputKey() == keyForPowerAdjuster && c.powerAdjuster.getState() == ENABLE) {
@@ -162,17 +160,11 @@ namespace EnergySupplemental {
       if (c.powerSwitch.getState() == OFF) {
         c.powerAdjuster.setState(DISABLE);
         c.syncroReader.setState(DISABLE);
-        if (c.speaker.getNumber() != SOUND_POWER_DOWN) {
-          c.speaker.addToPlay(SOUND_POWER_DOWN);
-        }
       } 
 
       if (c.powerSwitch.getState() == ON) {
         c.powerAdjuster.setState(SOLVED);
         c.syncroReader.setState(SYNCRONIZED);
-        if (c.speaker.getNumber() == SOUND_POWER_DOWN) {
-          c.speaker.addToPlay(SOUND_POWER_UP);
-        }
       }
     }
   }
@@ -184,9 +176,16 @@ namespace EnergySupplemental {
       c.showTimer.showpoint = millis();
 
       // code here runs every interval time
-      c.powerSwitch.display();
       c.powerAdjuster.display();
       // c.syncroReader.display();
+    }
+
+    c.showTimer1.current = millis();
+    if (c.showTimer1.current - c.showTimer1.showpoint > c.showTimer1.interval) {
+      c.showTimer1.showpoint = millis();
+
+      // code here runs every interval time (i.e. every 50ms)
+      c.powerSwitch.display();
     }
 
     c.speaker.play();

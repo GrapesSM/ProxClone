@@ -105,7 +105,7 @@ def main():
             'keypad',
             ]:
             continue
-        slaveThreads.append(Thread(target = controllers[key_name].refresh, args=(0.05, lambda : flagStopThreads), daemon = True))
+        slaveThreads.append(Thread(target = controllers[key_name].refresh, args=(0.1, lambda : flagStopThreads), daemon = True))
 
 
     try:

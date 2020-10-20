@@ -50,14 +50,14 @@ class BaseController:
 
             registers = None
             try:
-                self.busy = True 
+                self.busy = True
                 registers = self.read(delay)
                 self.busy = False
             except Exception as excpt:
                 self.busy = False
             
             if registers:
-                self.setRegisters(registers)               
+                self.setRegisters(registers)
             
             if self._failedCommand:
                 self.busy = True
@@ -92,10 +92,11 @@ class BaseController:
     def getNumberOfRegisters(self):
         return len(self._puzzle['registers'])
 
-    def read(self, delay=0.08):
+    def read(self, delay=0.1):
         registers = None
         try:                
             registers = list(self._master.execute(self.getSlaveID(), cst.READ_HOLDING_REGISTERS, 0, self.getNumberOfRegisters()))
+            # print(registers)
             if delay > 0: 
                 time.sleep(delay)
         except Exception as excpt:
@@ -103,7 +104,7 @@ class BaseController:
 
         return registers
 
-    def write(self, command, body = 0, delay=0.08):
+    def write(self, command, body = 0, delay=0.1):
         registers = None
         ok = False
         try:
@@ -113,7 +114,7 @@ class BaseController:
             registers[REGISTER_INDEX.REG_SLAVE_CONFIRM] = 0
             if delay > 0: 
                 time.sleep(delay)
-            self._master.execute(self.getSlaveID(), cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=self.registers[0:5])
+            self._master.execute(self.getSlaveID(), cst.WRITE_MULTIPLE_REGISTERS, 0, output_value=registers[0:5])
             ok = True
         except Exception as excpt:
             self._failedCommand = [command, body]

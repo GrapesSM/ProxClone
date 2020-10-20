@@ -5,7 +5,6 @@
 #define PowerLightIndicator_h
 
 #include <Arduino.h>
-#include <NeoPixelBus.h>
 
 class PowerLightIndicator
 {
