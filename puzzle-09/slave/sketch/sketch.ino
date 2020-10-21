@@ -1,4 +1,5 @@
 #include "Constants.h"
+#include "SPIFFS.h"
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
 #include <Adafruit_MCP23017.h>
@@ -38,6 +39,8 @@ void setup()
 {
   Serial.begin(SERIAL_BAUDRATE);
 
+  SPIFFS.begin();
+
   // Setup Modbus communication
   parts.slave = &slave;
   parts.slave->begin( SERIAL_BAUDRATE, PIN_RX_2, PIN_TX_2 );
@@ -64,7 +67,6 @@ void setup()
   // Setup power switch
   pinMode(PIN_SWITCH_1, INPUT);
   pinMode(PIN_SWITCH_2, INPUT);
-  pinMode(PIN_SWITCH_3, INPUT);
 
   // Setup pins for bottom I2C switches
   parts.mcp1.begin(ADDR_SWITCH_1);
@@ -79,9 +81,9 @@ void setup()
   }
 
   // Setup speaker pins
-//  pinMode(PIN_SPEAKER, OUTPUT);
-//  pinMode(PIN_AMPLIFIER, OUTPUT);
-//  digitalWrite(PIN_AMPLIFIER, LOW);
+  pinMode(PIN_SPEAKER, OUTPUT);
+  pinMode(PIN_AMPLIFIER, OUTPUT);
+  digitalWrite(PIN_AMPLIFIER, LOW);
 
   setupEnergySupplemental();
   setupShipPrepAux();
@@ -122,7 +124,7 @@ void setupEnergySupplemental()
   esComponents.powerAdjuster.set(&parts.encoder, &parts.matrix);
   esComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader, PIN_INPUT_1);
   esComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitchOfEnergySupplemental, PIN_SWITCH_1);
-  esComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER);
+  esComponents.speaker.set(soundFilenames);
 }
 
 void setupShipPrepAux()
@@ -130,7 +132,7 @@ void setupShipPrepAux()
   spComponents.batteryMatrix.set(parts.strip, lightPinsForBatteryMatrix, &parts.mcp2, switchPinsForBatteryMatrix, labelsForBatteryMatrix);
   spComponents.generator.set(parts.strip, lightPinsForGenerator, &parts.mcp1, switchPinsForGenerator, labelsForGenerator);
   spComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitchOfShipPrep, PIN_SWITCH_2);
-  spComponents.speaker = esComponents.speaker;
+  spComponents.speaker.set(soundFilenames);
 }
 
 //Run Task Function: process changes of puzzle
@@ -155,12 +157,14 @@ void runTaskFunction( void * parameters ) {
   }
 }
 
-//Show Task Fucntion: shows changes of puzzle
+//Show Task Function: shows changes of puzzle
 void showTaskFunction( void * parameters ){
   Serial.print("Show Task running on core ");
   Serial.println(xPortGetCoreID());
 
   for(;;){  
+    EnergySupplemental::sound(esComponents);
+    ShipPrepAux::sound(spComponents);
     // Enable communication to master  
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 

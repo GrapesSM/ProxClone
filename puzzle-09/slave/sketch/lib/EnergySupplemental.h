@@ -22,6 +22,9 @@ namespace EnergySupplemental {
       unsigned long showpoint = 0;
       unsigned long interval;
     } showTimer, showTimer1;
+    int powerSwitchStateChange[2] = {0, 0}; // old, new
+    int syncroKeyStateChange[2] = {0, 0}; // old, new
+    int syncroCountdownStateChange[2] = {0, 0}; // old, new
   } Components;
 
   void update(Puzzle & p, Components & c)
@@ -109,9 +112,10 @@ namespace EnergySupplemental {
       c.showTimer.interval = 200;
       c.showTimer1.interval = 50;
 
-      c.state = DISABLE;
+      c.state = ENABLE;
     }
   }
+
   void run(Components &c) 
   {
     c.powerSwitch.update();
@@ -143,8 +147,11 @@ namespace EnergySupplemental {
 
       if (c.powerSwitch.getState() == ON)
       {
-        if (c.powerAdjuster.getState() == DISABLE) 
+        if (c.powerAdjuster.getState() == DISABLE)
           c.powerAdjuster.setState(ENABLE);
+        
+        if (c.speaker.getState() == DISABLE)
+          c.speaker.setState(ENABLE);
       }
 
       if (c.powerAdjuster.getInputKey() == keyForPowerAdjuster && c.powerAdjuster.getState() == ENABLE) {
@@ -186,6 +193,34 @@ namespace EnergySupplemental {
 
       // code here runs every interval time (i.e. every 50ms)
       c.powerSwitch.display();
+    }
+  }
+
+  void sound(Components &c) 
+  {
+    c.powerSwitchStateChange[1] = c.powerSwitch.getState();
+    if (c.powerSwitchStateChange[0] != c.powerSwitchStateChange[1]) {
+      c.powerSwitchStateChange[0] = c.powerSwitchStateChange[1];
+      if (c.powerSwitch.getState() == ON) {
+        c.speaker.setCurrent(SOUND_STATION_UP);
+      }
+
+      if (c.powerSwitch.getState() == OFF) {
+        c.speaker.setCurrent(SOUND_STATION_DOWN);
+      }
+      
+    }
+
+    c.syncroKeyStateChange[1] = c.syncroReader.getSyncroKeyState();
+    if (c.syncroKeyStateChange[0] != c.syncroKeyStateChange[1]) {
+      c.syncroKeyStateChange[0] = c.syncroKeyStateChange[1];
+      c.speaker.setCurrent(SOUND_KEY_SWITCH);
+    }
+
+    c.syncroCountdownStateChange[1] = c.syncroReader.getSyncroCountdownState();
+    if (c.syncroCountdownStateChange[0] != c.syncroCountdownStateChange[1]) {
+      c.syncroCountdownStateChange[0] = c.syncroCountdownStateChange[1];
+      c.speaker.setCurrent(SOUND_COUNTDOWN_BEEP, 20);
     }
 
     c.speaker.play();

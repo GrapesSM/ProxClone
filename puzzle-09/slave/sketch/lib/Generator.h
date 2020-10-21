@@ -15,6 +15,7 @@ class Generator
     void update();
     bool isAllSwitchesOff();
     void readSwitches();
+    int getSwitchState();
     int getInputKey();
     void setState(STATE state);
     STATE getState();
@@ -138,6 +139,15 @@ void Generator::readSwitches()
 
     _lastInput[i] = _reading[i];
   }
+}
+
+int Generator::getSwitchState()
+{
+  int s = 0;
+  for (int i = 0; i < NUMBER_OF_SWITCHES_1; i++) {
+    s += _input[i];
+  }
+  return s;
 }
 
 int Generator::getInputKey() {

@@ -22,6 +22,9 @@ namespace ShipPrepAux {
       unsigned long showpoint = 0;
       unsigned long interval = 200;
     } showTimer;
+    int powerSwitchStateChange[2] = {0, 0}; // old, new
+    int batteryMatrixSwitchStateChange[2] = {0, 0}; // old, new
+    int generatorSwitchStateChange[2] = {0, 0}; // old, new
   } Components;
 
   void update(Puzzle & p, Components & c)
@@ -83,7 +86,7 @@ namespace ShipPrepAux {
       c.generator.setState(DISABLE);
       c.speaker.setState(DISABLE);
       p.registers[REG_SLAVE_SP_CONFIRM] = DONE;
-      c.state = DISABLE;
+      c.state = ENABLE;
     }
   }
 
@@ -114,7 +117,6 @@ namespace ShipPrepAux {
       if (c.powerSwitch.getState() == OFF) {
         c.batteryMatrix.setState(DISABLE);
         c.generator.setState(DISABLE);
-        c.speaker.setState(DISABLE);
       } 
 
       if (c.powerSwitch.getState() == ON) {
@@ -122,16 +124,10 @@ namespace ShipPrepAux {
           c.batteryMatrix.setState(ENABLE);
         if (c.generator.getState() == DISABLE) 
           c.generator.setState(ENABLE);
+        if (c.speaker.getState() == DISABLE)
+          c.speaker.setState(ENABLE);
       }
-      
-      // Serial.print(c.batteryMatrix.getInputKey());
-      // Serial.print(",");
-      // Serial.print(keyForBatteryMatrix);
-      // Serial.print(",");
-      // Serial.print(c.batteryMatrix.getInputKey() == keyForBatteryMatrix);
-      // Serial.print(",");
-      // Serial.print(c.batteryMatrix.getState() == ENABLE);
-      // Serial.println();
+
       if (c.batteryMatrix.getInputKey() == keyForBatteryMatrix && c.batteryMatrix.getState() == ENABLE) {
         c.batteryMatrix.setState(SOLVED);
       }
@@ -167,8 +163,35 @@ namespace ShipPrepAux {
       // code here runs every interval time
       // c.powerSwitch.display();
     }
+  }
 
-    // c.speaker.play();
+  void sound(Components &c) {
+
+    c.powerSwitchStateChange[1] = c.powerSwitch.getState();
+    if (c.powerSwitchStateChange[0] != c.powerSwitchStateChange[1]) {
+      c.powerSwitchStateChange[0] = c.powerSwitchStateChange[1];
+      if (c.powerSwitch.getState() == ON) {
+        c.speaker.setCurrent(SOUND_STATION_UP);
+      }
+
+      if (c.powerSwitch.getState() == OFF) {
+        c.speaker.setCurrent(SOUND_STATION_DOWN);
+      }
+    }
+
+    c.batteryMatrixSwitchStateChange[1] = c.batteryMatrix.getSwitchState();
+    if (c.batteryMatrixSwitchStateChange[0] != c.batteryMatrixSwitchStateChange[1]) {
+      c.batteryMatrixSwitchStateChange[0] = c.batteryMatrixSwitchStateChange[1];
+      c.speaker.setCurrent(SOUND_SWITCH);
+    }
+
+    c.generatorSwitchStateChange[1] = c.generator.getSwitchState();
+    if (c.generatorSwitchStateChange[0] != c.generatorSwitchStateChange[1]) {
+      c.generatorSwitchStateChange[0] = c.generatorSwitchStateChange[1];
+      c.speaker.setCurrent(SOUND_SWITCH);
+    }
+
+    c.speaker.play();
   }
 }
 

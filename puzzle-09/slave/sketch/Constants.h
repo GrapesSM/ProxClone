@@ -14,7 +14,7 @@
 #define PIN_RELAY_2 19
 #define PIN_SWITCH_1 27
 #define PIN_SWITCH_2 32
-#define PIN_SWITCH_3 25
+#define PIN_SPEAKER 25
 #define PIN_ANALOG_INPUT_1 34
 #define PIN_ANALOG_INPUT_2 35
 #define PIN_ANALOG_INPUT_3 37
@@ -145,16 +145,27 @@ extern int lightPinForPowerSwitchOfShipPrep = 18;
 
 extern int keyForPowerAdjuster = 656;
 
-#define NUMBER_OF_SOUNDS 3
-enum {  // enumeration fro   m 0, 1, 2 ...
-  SOUND_POWER_DOWN,
-  SOUND_POWER_UP,
-  SOUND_KEY_INSERT
-};
-
 typedef struct {
   uint8_t address = ADDR_SLAVE;
   STATE state;
   uint8_t numberOfRegisters = 20;
   uint16_t registers[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 } Puzzle;
+
+
+#define NUMBER_OF_SOUNDS 6
+#define SOUND_STATION_UP 0
+#define SOUND_STATION_DOWN 1
+#define SOUND_COUNTDOWN_BEEP 2 
+#define SOUND_KEY_SWITCH 3
+#define SOUND_SYNCRO_BEEP 4
+#define SOUND_SWITCH 5
+
+extern String soundFilenames[NUMBER_OF_SOUNDS] = {
+  "/StationPowerUp.wav",
+  "/StationPowerDown.wav",
+  "/CountdownBeep.wav",
+  "/KeySwitch.wav",
+  "/SycroBeep.wav",
+  "/Switch.wav"
+};

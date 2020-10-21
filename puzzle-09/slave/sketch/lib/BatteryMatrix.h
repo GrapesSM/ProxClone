@@ -15,6 +15,7 @@ class BatteryMatrix
     void update();
     bool isAllSwitchesOff();
     void readSwitches();
+    int getSwitchState();
     int getInputKey();
     void setState(STATE state);
     STATE getState();
@@ -84,6 +85,15 @@ void BatteryMatrix::readSwitches()
 
     _lastInput[i] = _reading[i];
   }
+}
+
+int BatteryMatrix::getSwitchState()
+{
+  int s = 0;
+  for (int i = 0; i < NUMBER_OF_SWITCHES_1; i++) {
+    s += _input[i];
+  }
+  return s;
 }
 
 int BatteryMatrix::getInputKey() {
