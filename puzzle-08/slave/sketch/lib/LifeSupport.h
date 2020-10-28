@@ -26,6 +26,9 @@ namespace LifeSupport {
       unsigned long showpoint = 0;
       unsigned long interval = 200;
     } showTimer;
+    int powerSwitchStateChange[2] = {0, 0}; // old, new
+    int externalVentStateChange[2] = {0, 0}; // old, new
+    int airSupplyPumpStateChange[2] = {0, 0}; // old, new
   } Components;
 
   void update(Puzzle & p, Components & c) 
@@ -80,7 +83,7 @@ namespace LifeSupport {
       c.speaker.setState(DISABLE);
       c.lightEffect.setState(DISABLE);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.state = DISABLE;
+      c.state = ENABLE;
     }
   }
 
@@ -131,6 +134,9 @@ namespace LifeSupport {
         if (c.lightEffect.getState() == DISABLE) {
           c.lightEffect.setState(ENABLE);
         }
+        if (c.speaker.getState() == DISABLE) {
+          c.speaker.setState(ENABLE);
+        }
       } 
     
       if (c.externalVent.getState() == OPEN) {
@@ -180,7 +186,66 @@ namespace LifeSupport {
 
     c.lightEffect.display();
     c.powerSwitch.display();
-    c.speaker.play();
+  }
+
+  void sound(Components & c)
+  {
+    c.powerSwitchStateChange[1] = c.powerSwitch.getState();
+    if (c.powerSwitchStateChange[0] != c.powerSwitchStateChange[1]) {      
+      c.powerSwitchStateChange[0] = c.powerSwitchStateChange[1];
+      if (c.powerSwitch.getState() == ON) {
+        c.speaker.setCurrent(SOUND_STATION_UP);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+
+      if (c.powerSwitch.getState() == OFF) {
+        c.speaker.setCurrent(SOUND_STATION_DOWN);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+    } else {
+      c.externalVentStateChange[1] = c.externalVent.getState();
+      if (c.externalVentStateChange[0] != c.externalVentStateChange[1]) {      
+        c.externalVentStateChange[0] = c.externalVentStateChange[1];
+        if (c.externalVent.getState() == OPEN) {
+          c.speaker.setCurrent(SOUND_EXTERNAL_VENT);
+          c.speaker.setRepeat(true);
+          c.speaker.setPlayPartly(true);
+        }
+
+        if (c.externalVent.getState() == CLOSED) {
+          c.speaker.setRepeat(false);
+          c.speaker.setPlayPartly(false);
+          c.speaker.soundOff();
+        }
+      }
+
+      if (c.externalVent.getState() == CLOSED) {
+        c.airSupplyPumpStateChange[1] = c.airSupplyPump.getState();
+        if (c.airSupplyPumpStateChange[0] != c.airSupplyPumpStateChange[1]) {      
+          c.airSupplyPumpStateChange[0] = c.airSupplyPumpStateChange[1];
+          if (c.airSupplyPump.getState() == ON) {
+            c.speaker.setCurrent(SOUND_AIR_SUPPLY_PUMP);
+            c.speaker.setRepeat(true);
+            c.speaker.setPlayPartly(true);
+          }
+
+          if (c.airSupplyPump.getState() == OFF) {
+            c.speaker.setRepeat(false);
+            c.speaker.setPlayPartly(false);
+            c.speaker.soundOff();
+          }
+        }
+      }
+    }
+
+
+    if (c.speaker.getPlayPartly()) {
+      c.speaker.playBytes(1024);
+    } else {
+      c.speaker.play();
+    }
   }
 }
 

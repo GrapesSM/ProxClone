@@ -90,13 +90,6 @@ extern int lightPinsForGenerator[] = {9, 6, 3};
 #define NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT 18
 extern int lightPinsForLightEffect[] = {13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30};
 
-#define NUMBER_OF_SOUNDS 3
-enum {  // enumeration from 0, 1, 2 ...
-  SOUND_POWER_UP,
-  SOUND_POWER_DOWN,
-  SOUND_KEY_INSERT
-};
-
 enum REGISTER_INDEX {
   REG_MASTER_FORCE = 0,
   REG_MASTER_COMMAND = 1,
@@ -138,4 +131,15 @@ typedef struct Puzzle {
   STATE state;
   uint8_t numberOfRegisters = 20;
   uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+};
+
+#define NUMBER_OF_SOUNDS 3
+#define SOUND_STATION_UP 0
+#define SOUND_STATION_DOWN 1
+#define SOUND_KEY_INSERT 2
+
+extern String soundFilenames[NUMBER_OF_SOUNDS] = {
+  "/StationPowerUp.wav",
+  "/StationPowerDown.wav",
+  "/KeyInsert.wav"
 };

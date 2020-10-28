@@ -1,8 +1,8 @@
 #include "Constants.h"
+#include "SPIFFS.h"
 #include "lib/ModbusRtu.h"
 #include "lib/LaserBar.h"
 #include "Adafruit_VL53L0X.h"
-#include "sounds/soundDetected.h"
 
 
 Puzzle puzzle;
@@ -10,8 +10,6 @@ Puzzle puzzle;
 struct Parts {
   Modbus * slave;
   Adafruit_VL53L0X lox = Adafruit_VL53L0X();
-  unsigned char* listOfSounds[NUMBER_OF_SOUNDS];
-  unsigned int listOfLengthOfSounds[NUMBER_OF_SOUNDS];
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
@@ -29,6 +27,9 @@ TaskHandle_t showTask;
 void setup() 
 {
   Serial.begin(SERIAL_BAUDRATE);
+  while (!Serial);
+
+  SPIFFS.begin();
 
   // Setup Modbus communication
   parts.slave = &slave;
@@ -50,13 +51,9 @@ void setup()
 
   // Setup speaker pins ---------------------------------------
   pinMode(PIN_SPEAKER, OUTPUT);
-  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
-  ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
   pinMode(PIN_AMPLIFIER, OUTPUT);
   digitalWrite(PIN_AMPLIFIER, HIGH);
 
-  parts.listOfSounds[SOUND_DETECTED] = soundDetected;
-  parts.listOfLengthOfSounds[SOUND_DETECTED] = sizeof(soundDetected)/sizeof(soundDetected[0]);
   // ----------------------------------------------------------
 
   setupLaserBar();
@@ -93,7 +90,7 @@ void loop()
 void setupLaserBar()
 {
   lbComponents.detector.set(&parts.lox, PIN_OUTPUT_1);
-  lbComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 65, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
+  lbComponents.speaker.set(soundFilenames);
 }
 
 //Run Task Function: process changes of puzzle
@@ -121,6 +118,8 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
+    LaserBar::sound(lbComponents);
+
     // Enable communication to master
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 

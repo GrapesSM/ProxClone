@@ -208,7 +208,6 @@ namespace EnergySupplemental {
       if (c.powerSwitch.getState() == OFF) {
         c.speaker.setCurrent(SOUND_STATION_DOWN);
       }
-      
     }
 
     c.syncroKeyStateChange[1] = c.syncroReader.getSyncroKeyState();

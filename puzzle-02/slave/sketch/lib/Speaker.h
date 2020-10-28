@@ -5,73 +5,58 @@
 #define Speaker_h
 
 #include <Arduino.h>
-#include "Queue.h"
+
+#define buffersize 1024
+
+char buffer[buffersize];
 
 class Speaker
 {
   public:
     Speaker();
-    void set(
-      int pin, 
-      int enablePin, 
-      unsigned int rate, 
-      unsigned char** listOfSounds, 
-      unsigned int* listOfLengthOfSounds,
-      int channel);
+    void init();
+    void set(String soundFilenames[]);
     void setState(STATE state);
     STATE getState();
-    void play();
-    void play(int number);
-    void speak(int frequency = PWM_SPEAKER_FREQUENCY, int dutycycle = PWM_SPEAKER_DUTYCYCLE);
-    void addToPlay(int number);
     void update();
-    void setNumber(int number);
-    int getNumber();
+    void setPlayPartly(bool value);
+    bool getPlayPartly();
+    void setRepeat(bool value);
+    bool getRepeat();
+    void soundOff();
+    void setCurrent(int soundNumber, int microseconds);
+    void play(uint8_t volume);
+    void playBytes(int numberOfBytes, uint8_t volume);
   private:
-    int _pin;
-    int _enablePin;
-    int _channel;
-    int _counter;
-    unsigned int _rate;
-    unsigned char** _listOfSounds;
-    unsigned int* _listOfLengthOfSounds;
-    int _numberOfSounds;
-    int _frequency;
-    int _dutycycle;
-    int _number;
-    int _index;
+    File _f;
+    int _microseconds;
+    int _soundNumber;
+    bool _repeat;
+    bool _playPartly;
+    String* _soundFilenames;
     STATE _state;
-    DataQueue<unsigned int> _queue;
 };
 
 Speaker::Speaker() 
 {
-  _counter = 0;
-  _numberOfSounds = 0;
-  _number = -1;
-  _index = 0;
+  init();
 }
 
-void Speaker::set(
-  int pin, 
-  int enablePin, 
-  unsigned int rate,
-  unsigned char** listOfSounds,
-  unsigned int* listOfLengthOfSounds,
-  int channel)
+void Speaker::init()
 {
-  _pin = pin;
-  _enablePin = enablePin;
-  _channel = channel;
-  _rate = rate;
-  _listOfSounds = listOfSounds;
-  _listOfLengthOfSounds = listOfLengthOfSounds;
-  _numberOfSounds = sizeof(listOfSounds)/sizeof(unsigned char*);
+  _soundNumber = 0;
+  _microseconds = 5;
+  _repeat = false;
+  _playPartly = false;
+}
+
+void Speaker::set(String soundFilenames[]) {
+  _soundFilenames = soundFilenames;
 }
 
 void Speaker::setState(STATE state)
 {
-  _state = state;
+  _state = state;;
 }
 
 STATE Speaker::getState()
@@ -79,77 +64,129 @@ STATE Speaker::getState()
   return _state;
 }
 
-void Speaker::play(int number)
-{
-  for (int i = 0; i < _listOfLengthOfSounds[number]; i++) {
-    dacWrite(_pin, _listOfSounds[number][i]);
-    delayMicroseconds(_rate);
-  }
-}
-
-void Speaker::speak(int frequency, int dutycycle)
-{
-  if (_frequency != frequency) {
-    _frequency = frequency;
-    ledcWriteTone(_channel, frequency);
-  }
-
-  if (_dutycycle != dutycycle) {
-    _dutycycle = dutycycle;
-    ledcWrite(_channel, dutycycle);
-  }
-
-  if (_frequency && dutycycle) {
-    delayMicroseconds(_rate);
-  }
-}
-
-void Speaker::addToPlay(int number)
-{
-  _number = number;
-  _queue.enqueue(number);
-}
-
-void Speaker::setNumber(int number) 
-{
-  _number = number;
-}
-
-int Speaker::getNumber()
-{
-  return _number;
-}
-
 void Speaker::update()
 {
-  switch (_state)
-  {
-    case ENABLE:
-      if (digitalRead(PIN_AMPLIFIER) == LOW) {
-        digitalWrite(PIN_AMPLIFIER, HIGH);
-        delay(5);
-      }
-      break;
     
-    case DISABLE:
-      if (digitalRead(PIN_AMPLIFIER) == HIGH) {
-        digitalWrite(PIN_AMPLIFIER, LOW);
-        delay(5);
-      }
-      break;
+}
+
+void Speaker::setPlayPartly(bool value)
+{
+  _playPartly = value;
+}
+
+bool Speaker::getPlayPartly()
+{
+  return _playPartly;
+}
+
+void Speaker::setRepeat(bool value)
+{
+  _repeat = value;
+}
+
+bool Speaker::getRepeat() 
+{
+  return _repeat;
+}
+
+void Speaker::soundOff()
+{
+  if (_f) {
+    _f.seek(_f.size() - 1);
+    _f.close();
   }
 }
 
-void Speaker::play() 
+void Speaker::setCurrent(int soundNumber, int microseconds = 20)
 {
-  if (_queue.isEmpty()) {      
+  _soundNumber = soundNumber;
+  _microseconds = microseconds;
+  _f = SPIFFS.open(_soundFilenames[_soundNumber], "r");
+}
+
+void Speaker::play(uint8_t volume = 30)
+{
+  if (_state == DISABLE) {
+    soundOff();
     return;
   }
-  _state = ENABLE;
-  update();
-  play(_queue.dequeue());    
-  _state = DISABLE;
-  update();
+
+  if (!_f) {
+    return;
+  }
+
+  digitalWrite(PIN_AMPLIFIER, HIGH);
+
+  int byteflag = 0;
+  int i;
+  unsigned int timer1old;
+
+  while (_f && _f.position() < (_f.size() - 1)) {
+    int numBytes = _min(1024, _f.size() - _f.position() - 1); // f.size() / 16000 ~ X seconds ~ X * 1000 milliseconds
+
+    if (byteflag == 0) {
+      _f.readBytes(buffer, numBytes);
+      byteflag = 1;
+    }
+
+    if (i < numBytes) {
+      int old = micros();
+      i++;
+      dacWrite(PIN_SPEAKER, map((unsigned int)buffer[i], 0, 255, 0, volume));
+      timer1old = micros();
+      while (micros() - old < _microseconds); //125usec = 1sec/8000 and assume 5us for overhead like wifi
+    } else {
+      i = 0;
+      byteflag = 0;
+    }
+  }
+
+  byteflag = 0;
+  digitalWrite(PIN_SPEAKER,LOW);
+
+  soundOff();
+}
+
+void Speaker::playBytes(int numberOfBytes = 1024, uint8_t volume = 30)
+{
+  if (_state == DISABLE) {
+    return;
+  }
+
+  if (!_f) {
+    return;
+  }
+
+  int byteflag = 0;
+  int i;
+  unsigned int timer1old;
+
+  if (_repeat && _f.position() >= _f.size() - 1) {
+    _f.seek(0);
+  }
+
+  if (_f && _f.position() < (_f.size() - 1)) {
+    int numBytes = _min(numberOfBytes, _f.size() - _f.position() - 1); // f.size() / 16000 ~ X seconds ~ X * 1000 milliseconds
+
+    if (byteflag == 0) {
+      _f.readBytes(buffer, numBytes);
+      byteflag = 1;
+    }
+
+    if (i < numBytes) {
+      int old = micros();
+      i++;
+      dacWrite(PIN_SPEAKER, map((unsigned int)buffer[i], 0, 255, 0, volume));
+      timer1old = micros();
+      while (micros() - old < _microseconds); //125usec = 1sec/8000 and assume 5us for overhead like wifi
+    } else {
+      i = 0;
+      byteflag = 0;
+    }
+  }
+
+  byteflag = 0;
+  digitalWrite(PIN_SPEAKER,LOW);
 }
 
 #endif

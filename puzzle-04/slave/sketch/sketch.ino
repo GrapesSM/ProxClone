@@ -1,4 +1,5 @@
 #include "Constants.h"
+#include "SPIFFS.h"
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
 #include <Adafruit_MCP23017.h>
@@ -31,6 +32,9 @@ TaskHandle_t showTask;
 void setup() 
 {
   Serial.begin(SERIAL_BAUDRATE);
+  while (!Serial);
+
+  SPIFFS.begin();
 
   // Setup Modbus communication
   parts.slave = &slave;
@@ -46,7 +50,6 @@ void setup()
 
   // Setup Nextion Display
   Serial2.begin(115200, SERIAL_8N1, RXD2, TXD2); 
-
 
   // Setup and Init Encoders
   ESP32Encoder::useInternalWeakPullResistors=false;
@@ -82,9 +85,9 @@ void setup()
   }
   
   // Setup speaker pins
-//  pinMode(PIN_SPEAKER, OUTPUT);
-//  pinMode(PIN_AMPLIFIER, OUTPUT);
-//  digitalWrite(PIN_AMPLIFIER, HIGH);
+  pinMode(PIN_SPEAKER, OUTPUT);
+  pinMode(PIN_AMPLIFIER, OUTPUT);
+  digitalWrite(PIN_AMPLIFIER, HIGH);
   
   setupDatamatic();
     // Setup Task functions
@@ -125,7 +128,7 @@ void setupDatamatic()
   dmComponents.codeReader.set(&parts.matrix, &parts.mcp1, buttonPins1, &parts.mcp2, buttonPins2, buttonLabels, PIN_INPUT_1, PIN_INPUT_2);
   dmComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
   dmComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
-  dmComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER);
+  dmComponents.speaker.set(soundFilenames);
 }
 
 //Run Task Function: process changes of puzzle
@@ -152,6 +155,8 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
+    Datamatic::sound(dmComponents);
+    
     // Enable communication to master
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 

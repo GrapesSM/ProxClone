@@ -90,12 +90,6 @@ extern int lightPinsForAirSupplyPump[] = {3, 4};
 #define NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT 18
 extern int lightPinsForLightEffect[] = {7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
 
-#define NUMBER_OF_SOUNDS 3
-enum {  // enumeration from 1, 2 ...
-  SOUND_POWER_DOWN,
-  SOUND_POWER_UP
-};
-
 enum REGISTER_INDEX {
   REG_MASTER_FORCE = 0,
   REG_MASTER_COMMAND = 1,
@@ -129,3 +123,16 @@ typedef struct {
   uint8_t numberOfRegisters = 20;
   uint16_t registers[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 } Puzzle; 
+
+#define NUMBER_OF_SOUNDS 4
+#define SOUND_STATION_UP 0
+#define SOUND_STATION_DOWN 1
+#define SOUND_AIR_SUPPLY_PUMP 2 
+#define SOUND_EXTERNAL_VENT 3
+
+extern String soundFilenames[NUMBER_OF_SOUNDS] = {
+  "/StationPowerUp.wav",
+  "/StationPowerDown.wav",
+  "/AirSupplyPump.wav",
+  "/ExternalVent.wav"
+};

@@ -1,4 +1,5 @@
 #include "Constants.h"
+#include "SPIFFS.h"
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
 #include "lib/StatusBoard.h"
@@ -26,6 +27,9 @@ TaskHandle_t showTask;
 void setup() 
 {
   Serial.begin(SERIAL_BAUDRATE);
+  while (!Serial);
+
+  SPIFFS.begin();
 
   // Setup Modbus communication
   parts.slave = &slave;
@@ -47,12 +51,10 @@ void setup()
   pinMode(PIN_INPUT_2, INPUT);
   pinMode(PIN_INPUT_3, INPUT);
 
-  // Setup speaker pins
-  pinMode(PIN_SPEAKER, OUTPUT);
-  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
-  ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
-  pinMode(PIN_AMPLIFIER, OUTPUT);
-  digitalWrite(PIN_AMPLIFIER, HIGH);
+//  // Setup speaker pins
+//  pinMode(PIN_SPEAKER, OUTPUT);
+//  pinMode(PIN_AMPLIFIER, OUTPUT);
+//  digitalWrite(PIN_AMPLIFIER, HIGH);
   
   setupStatusBoard();
 

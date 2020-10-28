@@ -1,4 +1,5 @@
 #include "Constants.h"
+#include "SPIFFS.h"
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
 #include "lib/PrepStatus.h"
@@ -25,6 +26,9 @@ TaskHandle_t showTask;
 void setup() 
 {
   Serial.begin(SERIAL_BAUDRATE);
+  while (!Serial);
+
+  SPIFFS.begin();
 
   // Setup Modbus communication
   parts.slave = &slave;
@@ -44,9 +48,9 @@ void setup()
   pinMode(PIN_SWITCH_1, INPUT);
 
   // Setup speaker pins
-//  pinMode(PIN_SPEAKER, OUTPUT);
-//  pinMode(PIN_AMPLIFIER, OUTPUT);
-//  digitalWrite(PIN_AMPLIFIER, HIGH);
+  pinMode(PIN_SPEAKER, OUTPUT);
+  pinMode(PIN_AMPLIFIER, OUTPUT);
+  digitalWrite(PIN_AMPLIFIER, HIGH);
   
   setupPrepStatus();
 
@@ -88,7 +92,7 @@ void setupPrepStatus()
   psComponents.generator.set(parts.strip, lightPinsForGenerator);
   psComponents.syncroReader.set(parts.strip, lightPinsForSyncroReader, PIN_INPUT_1);  
   psComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
-  psComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER);
+  psComponents.speaker.set(soundFilenames);
 }
 
 //Run Task Function: process changes of puzzle
@@ -110,12 +114,15 @@ void runTaskFunction( void * parameters ) {
   } 
 }
 
-//Show Task Fucntion: shows changes of puzzle
+//Show Task Function: shows changes of puzzle
 void showTaskFunction( void * parameters ){
   Serial.print("Show Task running on core ");
   Serial.println(xPortGetCoreID());
 
   for(;;){
+    // Sounds 
+    PrepStatus::sound(psComponents);
+
     // Enable communication to master
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 

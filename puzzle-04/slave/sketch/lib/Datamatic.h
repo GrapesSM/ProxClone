@@ -24,6 +24,10 @@ namespace Datamatic {
       unsigned long showpoint = 0;
       unsigned long interval = 200;
     } showTimer;
+    int powerSwitchStateChange[2] = {0, 0}; // old, new
+    int codeReaderModeChange[2] = {0, 0}; // old, new
+    String codeReaderTransmitChange[2] = {String(""), String("")}; // old, new
+    char codeReaderInputButtonsChange[2] = {'n', 'n'};
   } Components;
 
   void update(Puzzle & p, Components & c)
@@ -69,7 +73,7 @@ namespace Datamatic {
       c.informationDisplay.setState(DISABLE);
       c.lightEffect.setState(DISABLE);
       c.speaker.setState(DISABLE);
-      c.state = DISABLE;
+      c.state = ENABLE;
     }
   }
 
@@ -97,26 +101,26 @@ namespace Datamatic {
     }
 
     if (c.state == ENABLE) {
-      if (c.powerSwitch.getState() == DISABLE) {
-        c.powerSwitch.setState(ENABLE);
-      }
 
       if (c.powerSwitch.getState() == OFF) {
         c.codeReader.setState(DISABLE);
         c.informationDisplay.setState(DISABLE);
         c.lightEffect.setState(DISABLE);
-        c.speaker.setState(DISABLE);
       }
 
       if (c.powerSwitch.getState() == ON) {
-        if (c.codeReader.getState() == DISABLE) 
+        if (c.codeReader.getState() == DISABLE) {
           c.codeReader.setState(ENABLE);
-        if (c.informationDisplay.getState() == DISABLE) 
+        }
+        if (c.informationDisplay.getState() == DISABLE) {
           c.informationDisplay.setState(ENABLE);
-        if (c.speaker.getState() == DISABLE) 
+        } 
+        if (c.speaker.getState() == DISABLE) {
           c.speaker.setState(ENABLE);
-        if (c.lightEffect.getState() == DISABLE) 
+        }
+        if (c.lightEffect.getState() == DISABLE) {
           c.lightEffect.setState(ENABLE);
+        }
       }
 
       if (c.codeReader.getTransmittedKey() == keyForCodeReader1) {
@@ -144,7 +148,7 @@ namespace Datamatic {
 
   }
 
-  void show(Components &c)
+  void show(Components & c)
   { 
     c.showTimer.current = millis();
     if ((c.showTimer.current - c.showTimer.showpoint) > c.showTimer.interval) {
@@ -155,7 +159,53 @@ namespace Datamatic {
     }
 
     c.codeReader.display();
-    c.speaker.play();
+  }
+
+  void sound(Components & c) 
+  {
+    c.powerSwitchStateChange[1] = c.powerSwitch.getState();
+    if (c.powerSwitchStateChange[0] != c.powerSwitchStateChange[1]) {
+      c.powerSwitchStateChange[0] = c.powerSwitchStateChange[1];
+
+      if (c.powerSwitch.getState() == ON) {
+        c.speaker.setCurrent(SOUND_STATION_UP);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+
+      if (c.powerSwitch.getState() == OFF) {
+        c.speaker.setCurrent(SOUND_STATION_DOWN);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+    }
+
+    c.codeReaderModeChange[1] = c.codeReader.readMode();
+    if (c.codeReaderModeChange[0] != c.codeReaderModeChange[1]) {
+      c.codeReaderModeChange[0] = c.codeReaderModeChange[1];
+
+      if (c.codeReader.readMode() == INPUT_MODE) {
+        c.speaker.setCurrent(SOUND_DIAL_INPUT);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+
+      if (c.codeReader.readMode() == CLEAR_MODE) {
+        c.speaker.setCurrent(SOUND_DIAL_CLEAR);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+    }
+
+    c.codeReaderTransmitChange[1] = c.codeReader.getTransmittedKey();
+    if (c.codeReaderTransmitChange[0] != c.codeReaderTransmitChange[1]) {
+      c.codeReaderTransmitChange[0] = c.codeReaderTransmitChange[1];
+      c.speaker.setCurrent(SOUND_TRANSMIT_BUTTON);
+      c.speaker.setRepeat(false);
+      c.speaker.setPlayPartly(false);
+    }
+    
+    c.speaker.play(150);
   }
 }
 

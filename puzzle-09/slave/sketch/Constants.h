@@ -152,7 +152,6 @@ typedef struct {
   uint16_t registers[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 } Puzzle;
 
-
 #define NUMBER_OF_SOUNDS 6
 #define SOUND_STATION_UP 0
 #define SOUND_STATION_DOWN 1

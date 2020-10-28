@@ -1,4 +1,5 @@
 #include "Constants.h"
+#include "SPIFFS.h"
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
 #include <Wire.h>
@@ -30,6 +31,8 @@ void setup()
 {
   Serial.begin(SERIAL_BAUDRATE);
   while (!Serial);
+
+  SPIFFS.begin();
   
   // Setup 7 segment LED
   parts.matrix.begin(ADDR_SEVENSEGMENT);
@@ -57,9 +60,10 @@ void setup()
   pinMode(PIN_INPUT_2, INPUT);
 
   // Setup speaker pins
-//  pinMode(PIN_SPEAKER, OUTPUT);
-//  pinMode(PIN_AMPLIFIER, OUTPUT);
-//  digitalWrite(PIN_AMPLIFIER, HIGH);
+  pinMode(PIN_SPEAKER, OUTPUT);
+  pinMode(PIN_AMPLIFIER, OUTPUT);
+  digitalWrite(PIN_AMPLIFIER, HIGH);
+
 
   setupLifeSupport();
     // Setup Task functions
@@ -93,7 +97,7 @@ void setupLifeSupport()
   lsComponents.externalVent.set(parts.strip, lightPinsForExternalVent, PIN_INPUT_1);
   lsComponents.airSupplyPump.set(parts.strip, lightPinsForAirSupplyPump, PIN_INPUT_2);
   lsComponents.airPressureStatus.set(parts.strip, lightPinsForAirPressureStatus, &parts.matrix);
-  lsComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER);
+  lsComponents.speaker.set(soundFilenames);
   lsComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
 }
 
@@ -123,6 +127,8 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
   
   for(;;){
+    LifeSupport::sound(lsComponents);
+    
     // Enable communication to master
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 

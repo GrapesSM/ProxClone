@@ -97,12 +97,6 @@ extern String keyForCodeReader6 = "24356";
 #define NUMBER_OF_LIGHTS_FOR_LIGHT_EFFECT 18
 extern int lightPinsForLightEffect[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};
 
-#define NUMBER_OF_SOUNDS 2
-enum {  // enumeration from 0, 1, 2 ...
-  SOUND_POWER_UP,
-  SOUND_POWER_DOWN
-};
-
 enum REGISTER_INDEX {
   REG_MASTER_FORCE = 0,
   REG_MASTER_COMMAND = 1,
@@ -132,9 +126,31 @@ enum COMMAND {
   CMD_SET_DATAMATIC_KEY_5 = 35
 };
 
+enum MODE {
+  INPUT_MODE = 1,
+  CLEAR_MODE = 2
+};
+
 typedef struct {
   uint8_t address = ADDR_SLAVE;
   STATE state;
   uint8_t numberOfRegisters = 20;
   uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 } Puzzle;
+
+#define NUMBER_OF_SOUNDS 6
+#define SOUND_STATION_UP 0
+#define SOUND_STATION_DOWN 1
+#define SOUND_NUMBER_BUTTONS 2
+#define SOUND_DIAL_INPUT 3
+#define SOUND_DIAL_CLEAR 4
+#define SOUND_TRANSMIT_BUTTON 5
+
+extern String soundFilenames[NUMBER_OF_SOUNDS] = {
+  "/StationPowerUp.wav",
+  "/StationPowerDown.wav",
+  "/NumberButtons.wav",
+  "/DialInput.wav",
+  "/DialClear.wav",
+  "/TransmitButton.wav"
+};

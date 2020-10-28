@@ -21,6 +21,7 @@ class Speaker
     void update();
     void setCurrent(int soundNumber, int microseconds);
     void play(uint8_t volume);
+    void playBytes(int numberOfBytes, uint8_t volume);
   private:
     File _f;
     int _microseconds;
@@ -80,6 +81,45 @@ void Speaker::play(uint8_t volume = 30)
 
   while (_f && _f.position() < (_f.size() - 1)) {
     int numBytes = _min(1024, _f.size() - _f.position() - 1); // f.size() / 16000 ~ X seconds ~ X * 1000 milliseconds
+
+    if (byteflag == 0) {
+      _f.readBytes(buffer, numBytes);
+      byteflag = 1;
+    }
+
+    if (i < numBytes) {
+      int old = micros();
+      i++;
+      dacWrite(PIN_SPEAKER, map((unsigned int)buffer[i], 0, 255, 0, volume));
+      timer1old = micros();
+      while (micros() - old < _microseconds); //125usec = 1sec/8000 and assume 5us for overhead like wifi
+    } else {
+      i = 0;
+      byteflag = 0;
+    }
+  }
+
+  byteflag = 0;
+  digitalWrite(PIN_SPEAKER,LOW);
+
+  if (_f) 
+    _f.close();
+}
+
+void Speaker::playBytes(int numberOfBytes = 1024, uint8_t volume = 30)
+{
+  if (_state == DISABLE) {
+    return;
+  }
+
+  unsigned long 
+  int byteflag = 0;
+  int i;
+  unsigned int timer1; 
+  unsigned int timer1old;
+
+  if (_f && _f.position() < (_f.size() - 1)) {
+    int numBytes = _min(numberOfBytes, _f.size() - _f.position() - 1); // f.size() / 16000 ~ X seconds ~ X * 1000 milliseconds
 
     if (byteflag == 0) {
       _f.readBytes(buffer, numBytes);

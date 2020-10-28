@@ -1,4 +1,5 @@
 #include "Constants.h"
+#include "SPIFFS.h"
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
 #include <Adafruit_GFX.h>
@@ -31,8 +32,10 @@ TaskHandle_t showTask;
 void setup() 
 {
   Serial.begin(SERIAL_BAUDRATE);
-  while(!Serial);
+  while (!Serial);
 
+  SPIFFS.begin();
+  
   // Setup Modbus communication
   parts.slave = &slave;
   parts.slave->begin( SERIAL_BAUDRATE, PIN_RX_2, PIN_TX_2 );
@@ -111,7 +114,7 @@ void setupPowerControl()
   pcComponents.powerLightIndicator.set(parts.strip, lightPinForPowerLightIndicator);
   pcComponents.battery.set(parts.strip, lightPinsForBarIndicator);
   pcComponents.lightEffect.set(parts.strip, lightPinsForLightEffect);
-  pcComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER);
+  pcComponents.speaker.set(soundFilenames);
 }
 
 //Run Task Function: process changes of puzzle
@@ -139,6 +142,9 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
+    // Play sounds
+    PowerControl::sound(pcComponents);
+    
     // Enable communication to master
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 

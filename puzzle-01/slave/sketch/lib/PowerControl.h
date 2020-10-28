@@ -30,7 +30,8 @@ namespace PowerControl {
       unsigned long interval = 200;
     } showTimer;
     unsigned long failurePeriod = 45000;
-    float tempSupply = 0;
+    int powerLightIndicatorStateChange[2] = {0, 0}; // old, new
+    float powerAdjusterSupplyChange[2] = {0, 0}; // old, new
   } Components;
 
   void update(Puzzle & p, Components & c) 
@@ -104,7 +105,7 @@ namespace PowerControl {
       
       c.lightEffect.setState(DISABLE);
       
-      c.state = DISABLE;
+      c.state = ENABLE;
     }
   }
 
@@ -140,6 +141,10 @@ namespace PowerControl {
       }
       if (c.lightEffect.getState() == DISABLE) {
         c.lightEffect.setState(ENABLE);
+      }
+
+      if (c.speaker.getState() == DISABLE) {
+        c.speaker.setState(ENABLE);
       }
 
       c.battery.setDrawRate(c.powerAdjuster.getSupply());
@@ -179,18 +184,45 @@ namespace PowerControl {
     if ((c.showTimer.current - c.showTimer.showpoint) > c.showTimer.interval) {
       c.showTimer.showpoint = millis();
       
-      if (c.tempSupply != c.powerAdjuster.getSupply()) {
-        c.tempSupply = c.powerAdjuster.getSupply();
-        
-      }
-
       c.powerAdjuster.display();
       c.powerLightIndicator.display();
       c.lightEffect.display();
       c.battery.display();
     }
+  }
 
-    c.speaker.play();
+  void sound(Components & c)
+  {
+    c.powerAdjusterSupplyChange[1] = c.powerAdjuster.getSupply();
+    if (c.powerAdjusterSupplyChange[0] != c.powerAdjusterSupplyChange[1]) {
+      c.powerAdjusterSupplyChange[0] = c.powerAdjusterSupplyChange[1];
+      c.speaker.setCurrent(SOUND_POWER_ADJUSTER_DIAL);
+      c.speaker.setRepeat(false);
+      c.speaker.setPlayPartly(false);
+    }
+
+    c.powerLightIndicatorStateChange[1] = c.powerLightIndicator.getState();
+    if (c.powerLightIndicatorStateChange[0] != c.powerLightIndicatorStateChange[1]) {
+      c.powerLightIndicatorStateChange[0] = c.powerLightIndicatorStateChange[1];
+      
+      if (c.powerLightIndicator.getState() == ENABLE) {
+        c.speaker.setCurrent(SOUND_STATION_UP);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+      
+      if (c.powerLightIndicator.getState() == FAILURE) {
+        c.speaker.setCurrent(SOUND_STATION_DOWN);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+    }
+
+    if (c.speaker.getPlayPartly()) {
+      c.speaker.playBytes(1024);
+    } else {
+      c.speaker.play();
+    }
   }
 }
 

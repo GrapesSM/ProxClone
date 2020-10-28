@@ -102,3 +102,10 @@ typedef struct {
   uint8_t numberOfRegisters = 20;
   uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 } Puzzle;
+
+#define NUMBER_OF_SOUNDS 1
+#define SOUND_DETECTED 2
+
+extern String soundFilenames[NUMBER_OF_SOUNDS] = {
+  "/Detected.wav"
+};

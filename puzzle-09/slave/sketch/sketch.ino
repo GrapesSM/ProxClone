@@ -38,6 +38,7 @@ TaskHandle_t showTask;
 void setup()
 {
   Serial.begin(SERIAL_BAUDRATE);
+  while (!Serial);
 
   SPIFFS.begin();
 

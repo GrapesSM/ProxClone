@@ -32,11 +32,12 @@ namespace PrepStatus {
     boolean batteryMatrixFlag = false;
     boolean energySuppFlag = false;
     boolean generatorFlag = false;
+    int powerSwitchStateChange[2] = {0, 0};
+    int syncroReaderKeyStateChange[2] = {0, 0};
   } Components;
 
   void update(Puzzle & p, Components & c) 
   {
-
     if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE && 
         p.registers[REG_SLAVE_CONFIRM] != DONE) {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
@@ -136,7 +137,7 @@ namespace PrepStatus {
       c.speaker.setState(DISABLE);
       c.lightEffect.setState(DISABLE);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.state = DISABLE;
+      c.state = ENABLE;
     }
   }
 
@@ -177,14 +178,21 @@ namespace PrepStatus {
       } 
 
       if (c.powerSwitch.getState() == ON) {
-        if (c.batteryMatrix.getState() == DISABLE) 
+        if (c.batteryMatrix.getState() == DISABLE) {
           c.batteryMatrix.setState(ENABLE);
-        if (c.energySupp.getState() == DISABLE) 
+        }
+        if (c.energySupp.getState() == DISABLE) {
           c.energySupp.setState(ENABLE);
-        if (c.generator.getState() == DISABLE) 
+        }
+        if (c.generator.getState() == DISABLE) {
           c.generator.setState(ENABLE);
-        if (c.lightEffect.getState() == DISABLE) 
+        }
+        if (c.lightEffect.getState() == DISABLE) {
           c.lightEffect.setState(ENABLE);
+        }
+        if (c.speaker.getState() == DISABLE) {
+          c.speaker.setState(ENABLE);
+        }
       }
 
       if (
@@ -253,6 +261,37 @@ namespace PrepStatus {
       c.showTimer1.showpoint = millis();
 
       c.powerSwitch.display();
+    }
+
+  }
+
+  void sound(Components & c)
+  {
+    c.powerSwitchStateChange[1] = c.powerSwitch.getState();
+    if (c.powerSwitchStateChange[0] != c.powerSwitchStateChange[1]) {
+      c.powerSwitchStateChange[0] = c.powerSwitchStateChange[1];
+
+      if (c.powerSwitch.getState() == ON) {
+        c.speaker.setCurrent(SOUND_STATION_UP);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+
+      if (c.powerSwitch.getState() == OFF) {
+        c.speaker.setCurrent(SOUND_STATION_DOWN);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+    }
+
+    c.syncroReaderKeyStateChange[0] = c.syncroReader.getSyncroKeyState();
+    if (c.syncroReaderKeyStateChange[0] != c.syncroReaderKeyStateChange[0]) {
+      c.syncroReaderKeyStateChange[0] = c.syncroReaderKeyStateChange[0];
+      if (c.syncroReader.getSyncroKeyState()) {
+        c.speaker.setCurrent(SOUND_KEY_INSERT);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
     }
 
     c.speaker.play();

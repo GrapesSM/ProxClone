@@ -16,6 +16,7 @@ namespace LaserBar {
       unsigned long showpoint = 0;
       unsigned long interval = 200;
     } showTimer;
+    int detectorStateChange[2] = {0, 0};
   } Components;
 
   void update(Puzzle &p, Components &c)
@@ -52,7 +53,7 @@ namespace LaserBar {
 
       c.detector.setState(DISABLE);
       c.speaker.setState(DISABLE);
-      c.state = DISABLE;
+      c.state = ENABLE;
     }
   }
 
@@ -71,14 +72,13 @@ namespace LaserBar {
     }
 
     if (c.state == ENABLE) {
-      if (c.detector.getState() == DISABLE) {
-        c.detector.setState(ENABLE);
+      if (c.speaker.getState() == DISABLE) {
+        c.speaker.setState(ENABLE);
       }
 
-      if (c.detector.getState() == DETECTED) {
-        c.speaker.addToPlay(SOUND_DETECTED);
+      if (c.detector.getState() == DISABLE) {
         c.detector.setState(ENABLE);
-      }       
+      }     
     }
   }
 
@@ -90,6 +90,21 @@ namespace LaserBar {
 
       c.detector.display();
     }
+  }
+
+  void sound(Components & c)
+  {
+    c.detectorStateChange[1] = c.detector.getState();
+    if (c.detectorStateChange[0] != c.detectorStateChange[1]) {
+      c.detectorStateChange[0] = c.detectorStateChange[1];
+
+      if (c.detector.getState() == DETECTED) {
+        c.speaker.setCurrent(SOUND_DETECTED);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+    }
+
     c.speaker.play();
   }
 } // namespace LaserBar

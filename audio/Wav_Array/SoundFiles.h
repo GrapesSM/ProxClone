@@ -103,6 +103,7 @@ void playSound(const int index, const int index2, byte SoundFlag, uint8_t volume
 
       SPIFFS.begin();
       pinMode(2, OUTPUT);
+      digitalWrite(2, HIGH);
 
 
 

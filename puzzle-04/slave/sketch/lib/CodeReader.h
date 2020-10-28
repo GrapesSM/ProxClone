@@ -7,11 +7,6 @@
 #include <Arduino.h>
 #include "DebounceSwitch.h"
 
-enum MODE {
-  INPUT_MODE = 1,
-  CLEAR_MODE = 2
-};
-
 class CodeReader
 {
   public:
