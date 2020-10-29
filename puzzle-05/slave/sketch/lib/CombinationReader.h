@@ -23,6 +23,7 @@ class CombinationReader
     void display();
     bool isSolved();
     void setState(STATE);
+    int getValue();
     STATE getState();
   private:
     ESP32Encoder *_encoder;
@@ -165,13 +166,18 @@ void CombinationReader::checkNumber()
         }
 
         if (!_clockwise) {
-          if (_submittedVal-_previousVal > 4){
+          if (_submittedVal-_previousVal > 4) {
             _encoder->setCount(100);
           }
         }
     }
     _previousVal = _submittedVal;
   }
+}
+
+int CombinationReader::getValue()
+{
+  return _val;
 }
 
 void CombinationReader::update() 

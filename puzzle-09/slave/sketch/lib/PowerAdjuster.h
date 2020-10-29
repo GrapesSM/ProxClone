@@ -15,6 +15,7 @@ class PowerAdjuster
     void update();
     void display();
     int getInputKey();
+    int getValue();
     STATE getState();
     void setState(STATE state);
   private:
@@ -49,6 +50,11 @@ void PowerAdjuster::init()
 int PowerAdjuster::getInputKey() 
 {
   return _submittedVal;
+}
+
+int PowerAdjuster::getValue()
+{
+  return _val;
 }
 
 void PowerAdjuster::set(ESP32Encoder *encoder, Adafruit_7segment *matrix) 

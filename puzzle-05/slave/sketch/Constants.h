@@ -82,12 +82,6 @@ extern int lightPinForSafe = 3;
 #define NUMBER_OF_LIGHTS_FOR_COMBINATION_READER 3
 extern int lightPinsForCombinationReader[] = {0, 1, 2};
 
-#define NUMBER_OF_SOUNDS 2
-enum {  // enumeration from 0, 1, 2 ...
-  SOUND_POWER_DOWN,
-  SOUND_POWER_UP
-};
-
 enum REGISTER_INDEX {
   REG_MASTER_FORCE = 0,
   REG_MASTER_COMMAND = 1,
@@ -117,3 +111,14 @@ typedef struct {
   uint8_t numberOfRegisters = 20;
   uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 } Puzzle;
+
+#define NUMBER_OF_SOUNDS 3
+#define SOUND_STATION_UP 0
+#define SOUND_STATION_DOWN 1
+#define SOUND_SAFE_DIAL 2
+
+extern String soundFilenames[NUMBER_OF_SOUNDS] = {
+  "/StationPowerUp.wav",
+  "/StationPowerDown.wav",
+  "/SafeDial.wav"
+};

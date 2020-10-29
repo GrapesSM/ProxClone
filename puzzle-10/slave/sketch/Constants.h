@@ -133,13 +133,17 @@ typedef struct Puzzle {
   uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 };
 
-#define NUMBER_OF_SOUNDS 3
+#define NUMBER_OF_SOUNDS 5
 #define SOUND_STATION_UP 0
 #define SOUND_STATION_DOWN 1
-#define SOUND_KEY_INSERT 2
+#define SOUND_COUNTDOWN_BEEP 2 
+#define SOUND_KEY_SWITCH 3
+#define SOUND_SYNCRO_BEEP 4
 
 extern String soundFilenames[NUMBER_OF_SOUNDS] = {
   "/StationPowerUp.wav",
   "/StationPowerDown.wav",
-  "/KeyInsert.wav"
+  "/CountdownBeep.wav",
+  "/KeySwitch.wav",
+  "/SycroBeep.wav"
 };

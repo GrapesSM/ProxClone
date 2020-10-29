@@ -25,6 +25,7 @@ namespace EnergySupplemental {
     int powerSwitchStateChange[2] = {0, 0}; // old, new
     int syncroKeyStateChange[2] = {0, 0}; // old, new
     int syncroCountdownStateChange[2] = {0, 0}; // old, new
+    int powerAdjusterValueChange[2] = {0, 0}; // old, new
   } Components;
 
   void update(Puzzle & p, Components & c)
@@ -203,10 +204,14 @@ namespace EnergySupplemental {
       c.powerSwitchStateChange[0] = c.powerSwitchStateChange[1];
       if (c.powerSwitch.getState() == ON) {
         c.speaker.setCurrent(SOUND_STATION_UP);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
       }
 
       if (c.powerSwitch.getState() == OFF) {
         c.speaker.setCurrent(SOUND_STATION_DOWN);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
       }
     }
 
@@ -214,12 +219,24 @@ namespace EnergySupplemental {
     if (c.syncroKeyStateChange[0] != c.syncroKeyStateChange[1]) {
       c.syncroKeyStateChange[0] = c.syncroKeyStateChange[1];
       c.speaker.setCurrent(SOUND_KEY_SWITCH);
+      c.speaker.setRepeat(false);
+      c.speaker.setPlayPartly(false);
     }
 
     c.syncroCountdownStateChange[1] = c.syncroReader.getSyncroCountdownState();
     if (c.syncroCountdownStateChange[0] != c.syncroCountdownStateChange[1]) {
       c.syncroCountdownStateChange[0] = c.syncroCountdownStateChange[1];
       c.speaker.setCurrent(SOUND_COUNTDOWN_BEEP, 20);
+      c.speaker.setRepeat(false);
+      c.speaker.setPlayPartly(false);
+    }
+
+    c.powerAdjusterValueChange[1] = c.powerAdjuster.getValue();
+    if (c.powerAdjusterValueChange[0] != c.powerAdjusterValueChange[1]) {
+      c.powerAdjusterValueChange[0] = c.powerAdjusterValueChange[1];
+      c.speaker.setCurrent(SOUND_DIAL_TURN);
+      c.speaker.setRepeat(false);
+      c.speaker.setPlayPartly(true);
     }
 
     c.speaker.play();

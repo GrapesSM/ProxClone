@@ -172,10 +172,14 @@ namespace ShipPrepAux {
       c.powerSwitchStateChange[0] = c.powerSwitchStateChange[1];
       if (c.powerSwitch.getState() == ON) {
         c.speaker.setCurrent(SOUND_STATION_UP);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
       }
 
       if (c.powerSwitch.getState() == OFF) {
         c.speaker.setCurrent(SOUND_STATION_DOWN);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
       }
     }
 
@@ -183,12 +187,16 @@ namespace ShipPrepAux {
     if (c.batteryMatrixSwitchStateChange[0] != c.batteryMatrixSwitchStateChange[1]) {
       c.batteryMatrixSwitchStateChange[0] = c.batteryMatrixSwitchStateChange[1];
       c.speaker.setCurrent(SOUND_SWITCH);
+      c.speaker.setRepeat(false);
+      c.speaker.setPlayPartly(true);
     }
 
     c.generatorSwitchStateChange[1] = c.generator.getSwitchState();
     if (c.generatorSwitchStateChange[0] != c.generatorSwitchStateChange[1]) {
       c.generatorSwitchStateChange[0] = c.generatorSwitchStateChange[1];
       c.speaker.setCurrent(SOUND_SWITCH);
+      c.speaker.setRepeat(false);
+      c.speaker.setPlayPartly(true);
     }
 
     c.speaker.play();

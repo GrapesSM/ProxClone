@@ -32,8 +32,9 @@ namespace PrepStatus {
     boolean batteryMatrixFlag = false;
     boolean energySuppFlag = false;
     boolean generatorFlag = false;
-    int powerSwitchStateChange[2] = {0, 0};
-    int syncroReaderKeyStateChange[2] = {0, 0};
+    int powerSwitchStateChange[2] = {0, 0}; // old, new
+    int syncroKeyStateChange[2] = {0, 0}; // old, new
+    int syncroCountdownStateChange[2] = {0, 0}; // old, new
   } Components;
 
   void update(Puzzle & p, Components & c) 
@@ -284,17 +285,23 @@ namespace PrepStatus {
       }
     }
 
-    c.syncroReaderKeyStateChange[0] = c.syncroReader.getSyncroKeyState();
-    if (c.syncroReaderKeyStateChange[0] != c.syncroReaderKeyStateChange[0]) {
-      c.syncroReaderKeyStateChange[0] = c.syncroReaderKeyStateChange[0];
-      if (c.syncroReader.getSyncroKeyState()) {
-        c.speaker.setCurrent(SOUND_KEY_INSERT);
-        c.speaker.setRepeat(false);
-        c.speaker.setPlayPartly(false);
-      }
+    c.syncroKeyStateChange[1] = c.syncroReader.getSyncroKeyState();
+    if (c.syncroKeyStateChange[0] != c.syncroKeyStateChange[1]) {
+      c.syncroKeyStateChange[0] = c.syncroKeyStateChange[1];
+      c.speaker.setCurrent(SOUND_KEY_SWITCH);
+      c.speaker.setRepeat(false);
+      c.speaker.setPlayPartly(false);
     }
 
-    c.speaker.play();
+    c.syncroCountdownStateChange[1] = c.syncroReader.getSyncroCountdownState();
+    if (c.syncroCountdownStateChange[0] != c.syncroCountdownStateChange[1]) {
+      c.syncroCountdownStateChange[0] = c.syncroCountdownStateChange[1];
+      c.speaker.setCurrent(SOUND_COUNTDOWN_BEEP, 20);
+      c.speaker.setRepeat(false);
+      c.speaker.setPlayPartly(false);
+    }
+
+    c.speaker.play(200);
   }
 }
 

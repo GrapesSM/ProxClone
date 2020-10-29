@@ -242,9 +242,9 @@ namespace LifeSupport {
 
 
     if (c.speaker.getPlayPartly()) {
-      c.speaker.playBytes(1024);
+      c.speaker.playBytes(1024, 10);
     } else {
-      c.speaker.play();
+      c.speaker.play(10);
     }
   }
 }

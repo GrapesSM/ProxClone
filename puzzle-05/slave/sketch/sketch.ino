@@ -1,4 +1,5 @@
 #include "Constants.h"
+#include "SPIFFS.h"
 #include "lib/ModbusRtu.h"
 #include "NeoPixelBus.h"
 #include <ESP32Encoder.h>
@@ -27,6 +28,9 @@ TaskHandle_t showTask;
 void setup() 
 {
   Serial.begin(SERIAL_BAUDRATE);
+  while (!Serial);
+
+  SPIFFS.begin();
 
   // Setup Modbus communication
   parts.slave = &slave;
@@ -56,9 +60,9 @@ void setup()
   digitalWrite(PIN_RELAY_2, LOW);
 
   // Setup speaker pins
-//  pinMode(PIN_SPEAKER, OUTPUT);
-//  pinMode(PIN_AMPLIFIER, OUTPUT);
-//  digitalWrite(PIN_AMPLIFIER, HIGH);
+  pinMode(PIN_SPEAKER, OUTPUT);
+  pinMode(PIN_AMPLIFIER, OUTPUT);
+  digitalWrite(PIN_AMPLIFIER, HIGH);
 
   setupSafeomatic();
 
@@ -94,9 +98,9 @@ void setupSafeomatic()
 {
   smComponents.combinationReader.set(parts.strip, lightPinsForCombinationReader, &parts.encoder);
   smComponents.powerSwitch.set(parts.strip, lightPinForPowerSwitch, PIN_SWITCH_1);
-  smComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER);
   smComponents.accessPanel.set(PIN_INPUT_1, PIN_RELAY_2);
   smComponents.door.set(parts.strip, lightPinForSafe, PIN_RELAY_1);
+  smComponents.speaker.set(soundFilenames);
 }
 
 //Run Task Function: process changes of puzzle
@@ -124,6 +128,7 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
+    Safeomatic::sound(smComponents);
     // Enable communication to master
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 

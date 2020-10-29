@@ -28,6 +28,7 @@ class CodeReader
     void display();
     bool isDisabled();
     char readInput();
+    char getInput();
 
     String getTransmittedKey();
     MODE readMode();
@@ -51,6 +52,7 @@ class CodeReader
     int _reading[10];
     int _switchState[10];
     int _lastSwitchState[10];
+    char _input;
     unsigned long _lastDebounceTime[10];
     unsigned long _debounceDelay = 50;
     STATE _state;
@@ -66,6 +68,7 @@ void CodeReader::init()
   _counter = 0;
   _transmitted = false;
   _key = "";
+  _input = 'n';
   _transmittedKey = "";
 }
 
@@ -161,6 +164,11 @@ char CodeReader::readInput()
   }
 }
 
+char CodeReader::getInput()
+{
+  return _input;
+}
+
 MODE CodeReader::readMode()
 {
   if (_modeSwitch.isSwitch(HIGH)) {
@@ -175,7 +183,6 @@ void CodeReader::update()
   _modeSwitch.readSwitch();
   _transmitSwitch.readSwitch();
   MODE mode;
-  char input; 
   switch (_state)
   {
 
@@ -185,22 +192,22 @@ void CodeReader::update()
 
     case ENABLE:
     default:
-      input = readInput();
+      _input = readInput();
       mode = readMode();
       switch(mode) {
         case INPUT_MODE: 
           // Update number -----------------
-          if (input != 'n' && _entered == false && _counter < _matrix->getNumberOfDigits()) {
+          if (_input != 'n' && _entered == false && _counter < _matrix->getNumberOfDigits()) {
             _counter++;
-            _key += String(input);
+            _key += String(_input);
             _entered = true;
           } 
 
-          if (_entered == true && input == 'n') {
+          if (_entered == true && _input == 'n') {
             _entered = false;
           }
 
-          if (input == 'n') {
+          if (_input == 'n') {
             _entered = false;
           }
           // ------------------------------

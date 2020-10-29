@@ -131,13 +131,15 @@ typedef struct {
   uint16_t registers[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 } Puzzle;
 
-#define NUMBER_OF_SOUNDS 3
-#define SOUND_STATION_UP 0
-#define SOUND_STATION_DOWN 1
+#define NUMBER_OF_SOUNDS 4
+#define SOUND_POWER_UP 0
+#define SOUND_POWER_DOWN 1
 #define SOUND_POWER_ADJUSTER_DIAL 2
+#define SOUND_POWER_CRITICAL 3
 
 extern String soundFilenames[NUMBER_OF_SOUNDS] = {
-  "/StationPowerUp.wav",
-  "/StationPowerDown.wav",
-  "/PowerAdjusterDial.wav"
+  "/PowerUp.wav",
+  "/PowerDown.wav",
+  "/PowerAdjusterDial.wav",
+  "/PowerCritical.wav"
 };

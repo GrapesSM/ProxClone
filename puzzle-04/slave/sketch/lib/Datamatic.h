@@ -200,9 +200,19 @@ namespace Datamatic {
     c.codeReaderTransmitChange[1] = c.codeReader.getTransmittedKey();
     if (c.codeReaderTransmitChange[0] != c.codeReaderTransmitChange[1]) {
       c.codeReaderTransmitChange[0] = c.codeReaderTransmitChange[1];
-      c.speaker.setCurrent(SOUND_TRANSMIT_BUTTON);
+      c.speaker.setCurrent(SOUND_TRANSMIT_BUTTON, 5);
       c.speaker.setRepeat(false);
       c.speaker.setPlayPartly(false);
+    }
+
+    c.codeReaderInputButtonsChange[1] = c.codeReader.getInput();
+    if (c.codeReaderInputButtonsChange[0] != c.codeReaderInputButtonsChange[1]) {
+      if (c.codeReaderInputButtonsChange[1] != 'n') {
+        c.speaker.setCurrent(SOUND_NUMBER_BUTTONS);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+      c.codeReaderInputButtonsChange[0] = c.codeReaderInputButtonsChange[1];
     }
     
     c.speaker.play(150);

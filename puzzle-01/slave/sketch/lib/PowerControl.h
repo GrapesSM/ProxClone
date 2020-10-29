@@ -198,7 +198,7 @@ namespace PowerControl {
       c.powerAdjusterSupplyChange[0] = c.powerAdjusterSupplyChange[1];
       c.speaker.setCurrent(SOUND_POWER_ADJUSTER_DIAL);
       c.speaker.setRepeat(false);
-      c.speaker.setPlayPartly(false);
+      c.speaker.setPlayPartly(true);
     }
 
     c.powerLightIndicatorStateChange[1] = c.powerLightIndicator.getState();
@@ -206,18 +206,24 @@ namespace PowerControl {
       c.powerLightIndicatorStateChange[0] = c.powerLightIndicatorStateChange[1];
       
       if (c.powerLightIndicator.getState() == ENABLE) {
-        c.speaker.setCurrent(SOUND_STATION_UP);
+        c.speaker.setCurrent(SOUND_POWER_UP);
         c.speaker.setRepeat(false);
         c.speaker.setPlayPartly(false);
       }
       
       if (c.powerLightIndicator.getState() == FAILURE) {
-        c.speaker.setCurrent(SOUND_STATION_DOWN);
+        c.speaker.setCurrent(SOUND_POWER_DOWN);
         c.speaker.setRepeat(false);
         c.speaker.setPlayPartly(false);
       }
-    }
 
+      if (c.powerLightIndicator.getState() == FLASH) {
+        c.speaker.setCurrent(SOUND_POWER_CRITICAL);
+        c.speaker.setRepeat(true);
+        c.speaker.setPlayPartly(true);
+      }
+    }
+    
     if (c.speaker.getPlayPartly()) {
       c.speaker.playBytes(1024);
     } else {

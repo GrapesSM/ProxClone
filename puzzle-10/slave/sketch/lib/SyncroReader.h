@@ -18,6 +18,7 @@ class SyncroReader
     int getInputKey();
     void setState(STATE state);
     bool getSyncroKeyState();
+    int getSyncroCountdownState();
     STATE getState();
     void startTimer();
   private:
@@ -30,7 +31,7 @@ class SyncroReader
       unsigned long start;
       unsigned long current;
       unsigned long lastRefreshTime;
-      const unsigned long waitTimeMillis = 800; // ms
+      const unsigned long waitTimeMillis = 900; // ms
     } _timer;
     STATE _state;
 };
@@ -71,6 +72,13 @@ int SyncroReader::getInputKey()
 bool SyncroReader::getSyncroKeyState()
 {
   return _dSyncroKey.getState();
+}
+
+int SyncroReader::getSyncroCountdownState()
+{
+  if (_count > 0 && _count < 5)
+    return _count;
+  return 0;
 }
 
 void SyncroReader::update()
