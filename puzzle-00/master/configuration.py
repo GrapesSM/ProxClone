@@ -14,7 +14,7 @@ modbus = {
     'parity': 'N',
     'stopbits': 1,
     'xonxoff': 0,
-    'timeout': 0.1,
+    'timeout': 0.2,
     'verbose': False }
 
 db = {

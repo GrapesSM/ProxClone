@@ -104,8 +104,8 @@ typedef struct {
 } Puzzle;
 
 #define NUMBER_OF_SOUNDS 1
-#define SOUND_DETECTED 2
+#define SOUND_PRISONER 0
 
 extern String soundFilenames[NUMBER_OF_SOUNDS] = {
-  "/Detected.wav"
+  "/Prisoner.wav"
 };

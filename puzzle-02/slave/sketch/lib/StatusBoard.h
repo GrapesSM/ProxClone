@@ -115,7 +115,7 @@ namespace StatusBoard {
       c.blastDoorStatus.setState(DISABLE);
       c.laserGridStatus.setState(DISABLE);
       c.countdown.setState(DISABLE);
-      c.state = ENABLE;
+      c.state = DISABLE;
     }
   }
 

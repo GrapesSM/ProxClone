@@ -77,8 +77,8 @@ namespace PowerControl {
     p.registers[REG_SLAVE_LIGHT_EFFECT_STATE] = c.lightEffect.getState();
     p.registers[REG_SLAVE_BATTERY] = c.battery.getValue();
     p.registers[REG_SLAVE_BATTERY_MAX_VALUE] = c.battery.getMaxValue();
-    p.registers[REG_SLAVE_SUPPLY] = c.powerAdjuster.getSupply();
-    p.registers[REG_SLAVE_DEMAND] = c.powerAdjuster.getDemand();
+    p.registers[REG_SLAVE_SUPPLY] = (int)(c.powerAdjuster.getSupply() * 10);
+    p.registers[REG_SLAVE_DEMAND] = (int)(c.powerAdjuster.getDemand() * 10);
 
     if (c.state == SETUP) {
       c.state = INITIALIZING;
@@ -105,7 +105,7 @@ namespace PowerControl {
       
       c.lightEffect.setState(DISABLE);
       
-      c.state = ENABLE;
+      c.state = DISABLE;
     }
   }
 

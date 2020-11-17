@@ -18,6 +18,7 @@ namespace BlastDoorKeypad {
       unsigned long showpoint = 0;
       unsigned long interval = 200;
     } showTimer;
+    int codeReaderStateChange[2] = {0, 0};
   } Components;
 
   void update(Puzzle &p, Components &c)
@@ -69,7 +70,7 @@ namespace BlastDoorKeypad {
       c.speaker.setState(DISABLE);
 
       c.blastDoorOutput.setOutput(LOW);
-      c.state = DISABLE;
+      c.state = ENABLE;
     }
   }
 
@@ -91,17 +92,21 @@ namespace BlastDoorKeypad {
         c.codeReader.setState(ENABLE);
       }
 
-      if (c.codeReader.getState() == KEY_ENTERED) {
-        c.speaker.addToPlay(SOUND_ENTERED);
+      if (c.speaker.getState() == DISABLE) {
+        c.speaker.setState(ENABLE);
       }
 
       if (c.codeReader.getState() == TRANSMITTED) {
         
         if (c.codeReader.getInputKey() == keyForCodeReader) {
-          c.speaker.addToPlay(SOUND_CORRECT);
+          c.speaker.setCurrent(SOUND_CORRECT);
+          c.speaker.setRepeat(false);
+          c.speaker.setPlayPartly(false);  
           c.codeReader.setState(SOLVED);
         } else {
-          c.speaker.addToPlay(SOUND_WRONG);
+          c.speaker.setCurrent(SOUND_ERROR);
+          c.speaker.setRepeat(false);
+          c.speaker.setPlayPartly(false);  
           c.codeReader.setState(ENABLE);
         }
         
@@ -127,6 +132,21 @@ namespace BlastDoorKeypad {
       // code here runs every interval, i.e. 200ms 
     }
     c.speaker.play();
+  }
+
+  void sound(Components & c)
+  {
+    c.codeReaderStateChange[1] = c.codeReader.getState();
+    if (c.codeReaderStateChange[0] != c.codeReaderStateChange[1]) {
+      c.codeReaderStateChange[0] = c.codeReaderStateChange[1];
+      if (c.codeReader.getState() == KEY_ENTERED) {
+        c.speaker.setCurrent(SOUND_NUMBER_BUTTONS);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(true);  
+      }
+    }
+
+    c.speaker.play(100);
   }
 } // namespace BlastDoorKeypad
 

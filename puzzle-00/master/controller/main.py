@@ -89,23 +89,8 @@ def main():
     controllers = createControllers(master)
     proximaCommand = ProximaCommand(controllers, master)
     systemMonitor = WorkerThread(proximaCommand.run)
-    slaveThreads = list()
     flagStopThreads = False
-    for key_name in controllers.keys():
-        if key_name not in [
-            'docked_ship',
-            'prep_status',
-            'power_control',
-            'status_board',
-            'datamatic',
-            'safeomatic',
-            'life_support',
-            'lasergrid',
-            'laserbar',
-            'keypad',
-            ]:
-            continue
-        slaveThreads.append(Thread(target = controllers[key_name].refresh, args=(0.1, lambda : flagStopThreads), daemon = True))
+    slaveThread = Thread(target = proximaCommand.update, args=(0.15, lambda : flagStopThreads), daemon = True)
 
 
     try:
@@ -114,8 +99,7 @@ def main():
         #start the system
         systemMonitor.start()
 
-        for thread in slaveThreads:
-            thread.start()
+        slaveThread.start()
 
         #start the simulator! will block until quit command is received
         simulator.start()

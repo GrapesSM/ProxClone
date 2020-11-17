@@ -70,7 +70,7 @@ void setup()
   xTaskCreatePinnedToCore(
     runTaskFunction,   /* Task function. */
     "RunTask",     /* name of task. */
-    100000,       /* Stack size of task */
+    90000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &runTask,      /* Task handle to keep track of created task */
@@ -81,7 +81,7 @@ void setup()
   xTaskCreatePinnedToCore(
     showTaskFunction,   /* Task function. */
     "ShowTask",     /* name of task. */
-    60000,       /* Stack size of task */
+    90000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
@@ -122,7 +122,7 @@ void runTaskFunction( void * parameters ) {
   } 
 }
 
-//Show Task Fucntion: shows changes of puzzle
+//Show Task Function: shows changes of puzzle
 void showTaskFunction( void * parameters ){
   Serial.print("Show Task running on core ");
   Serial.println(xPortGetCoreID());

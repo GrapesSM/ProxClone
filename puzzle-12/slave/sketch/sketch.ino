@@ -1,10 +1,8 @@
 #include "Constants.h"
+#include "SPIFFS.h"
 #include "lib/ModbusRtu.h"
 #include "lib/BlastDoorKeyPad.h"
 #include <ESP32Encoder.h>
-#include "sounds/soundWrong.h"
-#include "sounds/soundEntered.h"
-#include "sounds/soundCorrect.h"
 
 Puzzle puzzle;
 
@@ -12,8 +10,6 @@ struct Parts {
   Modbus * slave;
   KEYPAD keypad;
   ESP32Encoder encoder;
-  unsigned char* listOfSounds[NUMBER_OF_SOUNDS];
-  unsigned int listOfLengthOfSounds[NUMBER_OF_SOUNDS];
 } parts;
 
 Modbus slave(puzzle.address, 1, PIN_485_EN);
@@ -30,6 +26,9 @@ TaskHandle_t showTask;
 void setup() 
 {
   Serial.begin(SERIAL_BAUDRATE);
+  while (!Serial);
+
+  SPIFFS.begin();
 
   // Setup Modbus communication
   parts.slave = &slave;
@@ -57,20 +56,12 @@ void setup()
 
   // Setup speaker pins
   pinMode(PIN_SPEAKER, OUTPUT);
-  ledcSetup(PWM_SPEAKER_CHANNEL, PWM_SPEAKER_FREQUENCY, PWM_SPEAKER_RESOLUTION);
-  ledcAttachPin(PIN_SPEAKER, PWM_SPEAKER_CHANNEL);
   pinMode(PIN_AMPLIFIER, OUTPUT);
+  digitalWrite(PIN_AMPLIFIER, HIGH);
 
   // Output Setup
   pinMode(PIN_OUTPUT_1, OUTPUT);
   digitalWrite(PIN_OUTPUT_1, LOW);
-
-  parts.listOfSounds[SOUND_WRONG] = soundWrong;
-  parts.listOfLengthOfSounds[SOUND_WRONG] = sizeof(soundWrong)/sizeof(soundWrong[0]);
-  parts.listOfSounds[SOUND_ENTERED] = soundEntered;
-  parts.listOfLengthOfSounds[SOUND_ENTERED] = sizeof(soundEntered)/sizeof(soundEntered[0]);
-  parts.listOfSounds[SOUND_CORRECT] = soundCorrect;
-  parts.listOfLengthOfSounds[SOUND_CORRECT] = sizeof(soundCorrect)/sizeof(soundCorrect[0]);
   
   setupBlastDoorKeypad();
 
@@ -78,7 +69,7 @@ void setup()
   xTaskCreatePinnedToCore(
     runTaskFunction,   /* Task function. */
     "RunTask",     /* name of task. */
-    100000,       /* Stack size of task */
+    90000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &runTask,      /* Task handle to keep track of created task */
@@ -89,7 +80,7 @@ void setup()
   xTaskCreatePinnedToCore(
     showTaskFunction,   /* Task function. */
     "ShowTask",     /* name of task. */
-    40000,       /* Stack size of task */
+    90000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
@@ -109,7 +100,7 @@ void loop()
 void setupBlastDoorKeypad()
 {
   bdComponents.codeReader.set(&parts.keypad, PIN_INPUT_1);
-  bdComponents.speaker.set(PIN_SPEAKER, PIN_AMPLIFIER, 5, parts.listOfSounds, parts.listOfLengthOfSounds, PWM_SPEAKER_CHANNEL);
+  bdComponents.speaker.set(soundFilenames);
   bdComponents.blastDoorOutput.set(PIN_OUTPUT_1);
 }
 
@@ -138,6 +129,8 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
+    BlastDoorKeypad::sound(bdComponents);
+
     // Enable communication to master
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
   } 

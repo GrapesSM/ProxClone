@@ -53,7 +53,7 @@ namespace LaserBar {
 
       c.detector.setState(DISABLE);
       c.speaker.setState(DISABLE);
-      c.state = ENABLE;
+      c.state = DISABLE;
     }
   }
 
@@ -90,22 +90,24 @@ namespace LaserBar {
 
       c.detector.display();
     }
-  }
 
-  void sound(Components & c)
-  {
     c.detectorStateChange[1] = c.detector.getState();
     if (c.detectorStateChange[0] != c.detectorStateChange[1]) {
       c.detectorStateChange[0] = c.detectorStateChange[1];
 
       if (c.detector.getState() == DETECTED) {
-        c.speaker.setCurrent(SOUND_DETECTED);
+        c.speaker.setCurrent(SOUND_PRISONER);
         c.speaker.setRepeat(false);
         c.speaker.setPlayPartly(false);
       }
     }
 
-    c.speaker.play();
+    c.speaker.play(255);
+  }
+
+  void sound(Components & c)
+  {
+    
   }
 } // namespace LaserBar
 

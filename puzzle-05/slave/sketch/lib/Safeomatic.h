@@ -78,7 +78,7 @@ namespace Safeomatic {
       c.door.setState(DISABLE);
       c.speaker.setState(DISABLE);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.state = ENABLE;
+      c.state = DISABLE;
     }
   }
 
@@ -196,7 +196,7 @@ namespace Safeomatic {
     if (c.speaker.getPlayPartly()) {
       c.speaker.playBytes(1024);
     } else {
-      c.speaker.play(150);
+      c.speaker.play();
     }
   }
 }

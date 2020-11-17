@@ -77,13 +77,6 @@ enum STATE {
 
 extern String keyForCodeReader = "21543";
 
-#define NUMBER_OF_SOUNDS 3
-enum {  // enumeration from 0, 1, 2 ...
-  SOUND_WRONG,
-  SOUND_ENTERED,
-  SOUND_CORRECT
-};
-
 enum REGISTER_INDEX {
   REG_MASTER_FORCE = 0,
   REG_MASTER_COMMAND = 1,
@@ -111,3 +104,14 @@ typedef struct {
   uint8_t numberOfRegisters = 20;
   uint16_t registers[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 } Puzzle;
+
+#define NUMBER_OF_SOUNDS 3
+#define SOUND_ERROR 0
+#define SOUND_CORRECT 1
+#define SOUND_NUMBER_BUTTONS 2
+
+extern String soundFilenames[NUMBER_OF_SOUNDS] = {
+  "/Error.wav",
+  "/Correct.wav",
+  "/NumberButtons.wav"
+};

@@ -2,20 +2,21 @@
 #define Detector_h
 
 #include <Arduino.h>
-#include "Adafruit_VL53L0X.h"
 
 class Detector
 {
   public:
     Detector();
     void init();
-    void set(Adafruit_VL53L0X* lox, int pin);
+    void set(Adafruit_VL53L0X & lox, int pin);
     void update();
     void display();
+    uint16_t getMeasure();
     STATE getState();
     void setState(STATE);
   private:
-    Adafruit_VL53L0X * _lox;
+    Adafruit_VL53L0X _lox;
+    uint16_t _measure;
     int _pin;
     STATE _state;
 };
@@ -30,10 +31,15 @@ void Detector::init()
 
 }
 
-void Detector::set(Adafruit_VL53L0X* lox, int pin)
+void Detector::set(Adafruit_VL53L0X & lox, int pin)
 {
   _lox = lox;
   _pin = pin;
+}
+
+uint16_t Detector::getMeasure()
+{
+  return _measure;
 }
 
 STATE Detector::getState() 
@@ -47,16 +53,21 @@ void Detector::setState(STATE state) {
 
 void Detector::update()
 {
-  if (_state == DISABLE) {
-    return;
-  }
+  // if (_state == DISABLE) {
+  //   return;
+  // }
 
   VL53L0X_RangingMeasurementData_t measure;
-  _lox->rangingTest(&measure, false); // pass in 'true' to get debug data printout!
-
-  if (measure.RangeStatus != 4 && measure.RangeMilliMeter < 2100) {  // phase failures have incorrect data
-    _state = DETECTED;
-  } else {
+  _lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
+  _measure = measure.RangeMilliMeter;
+  if (measure.RangeStatus != 4) {
+    if (measure.RangeMilliMeter > 5 && measure.RangeMilliMeter < 1500) {  // phase failures have incorrect data
+      _state = DETECTED;
+    } else {
+      _state = ENABLE;
+    }
+  }
+  else {
     _state = ENABLE;
   }
     

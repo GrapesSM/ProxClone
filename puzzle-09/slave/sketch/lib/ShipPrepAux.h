@@ -86,7 +86,7 @@ namespace ShipPrepAux {
       c.generator.setState(DISABLE);
       c.speaker.setState(DISABLE);
       p.registers[REG_SLAVE_SP_CONFIRM] = DONE;
-      c.state = ENABLE;
+      c.state = DISABLE;
     }
   }
 

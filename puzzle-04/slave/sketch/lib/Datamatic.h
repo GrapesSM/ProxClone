@@ -73,7 +73,7 @@ namespace Datamatic {
       c.informationDisplay.setState(DISABLE);
       c.lightEffect.setState(DISABLE);
       c.speaker.setState(DISABLE);
-      c.state = ENABLE;
+      c.state = DISABLE;
     }
   }
 

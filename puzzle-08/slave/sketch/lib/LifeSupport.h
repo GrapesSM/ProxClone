@@ -83,7 +83,7 @@ namespace LifeSupport {
       c.speaker.setState(DISABLE);
       c.lightEffect.setState(DISABLE);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
-      c.state = ENABLE;
+      c.state = DISABLE;
     }
   }
 

@@ -113,7 +113,7 @@ namespace EnergySupplemental {
       c.showTimer.interval = 200;
       c.showTimer1.interval = 50;
 
-      c.state = ENABLE;
+      c.state = DISABLE;
     }
   }
 
@@ -239,7 +239,12 @@ namespace EnergySupplemental {
       c.speaker.setPlayPartly(true);
     }
 
-    c.speaker.play();
+    if (c.speaker.getPlayPartly()) {
+      c.speaker.playBytes(1024);
+    } else {
+      c.speaker.play();
+    }
+
   }
 }
 
