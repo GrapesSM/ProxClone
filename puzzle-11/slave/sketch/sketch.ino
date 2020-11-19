@@ -121,6 +121,8 @@ void runTaskFunction( void * parameters ) {
     // Show changes
     LaserGrid::show(lgComponents);
 
+    LaserGrid::sound(lgComponents);
+    
     vTaskDelay(10);
   } 
 }
@@ -131,9 +133,11 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    LaserGrid::sound(lgComponents);
     
     // Enable communication to master
+//    if (Serial1.available() > 0)
+//    {
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+//    }
   } 
 }

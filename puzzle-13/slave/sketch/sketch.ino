@@ -64,7 +64,7 @@ void setup()
   xTaskCreatePinnedToCore(
     runTaskFunction,   /* Task function. */
     "RunTask",     /* name of task. */
-    90000,       /* Stack size of task */
+    110000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &runTask,      /* Task handle to keep track of created task */
@@ -75,7 +75,7 @@ void setup()
   xTaskCreatePinnedToCore(
     showTaskFunction,   /* Task function. */
     "ShowTask",     /* name of task. */
-    90000,       /* Stack size of task */
+    50000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
@@ -110,6 +110,8 @@ void runTaskFunction( void * parameters ) {
     // Show changes
     LaserBar::show(lbComponents);
 
+//    LaserBar::sound(lbComponents);
+    
     vTaskDelay(10);
   } 
 }
@@ -120,9 +122,11 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    LaserBar::sound(lbComponents);
 
     // Enable communication to master
+//    if (Serial1.available() > 0)
+//    {
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+//    }
   } 
 }

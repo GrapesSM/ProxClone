@@ -145,6 +145,8 @@ void runTaskFunction( void * parameters ) {
     // Show changes
     Datamatic::show(dmComponents);
     
+    Datamatic::sound(dmComponents);
+    
     vTaskDelay(10);
   }
 }
@@ -155,9 +157,11 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    Datamatic::sound(dmComponents);
     
     // Enable communication to master
+//    if (Serial1.available() > 0)
+//    {
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+//    }
   } 
 }

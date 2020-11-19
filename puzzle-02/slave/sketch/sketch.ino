@@ -125,6 +125,9 @@ void showTaskFunction( void * parameters ){
 
   for(;;){
     // Enable communication to master
-    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+    if (Serial1.available() > 0)
+    {
+      parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+    }
   } 
 }

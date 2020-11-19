@@ -132,6 +132,9 @@ void runTaskFunction( void * parameters ) {
     // Show changes
     PowerControl::show(pcComponents);
 
+    // Play sounds
+    PowerControl::sound(pcComponents);
+    
     vTaskDelay(10);
   }
 }
@@ -142,10 +145,10 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Play sounds
-    PowerControl::sound(pcComponents);
-
     // Enable communication to master
+//    if (Serial1.available() > 0)
+//    {
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+//    }
   } 
 }

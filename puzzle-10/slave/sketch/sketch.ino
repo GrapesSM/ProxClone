@@ -110,7 +110,7 @@ void runTaskFunction( void * parameters ) {
     // Show changes
     PrepStatus::show(psComponents);
     
-//    PrepStatus::sound(psComponents);
+    PrepStatus::sound(psComponents);
     
     vTaskDelay(10);
   } 
@@ -125,6 +125,9 @@ void showTaskFunction( void * parameters ){
     // Sounds 
 
     // Enable communication to master
+//    if (Serial1.available() > 0)
+//    {
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+//    }
   } 
 }

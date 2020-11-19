@@ -118,6 +118,8 @@ void runTaskFunction( void * parameters ) {
     // Show changes
     Safeomatic::show(smComponents);
     
+    Safeomatic::sound(smComponents);
+    
     vTaskDelay(10);
   } 
 }
@@ -128,8 +130,10 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    Safeomatic::sound(smComponents);
     // Enable communication to master
+//    if (Serial1.available() > 0)
+//    {
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+//    }
   } 
 }

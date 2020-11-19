@@ -119,6 +119,8 @@ void runTaskFunction( void * parameters ) {
     // Show changes
     BlastDoorKeypad::show(bdComponents);
     
+    BlastDoorKeypad::sound(bdComponents);
+    
     vTaskDelay(10);
   } 
 }
@@ -129,9 +131,10 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    BlastDoorKeypad::sound(bdComponents);
-
     // Enable communication to master
+//    if (Serial1.available() > 0)
+//    {
     parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+//    }
   } 
 }
