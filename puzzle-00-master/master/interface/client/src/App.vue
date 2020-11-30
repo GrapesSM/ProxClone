@@ -6,19 +6,13 @@
 </template>
 
 <script>
-import Navigation from "components/navigation";
-import { USER_REQUEST } from "actions/user";
+import Navigation from "./components/Navigation.vue";
 
 export default {
   components: {
     Navigation
   },
-  name: "app",
-  created: function() {
-    if (this.$store.getters.isAunthenticated) {
-      this.$store.dispatch(USER_REQUEST);
-    }
-  }
+  name: "app"
 };
 </script>
 

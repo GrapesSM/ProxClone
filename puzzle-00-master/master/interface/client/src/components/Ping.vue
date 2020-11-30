@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <button type="button" class="btn btn-primary">{{ msg }}</button>
+    <label>Response: {{ msg }}</label>
   </div>
 </template>
 
@@ -22,7 +22,7 @@ export default {
           this.msg = res.data;
         })
         .catch((error) => {
-          // eslint-disable-next-line
+          this.msg = error;
           console.error(error);
         });
     },

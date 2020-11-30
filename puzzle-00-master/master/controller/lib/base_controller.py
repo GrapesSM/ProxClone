@@ -82,8 +82,8 @@ class BaseController:
                     self._failedCount_SP = 0
                     self._failedCommand_SP = None
             
-        if registers == None:
-            print(self.getKeyName())
+        # if registers == None:
+        #     print(self.getKeyName())
         
 
     def setRegisters(self, registers):

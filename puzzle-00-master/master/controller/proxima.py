@@ -85,20 +85,20 @@ class ProximaCommand(object):
                 _ = ""
                 if self._controllers['status_board'].registers[SB_REGISTER_INDEX.REG_SLAVE_GAME_POWER_SWITCH_STATE] == STATE.ON:
                     if self._gameStage != GAME_STAGE.ONGOING:
-                        print("START")
+                        # print("START")
                         self._gameStage = GAME_STAGE.START 
 
                 if self._controllers['status_board'].registers[SB_REGISTER_INDEX.REG_SLAVE_GAME_POWER_SWITCH_STATE] == STATE.RESET:
-                    print("RESET")
+                    # print("RESET")
                     self._gameStage = GAME_STAGE.RESET
                 
                 if self._controllers['status_board'].registers[SB_REGISTER_INDEX.REG_SLAVE_GAME_POWER_SWITCH_STATE] != STATE.ON and \
                     self._controllers['status_board'].registers[SB_REGISTER_INDEX.REG_SLAVE_GAME_POWER_SWITCH_STATE] != STATE.RESET:
-                    print("PAUSE")
+                    # print("PAUSE")
                     self._gameStage = GAME_STAGE.PAUSE 
 
                 if self._gameStage == GAME_STAGE.START:
-                    print(self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_STATE])
+                    # print(self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_STATE])
                     
                     if self._controllers['status_board'].registers[SB_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.DISABLE:
                         self._controllers['status_board'].write(COMMAND.CMD_ENABLE)
@@ -161,7 +161,7 @@ class ProximaCommand(object):
                 
                 
                 if self._gameStage == GAME_STAGE.ONGOING:
-                    print("ONGOING")
+                    # print("ONGOING")
                     self._controlPowerControl()
 
                 if self._gameStage == GAME_STAGE.ONGOING:
@@ -193,7 +193,7 @@ class ProximaCommand(object):
 
         # #Check if the battery level is full and then enable all other puzzles if they are initialized
         if self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_LIGHT_EFFECT_STATE] == STATE.FAILURE:
-            print("FAILURE")
+            # print("FAILURE")
             if self._controllers['laserbar'].registers[LB_REGISTER_INDEX.REG_SLAVE_STATE] != STATE.DISABLE:
                 self._controllers['laserbar'].write(COMMAND.CMD_DISABLE)
             if self._controllers['lasergrid'].registers[LG_REGISTER_INDEX.REG_SLAVE_STATE] != STATE.DISABLE:
@@ -213,7 +213,7 @@ class ProximaCommand(object):
         
         elif self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_BATTERY] == self._batteryLevelMin:
             self._batteryFull = False
-            print("LOW BATTERY LEVEL")
+            # print("LOW BATTERY LEVEL")
             if self._controllers['laserbar'].registers[LB_REGISTER_INDEX.REG_SLAVE_STATE] != STATE.DISABLE:
                 self._controllers['laserbar'].write(COMMAND.CMD_DISABLE)
             if self._controllers['lasergrid'].registers[LG_REGISTER_INDEX.REG_SLAVE_STATE] != STATE.DISABLE:
@@ -232,7 +232,7 @@ class ProximaCommand(object):
                 self._controllers['docked_ship'].write_ES(COMMAND.CMD_DISABLE)
         
         elif self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_BATTERY] > self._batteryLevelMin:
-            print("FULL BATTERY FULL")
+            # print("FULL BATTERY FULL")
             if self._controllers['datamatic'].registers[DM_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.DISABLE:
                 self._controllers['datamatic'].write(COMMAND.CMD_ENABLE)
             if self._controllers['safeomatic'].registers[SM_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.DISABLE:
@@ -251,30 +251,30 @@ class ProximaCommand(object):
         #Check the power state of the puzzles and calculate the demand
         demand = 0.0
         if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_POWER_SWITCH_STATE] == STATE.ON:
-            print("DOCKED_SHIP")
+            # print("DOCKED_SHIP")
             demand += 4.5
         if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_POWER_SWITCH_STATE] == STATE.ON:
-            print("DOCKED_SHIP")
+            # print("DOCKED_SHIP")
             demand += 3.5
         if self._controllers['datamatic'].registers[DM_REGISTER_INDEX.REG_SLAVE_POWER_SWITCH_STATE] == STATE.ON:
-            print("DATAMATIC")
+            # print("DATAMATIC")
             demand += 1.5
         if self._controllers['lasergrid'].registers[DM_REGISTER_INDEX.REG_SLAVE_POWER_SWITCH_STATE] == STATE.ON:
-            print("LASER")
+            # print("LASER")
             demand += 1.5
         if self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_POWER_SWITCH_STATE] == STATE.ON:
-            print("PREP")
+            # print("PREP")
             demand += 1.5
         if self._controllers['life_support'].registers[LS_REGISTER_INDEX.REG_SLAVE_POWER_SWITCH_STATE] == STATE.ON:
-            print("LIFE_SUPPORT")
+            # print("LIFE_SUPPORT")
             demand += 2.5
         if self._controllers['safeomatic'].registers[SM_REGISTER_INDEX.REG_SLAVE_POWER_SWITCH_STATE] == STATE.ON:
-            print("SAFEOMATIC")
+            # print("SAFEOMATIC")
             demand += 1.0
             
         #Check the demand value and set to power control if changed
         demand = int(demand * 10)
-        print(demand, self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_DEMAND])
+        # print(demand, self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_DEMAND])
         if demand !=  self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_DEMAND]:
             print ("SET DEMAND")
             self._controllers['power_control'].write(COMMAND.CMD_SET_DEMAND, demand)
@@ -295,10 +295,10 @@ class ProximaCommand(object):
         if self._controllers['lasergrid'].registers[LG_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.SOLVED and \
            self._controllers['laserbar'].registers[LB_REGISTER_INDEX.REG_SLAVE_STATE] != STATE.DISABLE:
             self._controllers['laserbar'].write(COMMAND.CMD_DISABLE)
-            print("------------------------------")
+            # print("------------------------------")
         elif self._controllers['lasergrid'].registers[PS_REGISTER_INDEX.REG_SLAVE_STATE] != STATE.SOLVED and \
              self._controllers['laserbar'].registers[LB_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.DISABLE:
-            print("+++++++++++++++++++++++++++++")
+            # print("+++++++++++++++++++++++++++++")
             self._controllers['laserbar'].write(COMMAND.CMD_ENABLE)
         
     
@@ -332,7 +332,7 @@ class ProximaCommand(object):
         # Check the BatteryMatrix solved state and set to PrepStatus
         if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_SP_BATTERY_MATRIX_STATE] == STATE.SOLVED and \
             self._controllers['prep_status'].registers[PS_REGISTER_INDEX.REG_SLAVE_BATTERY_MATRIX_STATE] != STATE.SOLVED:
-            print("BM_SOLVED")
+            # print("BM_SOLVED")
             self._controllers['prep_status'].write(COMMAND.CMD_SET_PS_BATTERY_MATRIX_SOLVED)
 
         # Check the Generator solved state and set to PrepStatus

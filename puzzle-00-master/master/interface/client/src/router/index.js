@@ -1,28 +1,11 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Ping from 'components/ping';
-import Dashboard from 'components/dashboard';
-import Account from 'components/account';
-import Login from 'components/login';
+import Ping from '../components/Ping.vue';
+import Dashboard from '../components/Dashboard.vue';
 import store from '../store';
 
 Vue.use(Router);
 
-const ifNotAuthenticated = (to, from, next) => {
-  if (!store.getters.isAuthenticated) {
-    next();
-    return;
-  }
-  next("/");
-};
-
-const ifAuthenticated = (to, from, next) => {
-  if (store.getters.isAuthenticated) {
-    next();
-    return;
-  }
-  next("/login");
-};
 
 export default new Router({
   mode: 'history',
@@ -36,18 +19,6 @@ export default new Router({
       path: '/',
       name: 'Proxima - Dashboard',
       component: Dashboard,
-    },
-    {
-      path: '/account',
-      name: 'Account',
-      component: Account,
-      beforeEnter: ifAuthenticated
-    },
-    {
-      path: '/login',
-      name: 'Login',
-      component: Login,
-      beforeEnter: ifNotAuthenticated
     }
   ]
 });
