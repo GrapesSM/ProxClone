@@ -5,7 +5,6 @@ import time
 import json
 from .constants import STATE
 from .constants import STATE, COMMAND, REGISTER_INDEX, STATUS
-from queue import *
 from database.db import Puzzle
 
 class BaseController:
