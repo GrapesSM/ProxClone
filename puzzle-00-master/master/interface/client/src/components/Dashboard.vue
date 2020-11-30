@@ -93,7 +93,7 @@ export default {
   },
   methods: {
     getPuzzles() {
-      const path = `http://${process.env.API_URL}:5000/puzzles`;
+      const path = `http://${window.location.hostname}:5000/puzzles`;
       axios
         .get(path)
         .then(res => {

@@ -17,7 +17,7 @@ export default {
   },
   methods: {
     getPuzzle() {
-      const path = `http://${process.env.API_URL}:5000/puzzles/` + this.id;
+      const path = `http://${window.location.hostname}:5000/puzzles/` + this.id;
       axios
         .get(path)
         .then(res => {
