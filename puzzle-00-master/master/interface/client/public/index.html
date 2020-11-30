@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <title>Proxima Command</title>
+
+    <link rel="stylesheet" href="/css/open-iconic-bootstrap.min.css">
+    <link rel="stylesheet" href="/css/open-iconic.min.css">
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" href="/img/apple-touch-icon.png" sizes="180x180">
+    <link rel="icon" href="/img/favicon-32x32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="/img/favicon-16x16.png" sizes="16x16" type="image/png">
+    <link rel="manifest" href="/img/manifest.json">
+    <link rel="mask-icon" href="/img/safari-pinned-tab.svg" color="#563d7c">
+    <link rel="icon" href="/img/favicon.ico">
+    <meta name="msapplication-config" content="/img/browserconfig.xml">
+    <meta name="theme-color" content="#563d7c">
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+    <!-- Custom styles for this template -->
+    <link href="/css/dashboard.css" rel="stylesheet">
+    <!-- Custome javascripts for this template -->
+    <script>
+        function openNav() {
+            var sidebar = document.getElementById("mySidenav")
+            sidebar.style.width = "250px";
+            sidebar.style.zIndex = "2000";
+            sidebar.classList.remove("d-none");
+        }
+
+        function closeNav() {
+            var sidebar = document.getElementById("mySidenav")
+            sidebar.classList.add("d-none");
+            sidebar.style.zIndex = "1000";
+        }
+    </script>
+  </head>
+  <body>
+    <noscript>
+      <strong>We're sorry but client doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>
