@@ -56,7 +56,7 @@ class BaseController:
 
         if registers:
             self.setRegisters(registers)
-            # print(self.getKeyName(), registers)
+            print(self.getKeyName(), registers)
             if self._failedCommand:
                 self._failedCount = self._failedCount + 1
                 if self.write(self._failedCommand[0], self._failedCommand[1]):
@@ -81,8 +81,8 @@ class BaseController:
                     self._failedCount_SP = 0
                     self._failedCommand_SP = None
             
-        # if registers == None:
-        #     print(self.getKeyName())
+        if registers == None:
+            print(self.getKeyName())
         
 
     def setRegisters(self, registers):

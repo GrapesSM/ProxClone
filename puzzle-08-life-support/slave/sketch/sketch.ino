@@ -107,6 +107,7 @@ void runTaskFunction( void * parameters ) {
   Serial.println(xPortGetCoreID());
   
   for(;;){
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
 
     // Map puzzle's values to component's values
     LifeSupport::update(puzzle, lsComponents);
@@ -116,8 +117,7 @@ void runTaskFunction( void * parameters ) {
     
     // Show changes
     LifeSupport::show(lsComponents);
-
-    LifeSupport::sound(lsComponents);
+    
     vTaskDelay(10);
   } 
 }
@@ -128,11 +128,11 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
   
   for(;;){
-    
+    LifeSupport::sound(lsComponents);
     // Enable communication to master
 //    if (Serial1.available() > 0)
 //    {
-      parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+      
 //    }
   } 
 }
