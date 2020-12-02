@@ -131,3 +131,24 @@ enum COMMAND {
   CMD_SET_LIFE_SUPPORT_SOLVED = 93,
   CMD_RESET_COUNTDOWN_TIME = 94
 };
+
+#define NUMBER_OF_SOUNDS 8
+#define SOUND_START 0
+#define SOUND_FINAL 1
+#define SOUND_50MIN 2
+#define SOUND_40MIN 3
+#define SOUND_30MIN 4
+#define SOUND_20MIN 5
+#define SOUND_10MIN 6
+#define SOUND_1MIN 7
+
+extern String soundFilenames[NUMBER_OF_SOUNDS] = {
+  "/Start.wav",
+  "/Final.wav",
+  "/50min.wav",
+  "/40min.wav",
+  "/30min.wav",
+  "/20min.wav",
+  "/10min.wav",
+  "/1min.wav"
+};

@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 
-#define buffersize 1024
+#define buffersize 4096
 
 char buffer[buffersize];
 
@@ -45,7 +45,7 @@ Speaker::Speaker()
 void Speaker::init()
 {
   _soundNumber = 0;
-  _microseconds = 5;
+  _microseconds = 125;
   _repeat = false;
   _playPartly = false;
 }
@@ -97,7 +97,7 @@ void Speaker::soundOff()
   }
 }
 
-void Speaker::setCurrent(int soundNumber, int microseconds = 20)
+void Speaker::setCurrent(int soundNumber, int microseconds = 50)
 {
   _soundNumber = soundNumber;
   _microseconds = microseconds;
@@ -122,7 +122,7 @@ void Speaker::play(uint8_t volume = 30)
   unsigned int timer1old;
 
   while (_f && _f.position() < (_f.size() - 1)) {
-    int numBytes = _min(1024, _f.size() - _f.position() - 1); // f.size() / 16000 ~ X seconds ~ X * 1000 milliseconds
+    int numBytes = _min(4096, _f.size() - _f.position() - 1); // f.size() / 16000 ~ X seconds ~ X * 1000 milliseconds
 
     if (byteflag == 0) {
       _f.readBytes(buffer, numBytes);

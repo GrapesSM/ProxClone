@@ -28,6 +28,7 @@ namespace StatusBoard {
       unsigned long showpoint = 0;
       unsigned long interval = 200;
     } showTimer;
+    int countdownValueChange[2] = {0, 0};
   } Components;
 
   void update(Puzzle & p, Components & c)
@@ -205,7 +206,58 @@ namespace StatusBoard {
       c.laserGridStatus.display();
       c.countdown.display();
     }
-    
+  }
+
+  void sound(Components & c)
+  {
+    c.countdownValueChange[1] = c.countdown.getValue();
+    if (c.countdownValueChange[0] != c.countdownValueChange[1]) {
+      c.countdownValueChange[0] = c.countdownValueChange[1];
+
+      if (c.countdown.getValue() == 5959) {
+        c.speaker.setCurrent(SOUND_START);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+
+      if (c.countdown.getValue() == 5000) {
+        c.speaker.setCurrent(SOUND_50MIN);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+
+      if (c.countdown.getValue() == 4000) {
+        c.speaker.setCurrent(SOUND_40MIN);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+
+      if (c.countdown.getValue() == 3000) {
+        c.speaker.setCurrent(SOUND_30MIN);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+
+      if (c.countdown.getValue() == 2000) {
+        c.speaker.setCurrent(SOUND_20MIN);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+
+      if (c.countdown.getValue() == 1000) {
+        c.speaker.setCurrent(SOUND_10MIN);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+
+      if (c.countdown.getValue() == 102) {
+        c.speaker.setCurrent(SOUND_FINAL);
+        c.speaker.setRepeat(false);
+        c.speaker.setPlayPartly(false);
+      }
+    }
+
+    c.speaker.play(150);
   }
 }
 

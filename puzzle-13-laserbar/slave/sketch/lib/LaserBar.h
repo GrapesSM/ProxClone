@@ -90,11 +90,16 @@ namespace LaserBar {
 
       c.detector.display();
     }
+  }
 
+  void sound(Components & c)
+  {
     c.detectorStateChange[1] = c.detector.getState();
+    // Serial.print(c.detectorStateChange[0]);
+    // Serial.print(", ");
+    // Serial.println(c.detector.getState());
     if (c.detectorStateChange[0] != c.detectorStateChange[1]) {
       c.detectorStateChange[0] = c.detectorStateChange[1];
-
       if (c.detector.getState() == DETECTED) {
         c.speaker.setCurrent(SOUND_PRISONER);
         c.speaker.setRepeat(false);
@@ -103,11 +108,6 @@ namespace LaserBar {
     }
 
     c.speaker.play(255);
-  }
-
-  void sound(Components & c)
-  {
-    
   }
 } // namespace LaserBar
 

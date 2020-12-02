@@ -41,10 +41,7 @@ void setup()
   while (!parts.lox.begin()) {
     Serial.println("Failed to boot VL53L0X");
   }
-//  if (!parts.lox.begin()) {
-//    // Failed to boot VL53L0X
-//    while(1);
-//  }
+  
   // ----------------------------------------------------------
 
   // Setup Laser Output ---------------------------------------
@@ -101,6 +98,9 @@ void runTaskFunction( void * parameters ) {
   Serial.println(xPortGetCoreID());
 
   for(;;){
+    
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+
     // Map puzzle's values to component's values
     LaserBar::update(puzzle, lbComponents);
   
@@ -110,8 +110,6 @@ void runTaskFunction( void * parameters ) {
     // Show changes
     LaserBar::show(lbComponents);
 
-//    LaserBar::sound(lbComponents);
-    
     vTaskDelay(10);
   } 
 }
@@ -122,11 +120,6 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-
-    // Enable communication to master
-//    if (Serial1.available() > 0)
-//    {
-    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-//    }
+    LaserBar::sound(lbComponents);
   } 
 }

@@ -100,8 +100,6 @@ class ProximaCommand(object):
                 if self._gameStage == GAME_STAGE.START:
                     # print(self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_STATE])
                     
-                    if self._controllers['status_board'].registers[SB_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.DISABLE:
-                        self._controllers['status_board'].write(COMMAND.CMD_ENABLE)
                     if self._controllers['power_control'].registers[PC_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.DISABLE:
                         self._controllers['power_control'].write(COMMAND.CMD_ENABLE)
                     if self._controllers['laserbar'].registers[LB_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.DISABLE:
@@ -182,9 +180,11 @@ class ProximaCommand(object):
                 if self._gameStage == GAME_STAGE.ONGOING:
                     self._controlKeypad()
                 
-                if self._gameStage == GAME_STAGE.ONGOING and \
-                   self._controllers['status_board'].registers[SB_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.ENABLE:
-                    self._controlStatusBoard()
+                if self._gameStage == GAME_STAGE.ONGOING:
+                    if self._controllers['status_board'].registers[SB_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.DISABLE:
+                        self._controllers['status_board'].write(COMMAND.CMD_ENABLE)
+                    if self._controllers['status_board'].registers[SB_REGISTER_INDEX.REG_SLAVE_STATE] == STATE.ENABLE:
+                        self._controlStatusBoard()
 
             except Exception as ex:
                 LOGGER.debug("SystemDataCollector error: %s", str(ex))

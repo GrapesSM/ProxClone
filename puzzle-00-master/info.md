@@ -43,3 +43,79 @@ Master puzzle has three components such as controller, interface, and database
 
 # Tools
 - [SQLite Browser for Windows](https://sqlitebrowser.org/dl/#windows)
+
+# Proxima Controller Service Script
+#### sudo nano /etc/systemd/system/proxima-controller.service
+```
+[Unit]
+Description=Proxima Controller (Master) Code
+After=network.target
+
+[Service]
+ExecStart=/home/pi/proxima/puzzle-00-master/master/proxima-controller.service.sh
+WorkingDirectory=/home/pi/proxima/puzzle-00-master/master/
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
+```
+
+
+# Proxima Database Service Script
+#### sudo nano /etc/systemd/system/proxima-database.service
+```
+[Unit]
+Description=Proxima Database (Master) Code
+After=network.target
+
+[Service]
+ExecStart=/home/pi/proxima/puzzle-00-master/master/proxima-database.service.sh
+WorkingDirectory=/home/pi/proxima/puzzle-00-master/master/
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
+```
+
+# Proxima Interface Client Service Script
+#### sudo nano /etc/systemd/system/proxima-interface-client.service
+```
+[Unit]
+Description=Proxima Controller (Master) Code
+After=network.target
+
+[Service]
+ExecStart=/home/pi/proxima/puzzle-00-master/master/proxima-interface-client.service.sh
+WorkingDirectory=/home/pi/proxima/puzzle-00-master/master/
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
+```
+# Proxima Interface Server Service Script
+#### sudo nano /etc/systemd/system/proxima-interface-server.service
+```
+[Unit]
+Description=Proxima Controller (Master) Code
+After=network.target
+
+[Service]
+ExecStart=/home/pi/proxima/puzzle-00-master/master/proxima-interface-server.service.sh
+WorkingDirectory=/home/pi/proxima/puzzle-00-master/master/
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
+```

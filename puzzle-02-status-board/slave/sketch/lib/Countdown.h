@@ -15,6 +15,7 @@ class Countdown
     );
     void update();
     unsigned long getTime();
+    unsigned long getValue();
     void resetTime();
     STATE getState();
     unsigned long getmaxTimeCount();
@@ -26,11 +27,12 @@ class Countdown
     Adafruit_7segment * _matrix;
     unsigned long timeCounter;
     unsigned long maxTimeCount;
+    unsigned long _value;
     STATE _state;
     struct Timer {
       unsigned long current = 0;
       unsigned long countPoint = 0;
-      unsigned long interval = 1000;
+      unsigned long interval = 300;
     } timer;
 };
 
@@ -77,6 +79,10 @@ unsigned long Countdown::getTime() {
   return timeCounter;
 }
 
+unsigned long Countdown::getValue() {
+  return _value;
+}
+
 void Countdown::update()
 {
   timer.current = millis();
@@ -85,6 +91,8 @@ void Countdown::update()
     case ENABLE:
       if((timer.current - timer.countPoint) > timer.interval){
         timeCounter--;
+        if (timeCounter < 0 || timeCounter > maxTimeCount) timeCounter = 0;
+        _value = ((timeCounter / 60) * 100 + timeCounter % 60) % 10000;
         timer.countPoint = millis();
       }
       break;
@@ -99,6 +107,7 @@ void Countdown::update()
 
     case RESET: 
       timeCounter = maxTimeCount;
+      _value = ((timeCounter / 60) * 100 + timeCounter % 60) % 10000;
       timer.countPoint = timer.current;
       break;
   }
@@ -116,7 +125,7 @@ void Countdown::display()
     case ENABLE:
     default:
       _matrix->clear();
-      _matrix->print(((timeCounter / 60) * 100 + timeCounter % 60) % 10000);
+      _matrix->print(_value);
       _matrix->writeDisplay();
       break;
   }

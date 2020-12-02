@@ -52,9 +52,9 @@ void setup()
   pinMode(PIN_INPUT_3, INPUT);
 
 //  // Setup speaker pins
-//  pinMode(PIN_SPEAKER, OUTPUT);
-//  pinMode(PIN_AMPLIFIER, OUTPUT);
-//  digitalWrite(PIN_AMPLIFIER, HIGH);
+  pinMode(PIN_SPEAKER, OUTPUT);
+  pinMode(PIN_AMPLIFIER, OUTPUT);
+  digitalWrite(PIN_AMPLIFIER, HIGH);
   
   setupStatusBoard();
 
@@ -97,6 +97,7 @@ void setupStatusBoard()
   sbComponents.laserGridStatus.set(parts.strip, lightPinsForLaserGridStatus);
   sbComponents.countdown.set(&parts.matrix);
   sbComponents.powerSwitch.set(PIN_INPUT_1, PIN_INPUT_2);
+  sbComponents.speaker.set(soundFilenames);
 }
 
 //Run Task Function: process changes of puzzle
@@ -105,6 +106,9 @@ void runTaskFunction( void * parameters ) {
   Serial.println(xPortGetCoreID());
 
   for(;;){
+    // Enable communication to master
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+    
     // Map puzzle register's to component's values
     StatusBoard::update(puzzle, sbComponents);
 
@@ -124,10 +128,7 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Enable communication to master
-    if (Serial1.available() > 0)
-    {
-      parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-    }
+    // Play sounds
+    StatusBoard::sound(sbComponents);
   } 
 }

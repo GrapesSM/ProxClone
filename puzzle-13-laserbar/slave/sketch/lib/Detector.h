@@ -53,24 +53,27 @@ void Detector::setState(STATE state) {
 
 void Detector::update()
 {
-  // if (_state == DISABLE) {
-  //   return;
-  // }
+  if (_state == DISABLE) {
+    return;
+  }
 
   VL53L0X_RangingMeasurementData_t measure;
   _lox.rangingTest(&measure, false); // pass in 'true' to get debug data printout!
-  _measure = measure.RangeMilliMeter;
-  if (measure.RangeStatus != 4) {
-    if (measure.RangeMilliMeter > 5 && measure.RangeMilliMeter < 1500) {  // phase failures have incorrect data
+  
+  if (measure.RangeStatus != 4) {  // phase failures have incorrect data
+    _measure = measure.RangeMilliMeter;
+    if (_measure > 5 && _measure < 1500) {  // phase failures have incorrect data
       _state = DETECTED;
     } else {
       _state = ENABLE;
     }
-  }
-  else {
+  } else {
+    _measure = 5000;
     _state = ENABLE;
   }
-    
+
+  Serial.println(_measure);
+
   delay(100);
 }
 

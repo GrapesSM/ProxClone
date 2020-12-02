@@ -26,7 +26,7 @@ class Speaker
     void soundOff();
     void setCurrent(int soundNumber, int microseconds);
     void play(uint8_t volume);
-    void playBytes(int numberOfBytes, uint8_t volume);\
+    void playBytes(int numberOfBytes, uint8_t volume);
     void playBuffer(int length, uint8_t volume);
   private:
     File _f;
@@ -98,7 +98,7 @@ void Speaker::soundOff()
   }
 }
 
-void Speaker::setCurrent(int soundNumber, int microseconds = 40)
+void Speaker::setCurrent(int soundNumber, int microseconds = 27)
 {
   _soundNumber = soundNumber;
   _microseconds = microseconds;
@@ -175,7 +175,8 @@ void Speaker::playBuffer(int length, uint8_t volume = 30)
     i++;
     dacWrite(PIN_SPEAKER, map((unsigned int)buffer[i], 0, 255, 0, volume));
     timer1old = micros();
-    while (micros() - old < _microseconds); //125usec = 1sec/8000 and assume 5us for overhead like wifi
+    delayMicroseconds(_microseconds);
+    // while (micros() - old < _microseconds); //125usec = 1sec/8000 and assume 5us for overhead like wifi
   }
 }
 
