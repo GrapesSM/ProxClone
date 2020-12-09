@@ -142,6 +142,7 @@ namespace StatusBoard {
     }
 
     if (c.state == ENABLE) {
+      
       if (c.shipPrepStatus.getState() == DISABLE) {
         c.shipPrepStatus.setState(ENABLE);
       }

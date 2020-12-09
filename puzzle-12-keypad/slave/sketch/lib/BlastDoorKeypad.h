@@ -97,7 +97,6 @@ namespace BlastDoorKeypad {
       }
 
       if (c.codeReader.getState() == TRANSMITTED) {
-        
         if (c.codeReader.getInputKey() == keyForCodeReader) {
           c.speaker.setCurrent(SOUND_CORRECT);
           c.speaker.setRepeat(false);
@@ -111,15 +110,16 @@ namespace BlastDoorKeypad {
         }
         
         c.codeReader.clear();
+      }
 
-        if (c.codeReader.getState() == SOLVED) {
-          c.state = SOLVED;
-        }
-      } 
+      if (c.codeReader.getState() == SOLVED) {
+        c.state = SOLVED;
+      }
     }
 
     if (c.state == SOLVED) {
       // Serial.println("SOLVED");
+      c.speaker.setState(DISABLE);
     }
   }
 

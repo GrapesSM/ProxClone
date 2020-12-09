@@ -37,6 +37,11 @@ void setup()
   // Setup 7 segment LED
   parts.matrix.begin(ADDR_SEVENSEGMENT);
   parts.matrix.setBrightness(15);
+  delay(1000);
+  parts.matrix.clear();
+  parts.matrix.print(123);
+  parts.matrix.writeDisplay();
+  delay(2000);
 
   // Setup Modbus communication
   parts.slave = &slave;
@@ -129,10 +134,5 @@ void showTaskFunction( void * parameters ){
   
   for(;;){
     LifeSupport::sound(lsComponents);
-    // Enable communication to master
-//    if (Serial1.available() > 0)
-//    {
-      
-//    }
   } 
 }

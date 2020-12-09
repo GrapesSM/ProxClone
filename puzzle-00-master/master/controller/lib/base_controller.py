@@ -115,8 +115,6 @@ class BaseController:
         if self._failedCommand:
             return
 
-        # self._failedCommand = [command, body]
-
         registers = self.registers
         ok = False
         try:

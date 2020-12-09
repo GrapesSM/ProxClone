@@ -105,9 +105,17 @@ void SyncroReader::update()
       if (_inputKey == 10) {
         _inputKey = _count;
       }
-      _strip->SetPixelColor(_lightPins[0], RgbColor(255, 255, 0));
-      _strip->SetPixelColor(_lightPins[1], RgbColor(255, 255, 0));
-      _strip->SetPixelColor(_lightPins[2], RgbColor(255, 255, 0));
+
+      if (_count == 4) {
+        _strip->SetPixelColor(_lightPins[0], RgbColor(255, 255, 0));
+        _strip->SetPixelColor(_lightPins[1], RgbColor(255, 255, 0));
+        _strip->SetPixelColor(_lightPins[2], RgbColor(255, 255, 0));
+      } else {
+        _strip->SetPixelColor(_lightPins[0], RgbColor(255, 0, 0));
+        _strip->SetPixelColor(_lightPins[1], RgbColor(255, 0, 0));
+        _strip->SetPixelColor(_lightPins[2], RgbColor(255, 0, 0));
+      }
+
       return;
     } else {
       _inputKey = 10;

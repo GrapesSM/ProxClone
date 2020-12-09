@@ -50,6 +50,10 @@ void BatteryMatrix::init()
     _lastInput[i] = 0;
     _reading[i] = 0;
   }
+
+  for (int i = 0; i < 10; i++) {
+    _order[i] = 0;
+  }
 }
 
 void BatteryMatrix::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[], Adafruit_MCP23017 *mcp, int switchPins[], int labels[])

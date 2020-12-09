@@ -69,7 +69,7 @@ void setup()
   xTaskCreatePinnedToCore(
     runTaskFunction,   /* Task function. */
     "RunTask",     /* name of task. */
-    90000,       /* Stack size of task */
+    110000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &runTask,      /* Task handle to keep track of created task */
@@ -80,7 +80,7 @@ void setup()
   xTaskCreatePinnedToCore(
     showTaskFunction,   /* Task function. */
     "ShowTask",     /* name of task. */
-    90000,       /* Stack size of task */
+    60000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
@@ -110,6 +110,9 @@ void runTaskFunction( void * parameters ) {
   Serial.println(xPortGetCoreID());
 
   for(;;){
+    // Enable communication to master
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+
     // Map puzzle's values to component's values
     BlastDoorKeypad::update(puzzle, bdComponents);
 
@@ -118,8 +121,6 @@ void runTaskFunction( void * parameters ) {
 
     // Show changes
     BlastDoorKeypad::show(bdComponents);
-    
-    BlastDoorKeypad::sound(bdComponents);
     
     vTaskDelay(10);
   } 
@@ -131,10 +132,6 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Enable communication to master
-//    if (Serial1.available() > 0)
-//    {
-    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-//    }
+    BlastDoorKeypad::sound(bdComponents);
   } 
 }

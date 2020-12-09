@@ -105,6 +105,13 @@ namespace PrepStatus {
       c.syncroReader.setState(SYNCRONIZED);
       p.registers[REG_SLAVE_CONFIRM] = DONE;
     }
+
+    if (p.registers[REG_MASTER_COMMAND] == CMD_SET_PS_SYNCRO_READER_WRONG_SOLVED &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+      c.syncroReader.setState(FLASH);
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
+    }
+    
     
     p.registers[REG_SLAVE_MILLIS] = millis();
     p.registers[REG_SLAVE_STATE] = c.state;
@@ -296,7 +303,7 @@ namespace PrepStatus {
     c.syncroCountdownStateChange[1] = c.syncroReader.getSyncroCountdownState();
     if (c.syncroCountdownStateChange[0] != c.syncroCountdownStateChange[1]) {
       c.syncroCountdownStateChange[0] = c.syncroCountdownStateChange[1];
-      c.speaker.setCurrent(SOUND_COUNTDOWN_BEEP, 20);
+      c.speaker.setCurrent(SOUND_COUNTDOWN_BEEP);
       c.speaker.setRepeat(false);
       c.speaker.setPlayPartly(false);
     }

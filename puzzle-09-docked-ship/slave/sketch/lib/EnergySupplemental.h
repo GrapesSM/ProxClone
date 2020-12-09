@@ -226,7 +226,7 @@ namespace EnergySupplemental {
     c.syncroCountdownStateChange[1] = c.syncroReader.getSyncroCountdownState();
     if (c.syncroCountdownStateChange[0] != c.syncroCountdownStateChange[1]) {
       c.syncroCountdownStateChange[0] = c.syncroCountdownStateChange[1];
-      c.speaker.setCurrent(SOUND_COUNTDOWN_BEEP, 20);
+      c.speaker.setCurrent(SOUND_COUNTDOWN_BEEP);
       c.speaker.setRepeat(false);
       c.speaker.setPlayPartly(false);
     }

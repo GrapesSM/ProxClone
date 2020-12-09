@@ -32,7 +32,7 @@ class Countdown
     struct Timer {
       unsigned long current = 0;
       unsigned long countPoint = 0;
-      unsigned long interval = 300;
+      unsigned long interval = 1111;
     } timer;
 };
 

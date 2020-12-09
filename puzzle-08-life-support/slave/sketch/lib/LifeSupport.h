@@ -168,7 +168,7 @@ namespace LifeSupport {
         c.externalVent.setState(ENABLE);
         c.airPressureStatus.setState(ENABLE);
         c.airSupplyPump.setState(ENABLE);
-        c.speaker.setState(ENABLE);
+        c.speaker.setState(DISABLE);
         c.lightEffect.setState(SOLVED);
       }
     }
