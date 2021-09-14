@@ -1,11 +1,20 @@
 # Proxima Command
 
-## Global Registers (16-bit)
-- Power Status for each puzzle (binary)
-- Solved state for each puzzle (binary)
-- Remaining game time
-- Play message
-- Recharge / Standby
+## Puzzles
+- Puzzle 00: master
+- Puzzle 01: power control
+- Puzzle 02: status board
+- Puzzle 03: shelf
+- Puzzle 04: datamatic
+- Puzzle 05: safeomatic
+- Puzzle 06: rcps
+- Puzzle 07: corridor
+- Puzzle 08: life support
+- Puzzle 09: docked ship (energy supplemental and ship prep aux)
+- Puzzle 10: docked ship (prep status)
+- Puzzle 11: lasergrid
+- Puzzle 12: keypad
+- Puzzle 13: laser wall (laserbar)
 
 ## Puzzle and Component States
 ```cpp
