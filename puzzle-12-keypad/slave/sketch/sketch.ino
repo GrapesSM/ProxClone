@@ -61,7 +61,7 @@ void setup()
 
   // Output Setup
   pinMode(PIN_OUTPUT_1, OUTPUT);
-  digitalWrite(PIN_OUTPUT_1, LOW);
+  digitalWrite(PIN_OUTPUT_1, HIGH);
   
   setupBlastDoorKeypad();
 

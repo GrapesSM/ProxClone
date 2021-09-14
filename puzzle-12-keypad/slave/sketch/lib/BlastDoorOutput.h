@@ -28,7 +28,7 @@ BlastDoorOutput::BlastDoorOutput() {
 }
 
 void BlastDoorOutput::init() {
-  _value = LOW;
+  _value = HIGH;
 }
 
 void BlastDoorOutput::set(int pin) 

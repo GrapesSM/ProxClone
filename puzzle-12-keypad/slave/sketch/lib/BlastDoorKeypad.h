@@ -47,9 +47,9 @@ namespace BlastDoorKeypad {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
       
       if (p.registers[REG_MASTER_BODY] == 1) {
-        c.blastDoorOutput.setOutput(HIGH);
-      } else {
         c.blastDoorOutput.setOutput(LOW);
+      } else {
+        c.blastDoorOutput.setOutput(HIGH);
       }
       p.registers[REG_MASTER_BODY] = 0;
     }
@@ -69,8 +69,8 @@ namespace BlastDoorKeypad {
       c.codeReader.setState(DISABLE);
       c.speaker.setState(DISABLE);
 
-      c.blastDoorOutput.setOutput(LOW);
-      c.state = ENABLE;
+      c.blastDoorOutput.setOutput(HIGH);
+      c.state = DISABLE;
     }
   }
 
@@ -120,6 +120,7 @@ namespace BlastDoorKeypad {
     if (c.state == SOLVED) {
       // Serial.println("SOLVED");
       c.speaker.setState(DISABLE);
+      c.blastDoorOutput.setOutput(LOW);
     }
   }
 
