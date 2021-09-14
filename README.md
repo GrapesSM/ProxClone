@@ -44,3 +44,4 @@ struct Puzzle {
 - [Arduino Modbus](https://github.com/arduino-libraries/ArduinoModbus)
 - [Speaker](https://www.xtronical.com/the-dacaudio-library-download-and-installation/)
 - [Event Manager] https://github.com/igormiktor/arduino-EventManager
+- [ESP32Encoder] https://github.com/madhephaestus/ESP32Encoder
