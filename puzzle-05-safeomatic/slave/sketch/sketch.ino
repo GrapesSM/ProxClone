@@ -45,7 +45,7 @@ void setup()
   parts.strip->Show();
 
   // Setup and Init Encoders
-  ESP32Encoder::useInternalWeakPullResistors=false;
+  ESP32Encoder::useInternalWeakPullResistors=DOWN;
   //-- attach pins for use as encoder pins
   parts.encoder.attachHalfQuad(PIN_ENCODER_A, PIN_ENCODER_B);
   //-- adjust starting count value to 0
@@ -117,7 +117,8 @@ void runTaskFunction( void * parameters ) {
 
     // Show changes
     Safeomatic::show(smComponents);
-    
+
+    // Produce sounds
     Safeomatic::sound(smComponents);
     
     vTaskDelay(10);

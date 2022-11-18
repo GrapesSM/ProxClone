@@ -76,7 +76,7 @@ void setup()
   xTaskCreatePinnedToCore(
     runTaskFunction,   /* Task function. */
     "RunTask",     /* name of task. */
-    110000,       /* Stack size of task */
+    85000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &runTask,      /* Task handle to keep track of created task */
@@ -85,7 +85,7 @@ void setup()
   xTaskCreatePinnedToCore(
     showTaskFunction,   /* Task function. */
     "ShowTask",     /* name of task. */
-    40000,       /* Stack size of task */
+    60000,       /* Stack size of task */
     NULL,        /* parameter of the task */
     1,           /* priority of the task */
     &showTask,      /* Task handle to keep track of created task */
@@ -112,8 +112,6 @@ void runTaskFunction( void * parameters ) {
   Serial.println(xPortGetCoreID());
   
   for(;;){
-    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
-
     // Map puzzle's values to component's values
     LifeSupport::update(puzzle, lsComponents);
 
@@ -133,6 +131,9 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
   
   for(;;){
-    LifeSupport::sound(lsComponents);
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+
+    // Produce sound
+    // LifeSupport::sound(lsComponents);
   } 
 }

@@ -6,6 +6,13 @@
 
 #include <Arduino.h>
 
+enum LIGHT_STATE {
+  NO_COLOR,
+  RED,
+  YELLOW,
+  GREEN
+};
+
 class CombinationReader
 {
   public:
@@ -40,6 +47,8 @@ class CombinationReader
     int _increment;
     int _numbers[3] = {23, 7, 34};
     int _numbersSolved;
+    LIGHT_STATE _lightState = NO_COLOR;
+    LIGHT_STATE _prevLightState = NO_COLOR;
     const unsigned long _waitTimeMillis = 100; // ms
 	  unsigned long lastRefreshTime;
     int overtravel;
@@ -56,7 +65,7 @@ void CombinationReader::init()
   _val = 0;
   _previousVal = 0;
   _min = 0;
-  _max = 100;
+  _max = 50;
   _submittedVal = 0;
   lastRefreshTime = 0;
   overtravel = 3;
@@ -64,6 +73,8 @@ void CombinationReader::init()
   _solved = false;
   _increment = 0;
   _numbersSolved = 0;
+  _lightState = NO_COLOR;
+  _prevLightState = NO_COLOR;
 }
 
 void CombinationReader::set(NeoPixelBus<NeoGrbFeature, Neo800KbpsMethod> * strip, int lightPins[], ESP32Encoder *encoder) 
@@ -78,6 +89,8 @@ void CombinationReader::setLightsRed()
   _strip->SetPixelColor(_lightPins[0], RgbColor(255, 0, 0));
   _strip->SetPixelColor(_lightPins[1], RgbColor(255, 0, 0));
   _strip->SetPixelColor(_lightPins[2], RgbColor(255, 0, 0));
+  _prevLightState = _lightState;
+  _lightState = RED;
 }
 
 void CombinationReader::setLightsYellow()
@@ -85,11 +98,15 @@ void CombinationReader::setLightsYellow()
   _strip->SetPixelColor(_lightPins[0], RgbColor(255, 170, 0));
   _strip->SetPixelColor(_lightPins[1], RgbColor(255, 170, 0));
   _strip->SetPixelColor(_lightPins[2], RgbColor(255, 170, 0));
+  _prevLightState = _lightState;
+  _lightState = YELLOW;
 }
 
 void CombinationReader::setLightGreen(int light)
 {
   _strip->SetPixelColor(light, RgbColor(0, 255, 0));
+  _prevLightState = _lightState;
+  _lightState = GREEN;
 }
 
 void CombinationReader::setLightsOff()
@@ -97,6 +114,8 @@ void CombinationReader::setLightsOff()
   _strip->SetPixelColor(_lightPins[0], RgbColor(0, 0, 0));
   _strip->SetPixelColor(_lightPins[1], RgbColor(0, 0, 0));
   _strip->SetPixelColor(_lightPins[2], RgbColor(0, 0, 0));
+  _prevLightState = _lightState;
+  _lightState = NO_COLOR;
 }
 
 void CombinationReader::checkNumber() 
@@ -167,7 +186,7 @@ void CombinationReader::checkNumber()
 
         if (!_clockwise) {
           if (_submittedVal-_previousVal > 4) {
-            _encoder->setCount(100);
+            _encoder->setCount(50);
           }
         }
     }

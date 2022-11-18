@@ -101,6 +101,7 @@ void runTaskFunction( void * parameters ) {
   Serial.println(xPortGetCoreID());
 
   for(;;){
+    
     // Map puzzle's values with component's values
     PrepStatus::update(puzzle, psComponents);
 
@@ -124,7 +125,7 @@ void showTaskFunction( void * parameters ){
 
   for(;;){
     // Enable Modbus communication
-    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+   parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
     
   } 
 }
