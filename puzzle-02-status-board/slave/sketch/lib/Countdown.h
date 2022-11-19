@@ -14,6 +14,7 @@ class Countdown
       Adafruit_7segment *_matrix
     );
     void update();
+    void pause();
     unsigned long getTime();
     unsigned long getValue();
     void resetTime();
@@ -32,7 +33,7 @@ class Countdown
     struct Timer {
       unsigned long current = 0;
       unsigned long countPoint = 0;
-      unsigned long interval = 1111;
+      unsigned long interval = 1070;
     } timer;
 };
 

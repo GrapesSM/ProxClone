@@ -13,8 +13,10 @@
 #include "Countdown.h"
 #include "PowerSwitch.h"
 
-namespace StatusBoard {
-  typedef struct {
+namespace StatusBoard
+{
+  typedef struct
+  {
     ShipPrepStatus shipPrepStatus;
     LifeSupportStatus lifeSupportStatus;
     BlastDoorStatus blastDoorStatus;
@@ -23,7 +25,8 @@ namespace StatusBoard {
     Countdown countdown;
     PowerSwitch powerSwitch;
     STATE state;
-    struct ShowTimer {
+    struct ShowTimer
+    {
       unsigned long current = 0;
       unsigned long showpoint = 0;
       unsigned long interval = 200;
@@ -31,60 +34,70 @@ namespace StatusBoard {
     int countdownValueChange[2] = {0, 0};
   } Components;
 
-  void update(Puzzle & p, Components & c)
+  void update(Puzzle &p, Components &c)
   {
-    if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE && 
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+    if (p.registers[REG_MASTER_COMMAND] == CMD_ENABLE &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE)
+    {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = ENABLE;
     }
 
-    if (p.registers[REG_MASTER_COMMAND] == CMD_DISABLE && 
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+    if (p.registers[REG_MASTER_COMMAND] == CMD_DISABLE &&
+        p.registers[REG_SLAVE_CONFIRM] != DONE)
+    {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = DISABLE;
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_RESET &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+        p.registers[REG_SLAVE_CONFIRM] != DONE)
+    {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = RESET;
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_SOLVED &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+        p.registers[REG_SLAVE_CONFIRM] != DONE)
+    {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.state = SOLVED;
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_LASER_GRID_SOLVED &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;   
+        p.registers[REG_SLAVE_CONFIRM] != DONE)
+    {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.laserGridStatus.setState(SOLVED);
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_DOCKED_SHIP_SOLVED &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;   
+        p.registers[REG_SLAVE_CONFIRM] != DONE)
+    {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.shipPrepStatus.setState(SOLVED);
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_KEYPAD_SOLVED &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;   
+        p.registers[REG_SLAVE_CONFIRM] != DONE)
+    {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.blastDoorStatus.setState(SOLVED);
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_SET_LIFE_SUPPORT_SOLVED &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
-      p.registers[REG_SLAVE_CONFIRM] = DONE;   
+        p.registers[REG_SLAVE_CONFIRM] != DONE)
+    {
+      p.registers[REG_SLAVE_CONFIRM] = DONE;
       c.lifeSupportStatus.setState(SOLVED);
     }
 
     if (p.registers[REG_MASTER_COMMAND] == CMD_RESET_COUNTDOWN_TIME &&
-        p.registers[REG_SLAVE_CONFIRM] != DONE) {
+        p.registers[REG_SLAVE_CONFIRM] != DONE)
+    {
       p.registers[REG_SLAVE_CONFIRM] = DONE;
-      if (p.registers[REG_MASTER_BODY] > 0) {
+      if (p.registers[REG_MASTER_BODY] > 0)
+      {
         c.countdown.setmaxTimeCount(p.registers[REG_MASTER_BODY]);
         p.registers[REG_MASTER_BODY] = 0;
       }
@@ -102,7 +115,8 @@ namespace StatusBoard {
     p.registers[REG_SLAVE_COUNTDOWN_VALUE] = c.countdown.getTime();
     p.registers[REG_SLAVE_SPEAKER_STATE] = c.speaker.getState();
 
-    if (c.state == SETUP) {
+    if (c.state == SETUP)
+    {
       c.state = INITIALIZING;
 
       c.shipPrepStatus.init();
@@ -116,11 +130,11 @@ namespace StatusBoard {
       c.blastDoorStatus.setState(DISABLE);
       c.laserGridStatus.setState(DISABLE);
       c.countdown.setState(DISABLE);
-      c.state = DISABLE;
+      c.state = ENABLE;
     }
   }
 
-  void run(Components & c) 
+  void run(Components &c)
   {
     c.powerSwitch.update();
     c.shipPrepStatus.update();
@@ -129,7 +143,8 @@ namespace StatusBoard {
     c.laserGridStatus.update();
     c.countdown.update();
 
-    if (c.state == DISABLE) {
+    if (c.state == DISABLE)
+    {
       c.shipPrepStatus.setState(DISABLE);
       c.lifeSupportStatus.setState(DISABLE);
       c.blastDoorStatus.setState(DISABLE);
@@ -137,69 +152,110 @@ namespace StatusBoard {
       c.countdown.setState(DISABLE);
     }
 
-    if (c.state == RESET) {
+    if (c.state == RESET)
+    {
       c.state = SETUP;
     }
 
-    if (c.state == ENABLE) {
-      
-      if (c.shipPrepStatus.getState() == DISABLE) {
+    if (c.state == ENABLE)
+    {
+
+      if (c.shipPrepStatus.getState() == DISABLE)
+      {
         c.shipPrepStatus.setState(ENABLE);
       }
 
-      if (c.lifeSupportStatus.getState() == DISABLE) {
+      if (c.lifeSupportStatus.getState() == DISABLE)
+      {
         c.lifeSupportStatus.setState(ENABLE);
       }
 
-      if (c.blastDoorStatus.getState() == DISABLE) {
+      if (c.blastDoorStatus.getState() == DISABLE)
+      {
         c.blastDoorStatus.setState(ENABLE);
       }
 
-      if (c.laserGridStatus.getState() == DISABLE) {
+      if (c.laserGridStatus.getState() == DISABLE)
+      {
         c.laserGridStatus.setState(ENABLE);
       }
 
-      if (c.shipPrepStatus.getState() == SOLVED) {
+      if (c.countdown.getState() == DISABLE)
+      {
+        c.countdown.setState(ENABLE);
+      }
+
+      if (c.shipPrepStatus.getState() == SOLVED)
+      {
         c.shipPrepStatus.setGreenLight(ON);
         c.shipPrepStatus.setRedLight(OFF);
-      } else if (c.shipPrepStatus.getState() == ENABLE) {
+      }
+      else if (c.shipPrepStatus.getState() == ENABLE)
+      {
         c.shipPrepStatus.setRedLight(ON);
         c.shipPrepStatus.setGreenLight(OFF);
       }
 
-      if (c.lifeSupportStatus.getState() == SOLVED) {
+      if (c.lifeSupportStatus.getState() == SOLVED)
+      {
         c.lifeSupportStatus.setRedLight(OFF);
         c.lifeSupportStatus.setGreenLight(ON);
-      } else if (c.lifeSupportStatus.getState() == ENABLE) {
+      }
+      else if (c.lifeSupportStatus.getState() == ENABLE)
+      {
         c.lifeSupportStatus.setRedLight(ON);
         c.lifeSupportStatus.setGreenLight(OFF);
       }
 
-      if (c.blastDoorStatus.getState() == SOLVED) {
+      if (c.blastDoorStatus.getState() == SOLVED)
+      {
         c.blastDoorStatus.setRedLight(OFF);
         c.blastDoorStatus.setGreenLight(ON);
-      } else if (c.blastDoorStatus.getState() == ENABLE) {
+      }
+      else if (c.blastDoorStatus.getState() == ENABLE)
+      {
         c.blastDoorStatus.setRedLight(ON);
         c.blastDoorStatus.setGreenLight(OFF);
       }
 
-      if (c.laserGridStatus.getState() == SOLVED) {
+      if (c.laserGridStatus.getState() == SOLVED)
+      {
         c.laserGridStatus.setRedLight(OFF);
         c.laserGridStatus.setGreenLight(ON);
-      } else if (c.laserGridStatus.getState() == ENABLE) {
+      }
+      else if (c.laserGridStatus.getState() == ENABLE)
+      {
         c.laserGridStatus.setRedLight(ON);
         c.laserGridStatus.setGreenLight(OFF);
       }
 
-      c.countdown.setState(ENABLE);
-    }
+      if (c.powerSwitch.getState() == ON) {
+        // Serial.println("ON");
+        c.countdown.setState(ENABLE);
+      } 
+      else if (c.powerSwitch.getState() == OFF) {
+        // Serial.println("OFF");
+        c.countdown.setState(PAUSE);
+      } else if (c.powerSwitch.getState() == RESET) {
+        // Serial.println("RESET");
+        c.countdown.setState(RESET);
+      }
 
+      if (c.shipPrepStatus.getState() == SOLVED &&
+          c.lifeSupportStatus.getState() == SOLVED &&
+          c.blastDoorStatus.getState() == SOLVED &&
+          c.laserGridStatus.getState() == SOLVED)
+      {
+        c.countdown.setState(PAUSE);
+      }
+    }
   }
 
-  void show(Components & c)
+  void show(Components &c)
   {
     c.showTimer.current = millis();
-    if (c.showTimer.current - c.showTimer.showpoint > c.showTimer.interval) {
+    if (c.showTimer.current - c.showTimer.showpoint > c.showTimer.interval)
+    {
       c.showTimer.showpoint = millis();
       c.shipPrepStatus.display();
       c.lifeSupportStatus.display();
@@ -209,49 +265,57 @@ namespace StatusBoard {
     }
   }
 
-  void sound(Components & c)
+  void sound(Components &c)
   {
     c.countdownValueChange[1] = c.countdown.getValue();
-    if (c.countdownValueChange[0] != c.countdownValueChange[1]) {
+    if (c.countdownValueChange[0] != c.countdownValueChange[1])
+    {
       c.countdownValueChange[0] = c.countdownValueChange[1];
 
-      if (c.countdown.getValue() == 5959) {
+      if (c.countdown.getValue() == 5959)
+      {
         c.speaker.setCurrent(SOUND_START);
         c.speaker.setRepeat(false);
         c.speaker.setPlayPartly(false);
       }
 
-      if (c.countdown.getValue() == 5000) {
+      if (c.countdown.getValue() == 5000)
+      {
         c.speaker.setCurrent(SOUND_50MIN);
         c.speaker.setRepeat(false);
         c.speaker.setPlayPartly(false);
       }
 
-      if (c.countdown.getValue() == 4000) {
+      if (c.countdown.getValue() == 4000)
+      {
         c.speaker.setCurrent(SOUND_40MIN);
         c.speaker.setRepeat(false);
         c.speaker.setPlayPartly(false);
       }
 
-      if (c.countdown.getValue() == 3000) {
+      if (c.countdown.getValue() == 3000)
+      {
         c.speaker.setCurrent(SOUND_30MIN);
         c.speaker.setRepeat(false);
         c.speaker.setPlayPartly(false);
       }
 
-      if (c.countdown.getValue() == 2000) {
+      if (c.countdown.getValue() == 2000)
+      {
         c.speaker.setCurrent(SOUND_20MIN);
         c.speaker.setRepeat(false);
         c.speaker.setPlayPartly(false);
       }
 
-      if (c.countdown.getValue() == 1000) {
+      if (c.countdown.getValue() == 1000)
+      {
         c.speaker.setCurrent(SOUND_10MIN);
         c.speaker.setRepeat(false);
         c.speaker.setPlayPartly(false);
       }
 
-      if (c.countdown.getValue() == 102) {
+      if (c.countdown.getValue() == 102)
+      {
         c.speaker.setCurrent(SOUND_FINAL);
         c.speaker.setRepeat(false);
         c.speaker.setPlayPartly(false);
