@@ -7,8 +7,8 @@ server = {
     'static_path': 'static/' }
 
 modbus = {
-    'port': '/dev/ttyUSB0',
-    # 'port': 'COM5',
+    # 'port': '/dev/ttyUSB0',
+    'port': 'COM8',
     'baudrate': 19200,
     'bytesize': 8,
     'parity': 'N',

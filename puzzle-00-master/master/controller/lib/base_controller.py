@@ -3,7 +3,6 @@ from modbus_tk.modbus import LOGGER
 import modbus_tk.defines as cst
 import time
 import json
-from .constants import STATE
 from .constants import STATE, COMMAND, REGISTER_INDEX, STATUS
 from database.db import Puzzle
 
@@ -129,6 +128,6 @@ class BaseController:
             _ = ""
 
         return ok
-    
+
 
         

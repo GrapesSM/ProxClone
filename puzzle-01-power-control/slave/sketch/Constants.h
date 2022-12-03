@@ -7,7 +7,7 @@
 #define PIN_485_EN 15
 #define PIN_INPUT_1 4
 #define PIN_INPUT_2 33
-#define PIN_INPUT_3 // 18
+#define PIN_INPUT_3 // 18 Laser grid key reader set 
 #define PIN_NEOPIXEL 26
 #define PIN_SPEAKER 25
 #define PIN_RELAY_1 23

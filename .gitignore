@@ -10,3 +10,4 @@ __pycache__/
 *.db-journal
 nohup.out
 bash.exe.stackdump
+venv

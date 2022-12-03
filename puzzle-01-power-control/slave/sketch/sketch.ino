@@ -126,10 +126,10 @@ void runTaskFunction( void * parameters ) {
     // Map puzzle's values with component's values
     PowerControl::update(puzzle, pcComponents);
 
-    // State changes
+    // State changes 
     PowerControl::run(pcComponents);
 
-    // Show changes
+    // Show changes and internal state 
     PowerControl::show(pcComponents);
 
     // Play sounds

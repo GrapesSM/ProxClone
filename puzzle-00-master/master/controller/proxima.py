@@ -3,6 +3,7 @@
 from modbus_tk.modbus import LOGGER
 import modbus_tk.defines as cst
 import time
+import asyncio
 import copy
 from lib.helpers import *
 from lib.constants import *
@@ -47,36 +48,81 @@ class ProximaCommand(object):
             'point': 0,
             'interval': 500
         }
+
+    async def refresh(self, key_name):
+        # await self._master.execute(self._controllers[key_name].getSlaveID(), cst.READ_HOLDING_REGISTERS, 3, 1)
+        try:
+            # await asyncio.sleep(1)
+        # time.sleep(1)
+            await self._controllers[key_name].refresh(0.25)
+        except Exception as ex:
+            _ = ""
+        # await key_name
+
+    async def refreshAll(self):
+        for key_name in self._controllers.keys():
+            if key_name in [
+                'docked_ship',
+                'prep_status',
+                'power_control',
+                'status_board',
+                'datamatic',
+                'safeomatic',
+                'life_support',
+                'laserbar',
+                'keypad',
+                # 'lasergrid',
+                ]:
+                await self.refresh(key_name)
+        # await asyncio.gather(
+        #     # self.refresh('prep_status'), 
+        #     self.refresh('docked_ship'), 
+        #     # self.refresh('power_control'), 
+        #     # self.refresh('status_board'), 
+        #     # self.refresh('datamatic'), 
+        #     # self.refresh('safeomatic'), 
+        #     # self.refresh('lasergrid'), 
+        #     # self.refresh('life_support'), 
+        #     self.refresh('laserbar'),
+        #     # self.refresh('keypad'),
+        # )
     
     def update(self, delay, stop):
         while True:
             if stop():
                 break
-            
-            for key_name in self._controllers.keys():
-                if key_name not in [
-                    'docked_ship',
-                    'prep_status',
-                    'power_control',
-                    'status_board',
-                    'datamatic',
-                    'safeomatic',
-                    'life_support',
-                    'lasergrid',
-                    'laserbar',
-                    'keypad',
-                    ]:
-                    continue
 
-                try: 
-                    self._refreshTimer['current'] = int(time.perf_counter() * 1000)
-                    if self._refreshTimer['current'] - self._refreshTimer['point'] > self._refreshTimer['interval']:
-                        self._refreshTimer['point'] = int(time.perf_counter() * 1000)
-                        slave = self._master.execute(self._controllers[key_name].getSlaveID(), cst.READ_HOLDING_REGISTERS, 3, 1)
-                        if slave and slave[0] > 0:
-                            self._controllers[key_name].refresh(delay)
-                except Exception as ex:
-                    _ = ""
+            s = time.perf_counter()
+            asyncio.run(self.refreshAll())
+            elapsed = time.perf_counter() - s
+            # print(f"{__file__} executed in {elapsed:0.2f} seconds.")
+
+            # for key_name in self._controllers.keys():
+            #     if key_name not in [
+            #         'docked_ship',
+            #         'prep_status',
+            #         'power_control',
+            #         'status_board',
+            #         'datamatic',
+            #         'safeomatic',
+            #         'life_support',
+            #         'lasergrid',
+            #         'laserbar',
+            #         'keypad',
+            #         ]:
+            #         continue
+
+            #     try: 
+                    
+            #         # self._refreshTimer['current'] = int(time.perf_counter() * 1000)
+            #         # if self._refreshTimer['current'] - self._refreshTimer['point'] > self._refreshTimer['interval']:
+            #         #     self._refreshTimer['point'] = int(time.perf_counter() * 1000)
+            #         #     # slave = self._master.execute(self._controllers[key_name].getSlaveID(), cst.READ_HOLDING_REGISTERS, 3, 1)
+            #         #     print(slave)
+            #         #     if slave and slave[0] > 0:
+            #         #         self._controllers[key_name].refresh(delay)
+            #     except Exception as ex:
+            #         _ = ""
 
     def run(self):
         self._runTimer['current'] = int(time.perf_counter() * 1000)
@@ -370,14 +416,14 @@ class ProximaCommand(object):
                 self._dsSyncroPoint = int(time.perf_counter() * 1000)
                 self._dsSyncroKeyInserted = True
             
-            if abs(int(time.perf_counter() * 1000) - self._dsSyncroPoint) > 3000:
+            if abs(int(time.perf_counter() * 1000) - self._dsSyncroPoint) > 5000:
                 self._controllers['prep_status'].write(COMMAND.CMD_SET_PS_SYNCRO_READER_WRONG_SOLVED)
                 self._controllers['docked_ship'].write_ES(COMMAND.CMD_SET_DS_SYNCRO_READER_WRONG_SOLVED)
             
         if self._controllers['docked_ship'].registers[DS_REGISTER_INDEX.REG_SLAVE_ES_SYNCRO_READER_INPUT_KEY] != 4:
             self._dsSyncroKeyInserted = False
 
-        if self._psSyncroKeyInserted and self._dsSyncroKeyInserted and abs(self._dsSyncroPoint - self._psSyncroPoint) < 3000:
+        if self._psSyncroKeyInserted and self._dsSyncroKeyInserted and abs(self._dsSyncroPoint - self._psSyncroPoint) < 5000:
             self._controllers['prep_status'].write(COMMAND.CMD_SET_PS_SYNCRO_READER_SYNCRONIZED)
             self._controllers['docked_ship'].write_ES(COMMAND.CMD_SET_DS_SYNCRO_READER_SYNCRONIZED)
         
