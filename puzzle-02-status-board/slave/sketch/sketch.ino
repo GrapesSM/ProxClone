@@ -106,8 +106,6 @@ void runTaskFunction( void * parameters ) {
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Enable communication to master
-    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
     
     // Map puzzle register's to component's values
     StatusBoard::update(puzzle, sbComponents);
@@ -128,7 +126,10 @@ void showTaskFunction( void * parameters ){
   Serial.println(xPortGetCoreID());
 
   for(;;){
-    // Play sounds
-    StatusBoard::sound(sbComponents);
+    // Enable communication to master
+    parts.slave->poll( puzzle.registers, puzzle.numberOfRegisters );
+    
+//    // Play sounds
+//    StatusBoard::sound(sbComponents);
   } 
 }

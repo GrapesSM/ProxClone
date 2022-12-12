@@ -3,7 +3,6 @@ from modbus_tk.modbus import LOGGER
 import modbus_tk.defines as cst
 import time
 import json
-from .constants import STATE
 from .constants import STATE, COMMAND, REGISTER_INDEX, STATUS
 from database.db import Puzzle
 
@@ -56,7 +55,7 @@ class BaseController:
 
         if registers:
             self.setRegisters(registers)
-            print(self.getKeyName(), registers)
+            # print(self.getKeyName(), registers)
             if self._failedCommand:
                 self._failedCount = self._failedCount + 1
                 if self.write(self._failedCommand[0], self._failedCommand[1]):
@@ -129,6 +128,6 @@ class BaseController:
             _ = ""
 
         return ok
-    
+
 
         

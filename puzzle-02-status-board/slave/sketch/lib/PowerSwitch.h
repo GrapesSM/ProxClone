@@ -70,15 +70,15 @@ void PowerSwitch::update()
     {
       _turned == false;
 
-      if (sw1 && !sw2)
+      if (_sw1 && !_sw2)
       {
         _state = ON;
       }
-      else if (!sw1 && sw2)
+      else if (!_sw1 && _sw2)
       {
         _state = OFF;
       }
-      else if (!sw1 && !sw2)
+      else if (!_sw1 && !_sw2)
       {
         _state = RESET;
       }

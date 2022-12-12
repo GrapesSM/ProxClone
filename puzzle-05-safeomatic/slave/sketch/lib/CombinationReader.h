@@ -121,10 +121,10 @@ void CombinationReader::setLightsOff()
 void CombinationReader::checkNumber() 
 {
   if (_submittedVal != _previousVal) {
-    if (_submittedVal - _previousVal > 0) {
-      _clockwise = false;
-    } else {
+    if (_submittedVal - _previousVal > 0) {     // changed clock states 
       _clockwise = true;
+    } else {
+      _clockwise = false;
     }
 
     if (_prepped) {

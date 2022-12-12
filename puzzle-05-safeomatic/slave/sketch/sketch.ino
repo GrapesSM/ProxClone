@@ -107,6 +107,7 @@ void setupSafeomatic()
 void runTaskFunction( void * parameters ) {
   Serial.print("Run Task running on core ");
   Serial.println(xPortGetCoreID());
+ 
 
   for(;;){
     // Map puzzle's values to component's values
