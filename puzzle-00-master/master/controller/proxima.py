@@ -49,17 +49,15 @@ class ProximaCommand(object):
             'interval': 500
         }
 
-    async def refresh(self, key_name):
-        # await self._master.execute(self._controllers[key_name].getSlaveID(), cst.READ_HOLDING_REGISTERS, 3, 1)
+    async def refresh(self, key_name, delay):
         try:
             # await asyncio.sleep(1)
-        # time.sleep(1)
-            await self._controllers[key_name].refresh(0.25)
+            # time.sleep(1)
+            await self._controllers[key_name].refresh(delay)
         except Exception as ex:
             _ = ""
-        # await key_name
 
-    async def refreshAll(self):
+    async def refreshAll(self, delay):
         for key_name in self._controllers.keys():
             if key_name in [
                 'docked_ship',
@@ -71,9 +69,9 @@ class ProximaCommand(object):
                 'life_support',
                 'laserbar',
                 'keypad',
-                # 'lasergrid',
+                'lasergrid',
                 ]:
-                await self.refresh(key_name)
+                await self.refresh(key_name, delay)
         # await asyncio.gather(
         #     # self.refresh('prep_status'), 
         #     self.refresh('docked_ship'), 
@@ -91,38 +89,9 @@ class ProximaCommand(object):
         while True:
             if stop():
                 break
-
-            s = time.perf_counter()
-            asyncio.run(self.refreshAll())
-            elapsed = time.perf_counter() - s
-            # print(f"{__file__} executed in {elapsed:0.2f} seconds.")
-
-            # for key_name in self._controllers.keys():
-            #     if key_name not in [
-            #         'docked_ship',
-            #         'prep_status',
-            #         'power_control',
-            #         'status_board',
-            #         'datamatic',
-            #         'safeomatic',
-            #         'life_support',
-            #         'lasergrid',
-            #         'laserbar',
-            #         'keypad',
-            #         ]:
-            #         continue
-
-            #     try: 
-                    
-            #         # self._refreshTimer['current'] = int(time.perf_counter() * 1000)
-            #         # if self._refreshTimer['current'] - self._refreshTimer['point'] > self._refreshTimer['interval']:
-            #         #     self._refreshTimer['point'] = int(time.perf_counter() * 1000)
-            #         #     # slave = self._master.execute(self._controllers[key_name].getSlaveID(), cst.READ_HOLDING_REGISTERS, 3, 1)
-            #         #     print(slave)
-            #         #     if slave and slave[0] > 0:
-            #         #         self._controllers[key_name].refresh(delay)
-            #     except Exception as ex:
-            #         _ = ""
+            # s = time.perf_counter()
+            asyncio.run(self.refreshAll(delay))
+            # elapsed = time.perf_counter() - s
 
     def run(self):
         self._runTimer['current'] = int(time.perf_counter() * 1000)
