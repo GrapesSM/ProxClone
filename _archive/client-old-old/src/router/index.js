@@ -4,7 +4,7 @@ import Ping from '../components/Ping.vue';
 import Dashboard from '../components/Dashboard.vue';
 import store from '../store';
 
-Vue.use(Router);
+
 
 
 export default new Router({
