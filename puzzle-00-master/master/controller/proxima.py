@@ -29,7 +29,7 @@ class ProximaCommand(object):
         self._syncroTimer = {
             'current': 0,
             'point': 0,
-            'interval': 7000
+            'interval': 5500
         }
         self.firstCall = 0
         self.lastCall = 0
@@ -49,42 +49,52 @@ class ProximaCommand(object):
             'interval': 500
         }
 
-    async def refresh(self, key_name, delay):
+    async def refresh(self, key_name, delay=0.0):
         try:
-            # await asyncio.sleep(1)
-            # time.sleep(1)
             await self._controllers[key_name].refresh(delay)
+            if delay > 0.0:
+                time.sleep(delay)
+            #await self._controllers[key_name].refresh(delay)
         except Exception as ex:
             _ = ""
 
     async def refreshAll(self, delay):
         for key_name in self._controllers.keys():
-            if key_name in [
-                'docked_ship',
-                'prep_status',
-                'power_control',
-                'status_board',
-                'datamatic',
-                'safeomatic',
-                'life_support',
-                'laserbar',
-                'keypad',
-                'lasergrid',
-                ]:
-                await self.refresh(key_name, delay)
-        # await asyncio.gather(
-        #     # self.refresh('prep_status'), 
-        #     self.refresh('docked_ship'), 
-        #     # self.refresh('power_control'), 
-        #     # self.refresh('status_board'), 
-        #     # self.refresh('datamatic'), 
-        #     # self.refresh('safeomatic'), 
-        #     # self.refresh('lasergrid'), 
-        #     # self.refresh('life_support'), 
+            if key_name in ['docked_ship'] or key_name in ['prep_status']:
+                await self.refresh('docked_ship', 0.00)
+                await self.refresh('prep_status', 0.00)
+                await self.refresh('prep_status', 0.00)
+            if key_name in ['power_control']:
+                await self.refresh(key_name, 0.00)
+            if key_name in ['status_board']:
+                await self.refresh(key_name, 0.00)
+                await self.refresh(key_name, 0.00)
+            if key_name in ['datamatic']:
+                await self.refresh(key_name, 0.00)
+            if key_name in ['safeomatic']:
+                await self.refresh(key_name, 0.00)
+            if key_name in ['life_support']:
+                await self.refresh(key_name, 0.00)
+            if key_name in ['laserbar']:
+                await self.refresh(key_name, 0.00)
+            if key_name in ['keypad']:
+                await self.refresh(key_name, 0.00)
+                await self.refresh(key_name, 0.00)
+            if key_name in ['lasergrid']:
+                await self.refresh(key_name, 0.00)
+        #await asyncio.gather(
+        #     self.refresh('prep_status'),
+        #     self.refresh('docked_ship'),
+        #     self.refresh('power_control'),
+        #     self.refresh('status_board'),
+        #     self.refresh('datamatic'),
+        #     self.refresh('safeomatic'),
+        #     self.refresh('lasergrid'),
+        #     self.refresh('life_support'),
         #     self.refresh('laserbar'),
-        #     # self.refresh('keypad'),
-        # )
-    
+        #     self.refresh('keypad'),
+        #)
+
     def update(self, delay, stop):
         while True:
             if stop():

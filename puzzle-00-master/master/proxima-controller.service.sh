@@ -1,5 +1,5 @@
-#!/bin/bash 
+#!/bin/bash
 
-DIR_PATH="/home/pi/proxima/puzzle-00-master/master"
-cd "$DIR_PATH/controller"
-python3 main.py
+DIR_PATH="/home/pi/proxima/puzzle-00-master/master/controller"
+/usr/bin/python3 "$DIR_PATH/main.py" > /home/pi/proxima/logs
+
