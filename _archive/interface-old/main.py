@@ -15,7 +15,7 @@ for puzzle in Puzzle.select().dicts():
     puzzle['state'] = json.loads(puzzle['state'])
     puzzles.append(puzzle)
     
-
+st.write(puzzles)
 df = pd.DataFrame(puzzles)
 st.write(df)
 puzzle_df = df.drop('state', axis=1)
