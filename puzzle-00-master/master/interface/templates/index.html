@@ -1,120 +1,151 @@
 <!doctype html>
 <html>
-<head>
-    <title>Proxima</title>
-    <link rel="icon" type="image/png" href="{{url_for('static', filename='favicon-32x32.png')}}">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="{{url_for('static', filename= 'tailwindcss.min.js')}}"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-            line-height: 1.5;
-            margin: 0;
-            padding: 0;
-        }
+    <head>
+        <title>Proxima</title>
+        <link rel="icon" type="image/png" href="{{url_for('static', filename='android-chrome-192x192.png')}}">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                font-size: 14px;
+                line-height: 1.5;
+                margin: 0;
+                padding: 0;
+            }
 
-        h2 {
-            margin-top: 30px;
-            margin-bottom: 10px;
-        }
+            h2 {
+                margin-top: 30px;
+                margin-bottom: 10px;
+            }
 
-        .table-wrapper {
-            overflow-x: auto;
-            margin-top: 20px;
-            
-        }
+            .table-wrapper {
+                overflow-x: auto;
+                margin-top: 20px;
 
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin: 0 auto;
-            
-        }
+            }
 
-        th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-        }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin: 0 auto;
 
-        th {
-            
-            background-color: #f1f1f1;
-        }
-        header {
-            margin-bottom: 30px;
-        }
-        .button {
-            background-color: #2d2d2d;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            font-size: 16px;
-            border-radius: 8px;
-            transition: background-color 0.3s ease;
-            width: 7rem;
-            height: 5rem;
-        }
-        .button:first-child {
-            margin-top: 1rem;
-        }
-        .button:hover {
-            background-color: #c30000;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body class="bg-gray-600">
-    <div class="container mx-auto">
+            }
 
-        <!-- Header with title and buttons -->
-        <header class="flex justify-between items-center py-4">
-            <!-- <h1 class="text-lg font-medium">PROXIMA COMMAND</h1> -->
-            <div class="flex flex-wrap items-center space-x-4 space-y-4">
-                {% for name, key_name, registers in data %}
+            th,
+            td {
+                border: 1px solid #ccc;
+                padding: 8px;
+                text-align: left;
+            }
 
-                <button class="button lg:px-6 lg:py-2 md:px-4 md:py-2 sm:px-3 sm:py-1.5 px-2 py-1" onclick="location.href='#{{ key_name }}'">{{ name }}</button>
+            th {
+
+                background-color: #f1f1f1;
+            }
+            header {
+                margin-bottom: 30px;
+            }
+            .button {
+                background-color: #2d2d2d;
+                color: white;
+                border: none;
+                padding: 10px 20px;
+                text-align: center;
+                text-decoration: none;
+                font-size: 16px;
+                border-radius: 8px;
+                transition: background-color 0.3s ease;
+                width: 7rem;
+                height: 5rem;
+            }
+            .button:first-child {
+                margin-top: 1rem;
+            }
+            .button:hover {
+                background-color: #c30000;
+                cursor: pointer;
+            }
+            #nav {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-top: 20px;
+            }
+            .stat-wrap {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin-top: 20px;
+
+            }
+        </style>
+    </head>
+    <body class="bg-gray-600">
+        <div class="stat-wrap">
+            <div id="nav" class="button">
+                <button onclick="navigateToStatusBoard()">View Status Board
+                </button>
+            </div>
+        </div>
+
+        <div
+            class="container mx-auto">
+
+            <!-- Header with title and buttons -->
+            <header
+                class="flex justify-between items-center py-4">
+                <!-- <h1 class="text-lg font-medium">PROXIMA COMMAND</h1> -->
+                <div class="flex flex-wrap items-center space-x-4 space-y-4">
+                    {% for name, key_name, registers in data %}
+
+                        <button class="button lg:px-6 lg:py-2 md:px-4 md:py-2 sm:px-3 sm:py-1.5 px-2 py-1" onclick="location.href='#{{ key_name }}'">{{ name }}</button>
                         <!-- <a href="#{{ key_name }}">{{ key_name }}</a> -->
-                
+
+                    {% endfor %}
+                </div>
+            </header>
+
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {% for name, key_name, registers in data %}
+                    <div id="{{ key_name }}" class="p-4 bg-white rounded-lg shadow">
+                        <h2 class="mb-2 text-lg font-medium">{{ name }}
+                            ({{ key_name }})</h2>
+                        <table class="w-full text-left table-fixed">
+                            <thead>
+                                <tr>
+                                    <th class="w-full py-2 font-medium border-b border-gray-300">Name</th>
+                                    <th class="w-full py-2 font-medium border-b border-gray-300">Value</th>
+                                    <th class="w-full py-2 font-medium border-b border-gray-300">Raw Value</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for register in registers %}
+                                    <tr>
+                                        <td class="py-2 border-b border-gray-300">{{ puzzle_registers_meta[key_name][loop.index - 1] }}</td>
+                                        <td class="py-2 border-b border-gray-300">{{ puzzle_states[register] }}</td>
+                                        <td class="py-2 border-b border-gray-300">{{ register }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 {% endfor %}
             </div>
-        </header>
-    
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {% for name, key_name, registers in data %}
-              <div id="{{ key_name }}" class="p-4 bg-white rounded-lg shadow">
-                <h2 class="mb-2 text-lg font-medium">{{ name }} ({{ key_name }})</h2>
-                <table class="w-full text-left table-fixed">
-                  <thead>
-                    <tr>
-                      <th class="w-full py-2 font-medium border-b border-gray-300">Name</th>
-                      <th class="w-full py-2 font-medium border-b border-gray-300">Value</th>
-                      <th class="w-full py-2 font-medium border-b border-gray-300">Raw Value</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for register in registers %}
-                    <tr>
-                      <td class="py-2 border-b border-gray-300">{{ puzzle_registers_meta[key_name][loop.index - 1] }}</td>
-                      <td class="py-2 border-b border-gray-300">{{ puzzle_states[register] }}</td>
-                      <td class="py-2 border-b border-gray-300">{{ register }}</td>
-                    </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            {% endfor %}
-          </div>
-    </div>
-    <script>
-        // Reload the page every 10 seconds
-        setInterval(function() {
-          location.reload();
-        }, 10000);
-      </script>
-</body>
+            <div>
+                {{ data }}</div>
+
+        </div>
+        <script>
+            // Reload the page every 10 seconds
+            setInterval(function () {
+                location.reload();
+            }, 10000);
+
+            function navigateToStatusBoard() {
+                window.open('/status-board');
+            }
+        </script>
+    </body>
 </html>
