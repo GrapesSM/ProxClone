@@ -229,7 +229,7 @@
             };
 
             // Fetch data from API
-            fetch('http://localhost:5000/data').then(response => {
+            fetch('/data').then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -398,11 +398,9 @@
             function renderCountdown(countdownStatus){
                 console.log(countdownStatus)
                 const clock = document.getElementById('time')
-                const seconds = Math.floor(countdownStatus/1000);
-                const remainingSeconds = 3600 - seconds;
-                const hours = Math.floor(remainingSeconds / 3600);
-                const minutes = Math.floor((remainingSeconds % 3600) / 60);
-                const secondsRemainder = remainingSeconds % 60;
+                const seconds = Math.floor(countdownStatus)
+                const minutes = Math.floor(seconds / 60);
+                const secondsRemainder = seconds % 60;
                 const timeString = pad(minutes) + ":" + pad(secondsRemainder);
                 clock.innerHTML = timeString;
                 console.log(timeString)

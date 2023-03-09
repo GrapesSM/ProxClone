@@ -90,7 +90,7 @@ def main():
     proximaCommand = ProximaCommand(controllers, master)
     systemMonitor = WorkerThread(proximaCommand.run)
     flagStopThreads = False
-    slaveThread = Thread(target = proximaCommand.update, args=(0.15, lambda : flagStopThreads), daemon = True)
+    slaveThread = Thread(target = proximaCommand.update, args=(0.35, lambda : flagStopThreads), daemon = True)
 
 
     try:
@@ -112,6 +112,7 @@ def main():
         flagStopThreads = True
         #close the simulator
         simulator.close()
+
         #stop the data collect
         systemMonitor.stop()
 

@@ -11,3 +11,4 @@ __pycache__/
 nohup.out
 bash.exe.stackdump
 venv
+logs

@@ -29,7 +29,7 @@ class BaseController:
         self._timer = {
             'current': 0,
             'point': 0,
-            'interval': 5000 #milliseconds
+            'interval': 1000 #milliseconds
         }
 
     @property
@@ -51,11 +51,12 @@ class BaseController:
         try:
             registers = self.read()
         except Exception as excpt:
+            print(str(excpt))
             _ = ""
 
         if registers:
             self.setRegisters(registers)
-            # print(self.getKeyName(), registers)
+            #print(self.getKeyName(), registers)
             if self._failedCommand:
                 self._failedCount = self._failedCount + 1
                 if self.write(self._failedCommand[0], self._failedCommand[1]):
@@ -81,7 +82,8 @@ class BaseController:
                     self._failedCommand_SP = None
             
         if registers == None:
-            print(self.getKeyName())
+            #print(self.getKeyName())
+            _ = ""
         
 
     def setRegisters(self, registers):
