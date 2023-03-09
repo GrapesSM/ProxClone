@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Teko:wght@300&display=swap" rel="stylesheet">
+        <title>Status Board</title>
+    </head>
+    <style>
+        @font-face{
+        font-family: 'spacefont';
+        src: url('spacefont.otf');
+      }
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #container {
+            background-color: grey;
+            width: 600px;
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 50px auto 0;
+            padding: 50px;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.4);
+            border-radius: 30px;
+            border: 2px solid black;
+
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .box {
+            flex-basis: 24%;
+            height: 100px;
+            width: 75px;
+            margin: 100px 20px 15px; /* Updated margin property */
+            background-color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            border-radius: 10px;
+        }
+        #shipprep {
+            flex-basis: 24%;
+            height: 100px;
+            width: 75px;
+            margin: 100px 20px 15px; /* Updated margin property */
+            background-color: grey;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            border-radius: 10px;
+            justify-content: space-between;
+        }
+        #blastdoor {
+            flex-basis: 24%;
+            height: 100px;
+            width: 75px;
+            margin: 100px 20px 15px; /* Updated margin property */
+            background-color: grey;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            border-radius: 10px;
+            justify-content: space-between;
+        }
+        #lasergrid {
+            flex-basis: 24%;
+            height: 100px;
+            width: 75px;
+            margin: 100px 20px 15px; /* Updated margin property */
+            background-color: grey;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            border-radius: 10px;
+            justify-content: space-between;
+        }
+        #lifesup {
+            flex-basis: 24%;
+            height: 100px;
+            width: 75px;
+            margin: 100px 20px 15px; 
+            background-color: grey;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            border-radius: 10px;
+            justify-content: space-between;
+        }
+
+        .title {
+            margin-right: 10px;
+
+        }
+
+        .content {
+            flex-grow: 1;
+        }
+
+        h1.title {
+            margin: 0 0 20px;
+            margin-top: 50px;
+            font-size: 70px;
+            text-align: center; /* Added margin-top property */
+            font-family: "Teko", sans-serif; /* Apply custom font to body */
+
+        }
+
+
+        .puzzles {
+            font-size: 12px;
+            /* font-family: "Teko", sans-serif; */
+
+        }
+
+        #shipprep-enabled,
+        #lifesup-enabled,
+        #blastdoor-enabled,
+        #lasergrid-enabled {
+            height: 40px;
+            width: 60px;
+            background-color: #5F885C;
+            display: flex;
+            border-radius: 3px;
+            border: 4px solid black;
+            justify-content: space-between;
+        }
+
+        #shipprep-disabled,
+        #lifesup-disabled,
+        #blastdoor-disabled,
+        #lasergrid-disabled {
+            height: 40px;
+            width: 60px;
+            background-color: rgb(255, 0, 0);
+            display: flex;
+            border-radius: 3px;
+            border: 4px solid black;
+            justify-content: space-between;
+        }
+
+        #countdown {
+            margin: 20px 20px 20px 20px;
+            font-size: 50px;
+            text-align: center; /* Added margin-top property */
+            font-family: "Teko", sans-serif;
+            display: flex;
+            flex-direction: row;
+            
+
+        }
+        #timer {
+            background-color: rgb(80, 78, 78);
+            margin: 0px 30px 0px;
+            border: 4px solid black;
+            border-radius: 5px;
+        }
+        #time {
+            display: flex;
+            justify-content: space-evenly;
+            font-family: 'Lucida Console';
+            padding: 10px 10px 10px 10px;
+            color: red;
+            
+        }
+    </style>
+
+    <body>
+
+        <div id="container">
+            <h1 class="title">SPACE STATION-X STATUS</h1>
+            <div class="row">
+                <h3 class="puzzles">SHIP PREP</h3>
+                <div id="shipprep">
+                    <div id="shipprep-enabled"></div>
+                    <div id="shipprep-disabled"></div>
+
+
+                </div>
+                <h3 class="puzzles">LIFE SUPPORT</h3>
+                <div id="lifesup">
+                    <div id="lifesup-enabled"></div>
+                    <div id="lifesup-disabled"></div>
+
+                </div>
+                <h3 class="puzzles">BLAST DOOR</h3>
+                <div id="blastdoor">
+                    <div id="blastdoor-enabled"></div>
+                    <div id="blastdoor-disabled"></div>
+
+                </div>
+                <h3 class="puzzles">LASER GRID</h3>
+                <div id="lasergrid">
+                    <div id="lasergrid-enabled"></div>
+                    <div id="lasergrid-disabled"></div>
+                </div>
+            </div>
+            <div id="countdown">
+                DESTRUCT COUNTDOWN
+                <div id="timer">
+                    <div id="time"></div>
+                </div>
+            </div>
+        </div>
+        <div id="ref-lifestupport"></div>
+        <div id="ref-statusboard"></div>
+        <div id="ref-blastdoor"></div>
+        <div id="ref-lasergrid"></div>
+
+        <script>
+
+            // Initialize state
+            let state = {
+                isLoading: true,
+                data: null,
+                error: "No error"
+            };
+
+            // Fetch data from API
+            fetch('http://localhost:5000/data').then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            }).then(data => { // Update state with fetched data
+                state = {
+                    data: data,
+                    error: null
+                };
+
+
+                let [shipPrepStatus, lifeSuppStatus, blastDoorStatus, laserGridStatus, countdownStatus] = getStates();
+                console.log(countdownStatus);
+                renderShipPrep(shipPrepStatus);
+                renderLifeSupport(lifeSuppStatus);
+                renderBlastDoor(blastDoorStatus);
+                renderLaserGrid(laserGridStatus);
+                renderCountdown(countdownStatus);
+            }).catch(error => { // Update state with error
+                state = {
+                    isLoading: false,
+                    data: null,
+                    error: error.message
+                };
+
+            });
+            function getStates() {
+                const registers = state.data.data;
+
+                let shipPrepStatus,
+                    lifeSuppStatus,
+                    blastDoorStatus,
+                    laserGridStatus,
+                    countdownStatus;
+                registers.forEach(item => {
+                    const [name, key, registerList] = item;
+
+                    if (key === "status_board") {
+                        const values = registerList.slice(7, 14);
+
+                        shipPrepStatus = values[0];
+                        lifeSuppStatus = values[1];
+                        blastDoorStatus = values[2];
+                        laserGridStatus = values[3];
+                        countdownStatus = values[5];
+
+                    }
+                });
+                console.log("states updated")
+                return [shipPrepStatus, lifeSuppStatus, blastDoorStatus, laserGridStatus, countdownStatus];
+
+
+            }
+            // Function to render UI based on state
+            function renderShipPrep(shipPrepStatus) {
+                console.log("render shiprep")
+                if (state.isLoading) { // Show loading spinner
+                    console.log("isloading")
+                    document.getElementById('ref-lifesupport').innerHTML = "loading";
+
+
+                } else if (state.error) { // Show error message
+                    console.log("Error: ${state.error}")
+                    document.getElementById('ref-lifesupport').innerHTML = "error";
+
+
+                } else {
+
+                    console.log(shipPrepStatus)
+                    const shipPrepEnabled = document.getElementById('shipprep-enabled');
+                    const shipPrepDisabled = document.getElementById('shipprep-disabled');
+
+                    if (shipPrepStatus == 4) {
+                        shipPrepEnabled.style.backgroundColor = "#27FF00";
+                        shipPrepDisabled.style.backgroundColor = "#7D5656";
+                    } else {
+                        shipPrepEnabled.style.backgroundColor = "#5F885C";
+                        shipPrepDisabled.style.backgroundColor = "#FF0000";
+                    }
+
+
+                }
+            }
+            function renderLifeSupport(lifeSuppStatus) {
+
+                console.log(lifeSuppStatus)
+                if (state.isLoading) {
+                    console.log("isloading")
+                    document.getElementById('ref-lifesupport').innerHTML = "loading";
+
+                } else if (state.error) { // Show error message
+                    console.log("error")
+                    document.getElementById('ref-lifesupport').innerHTML = "error";
+
+                } else {
+                    console.log("get life sup ids")
+                    const lifeSupEnabled = document.getElementById('lifesup-enabled');
+                    const lifeSupDisabled = document.getElementById('lifesup-disabled');
+
+                    if (lifeSuppStatus == 4) {
+                        lifeSupEnabled.style.backgroundColor = "#27FF00";
+                        lifeSupDisabled.style.backgroundColor = "#7D5656";
+                    } else {
+                        lifeSupEnabled.style.backgroundColor = "#5F885C";
+                        lifeSupDisabled.style.backgroundColor = "#FF0000";
+                    }
+
+                }
+            }
+            function renderBlastDoor(blastDoorStatus) {
+
+                console.log("render blastdoor")
+                console.log(blastDoorStatus)
+                if (state.isLoading) { 
+                    console.log("isloading")
+                    document.getElementById('ref-lifesupport').innerHTML = "loading";
+
+                } else if (state.error) {
+                    console.log("error")
+                    document.getElementById('ref-lifesupport').innerHTML = "error";
+
+                } else {
+                    console.log("get blastdoor ids")
+                    const blastDoorEnabled = document.getElementById('blastdoor-enabled');
+                    const blastDoorDisabled = document.getElementById('blastdoor-disabled');
+
+                    if (blastDoorStatus == 4) {
+                        blastDoorEnabled.style.backgroundColor = "#27FF00";
+                        blastDoorDisabled.style.backgroundColor = "#7D5656";
+                    } else {
+                        blastDoorEnabled.style.backgroundColor = "#5F885C";
+                        blastDoorDisabled.style.backgroundColor = "#FF0000";
+                    }
+
+                }
+            }
+            function renderLaserGrid(laserGridStatus) {
+
+                console.log("render lasergrid");
+                console.log(laserGridStatus);
+                if (state.isLoading) { 
+                    console.log("isloading")
+                    document.getElementById('ref-lifesupport').innerHTML = "loading";
+
+
+                } else if (state.error) {
+                    console.log("error")
+                    document.getElementById('ref-lifesupport').innerHTML = "error";
+
+                    // ...
+                } else {
+                    console.log("get lasergrid ids")
+                    const laserGridEnabled = document.getElementById('lasergrid-enabled');
+                    const laserGridDisabled = document.getElementById('lasergrid-disabled');
+
+                    if (laserGridStatus == 4) {
+                        laserGridEnabled.style.backgroundColor = "#27FF00";
+                        laserGridDisabled.style.backgroundColor = "#7D5656";
+                    } else {
+                        laserGridEnabled.style.backgroundColor = "#5F885C";
+                        laserGridDisabled.style.backgroundColor = "#FF0000";
+                    }
+
+                }
+            }
+            function renderCountdown(countdownStatus){
+                console.log(countdownStatus)
+                const clock = document.getElementById('time')
+                const seconds = Math.floor(countdownStatus/1000);
+                const remainingSeconds = 3600 - seconds;
+                const hours = Math.floor(remainingSeconds / 3600);
+                const minutes = Math.floor((remainingSeconds % 3600) / 60);
+                const secondsRemainder = remainingSeconds % 60;
+                const timeString = pad(minutes) + ":" + pad(secondsRemainder);
+                clock.innerHTML = timeString;
+                console.log(timeString)
+            }
+
+            function pad(num) {
+                if (num<10){
+                    return "0" + num;
+                }
+                else{
+                    return num;
+                }
+                }
+            
+
+                setInterval(function() {
+          location.reload();
+        }, 10000);
+        </script>
+    </body>
+</html>
