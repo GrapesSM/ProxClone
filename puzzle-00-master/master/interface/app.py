@@ -1,9 +1,13 @@
+
+import os, sys, json
 from data import *
 from flask import *
 from flask_cors import CORS
 import collections
-collections.Iterable = collections.abc.Iterable
-import os, sys, json
+try:
+	collectionsAbc = collections.abc
+except AttributeError:
+	collectionsAbc = collections
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from database.db import *
 
@@ -38,7 +42,6 @@ def index():
 
 @app.route('/status-board')
 def statusboard():
-    
     return render_template('status-board.html')
 
 
@@ -58,13 +61,14 @@ def getData():
         registers = d['state']['registers']
         # add the name and registers data to the list
         data.append((name, key_name, registers))
-        # pass the name and registers data to the HTML template
-    return {
-        'data': data,
-        'puzzle_registers_meta': puzzle_registers_meta,
-        'puzzle_states': puzzle_states
-    }
+        # pass the name and registers data to the HTML templat
 
+    return jsonify(
+	data= data,
+	puzzle_registers_meta=puzzle_registers_meta,
+	puzzle_states=puzzle_states
+    )
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
+
