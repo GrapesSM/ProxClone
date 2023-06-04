@@ -56,7 +56,8 @@ class BaseController:
 
         if registers:
             self.setRegisters(registers)
-            #print(self.getKeyName(), registers)
+            #if self.getKeyName() == 'lasergrid':
+            #    print(self.getKeyName(), registers)
             if self._failedCommand:
                 self._failedCount = self._failedCount + 1
                 if self.write(self._failedCommand[0], self._failedCommand[1]):
