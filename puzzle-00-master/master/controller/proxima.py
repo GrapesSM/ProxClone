@@ -59,6 +59,7 @@ class ProximaCommand(object):
             _ = ""
 
     async def refreshAll(self, delay):
+        #print(self._controllers.keys())
         for key_name in self._controllers.keys():
             if key_name in ['docked_ship'] or key_name in ['prep_status']:
                 await self.refresh('docked_ship', 0.00)
@@ -81,6 +82,7 @@ class ProximaCommand(object):
                 await self.refresh(key_name, 0.00)
                 await self.refresh(key_name, 0.00)
             if key_name in ['lasergrid']:
+                await self.refresh(key_name, 0.00)
                 await self.refresh(key_name, 0.00)
         #await asyncio.gather(
         #     self.refresh('prep_status'),

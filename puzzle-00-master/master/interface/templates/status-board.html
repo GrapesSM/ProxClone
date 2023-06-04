@@ -272,13 +272,14 @@
 
                         shipPrepStatus = values[0];
                         lifeSuppStatus = values[1];
-                        blastDoorStatus = values[2];
-                        laserGridStatus = values[3];
+                        laserGridStatus = values[2];
+                        blastDoorStatus = values[3];
                         countdownStatus = values[5];
-
+                        console.log(values)
                     }
                 });
                 console.log("states updated")
+		
                 return [shipPrepStatus, lifeSuppStatus, blastDoorStatus, laserGridStatus, countdownStatus];
 
 
@@ -353,6 +354,7 @@
 
                 } else {
                     console.log("get blastdoor ids")
+		    console.log(blastDoorStatus)
                     const blastDoorEnabled = document.getElementById('blastdoor-enabled');
                     const blastDoorDisabled = document.getElementById('blastdoor-disabled');
 
